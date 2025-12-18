@@ -1,20 +1,32 @@
+"use client"
+
 import AuthButton from '@/components/AuthButton'
+import POICarousel from '@/components/POICarousel'
+import { getAllPOIs } from '@/lib/data'
 
 export default function Home() {
+  const allPOIs = getAllPOIs()
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-center font-mono text-sm">
-        <div className="mb-8 flex justify-end">
+    <div className="min-h-screen bg-black">
+      <header className="sticky top-0 z-50 bg-black bg-opacity-80 backdrop-blur-sm border-b border-gray-800">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-white">B-4K</h1>
           <AuthButton />
         </div>
-        <h1 className="text-4xl font-bold text-center mb-4">
-          Welcome to B4K
-        </h1>
-        <p className="text-center text-gray-600">
-          Next.js + TypeScript 프로젝트가 준비되었습니다.
-        </p>
-      </div>
-    </main>
+      </header>
+
+      <main className="w-full py-8">
+        <div className="container mx-auto px-6 mb-8">
+          <h2 className="text-3xl font-bold text-white mb-2">추천 장소</h2>
+          <p className="text-gray-400">아래 카테고리를 탐색하여 원하는 K-Culture 여행지를 찾아보세요</p>
+        </div>
+        
+        <div className="w-full px-6">
+          <POICarousel pois={allPOIs} />
+        </div>
+      </main>
+    </div>
   )
 }
 

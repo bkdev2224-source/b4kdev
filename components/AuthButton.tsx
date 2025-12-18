@@ -11,21 +11,17 @@ export default function AuthButton() {
 
   if (session) {
     return (
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {session.user?.image && (
           <img
             src={session.user.image}
             alt={session.user.name || "User"}
-            className="w-10 h-10 rounded-full"
+            className="w-8 h-8 rounded-full"
           />
         )}
-        <div className="flex flex-col">
-          <span className="text-sm font-medium">{session.user?.name}</span>
-          <span className="text-xs text-gray-500">{session.user?.email}</span>
-        </div>
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          className="px-4 py-2 bg-white text-black rounded-full hover:scale-105 transition-transform font-semibold text-sm"
         >
           로그아웃
         </button>
@@ -36,9 +32,9 @@ export default function AuthButton() {
   return (
     <a
       href="/auth/signin"
-      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+      className="px-6 py-2 bg-white text-black rounded-full hover:scale-105 transition-transform font-semibold text-sm"
     >
-      로그인
+      로그인하기
     </a>
   )
 }
