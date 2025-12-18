@@ -1,7 +1,10 @@
 import { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
+import clientPromise from "./mongodb"
 
 export const authOptions: NextAuthOptions = {
+  adapter: MongoDBAdapter(clientPromise),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -27,10 +30,10 @@ export const authOptions: NextAuthOptions = {
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token, user }) {
       // 세션에 토큰 정보 추가
       if (session.user) {
-        session.user.id = token.id as string
+        session.user.id = token.id as string || user?.id || ""
         session.accessToken = token.accessToken as string
       }
       return session

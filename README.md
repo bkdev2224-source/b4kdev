@@ -14,6 +14,8 @@ Next.js와 TypeScript를 사용한 웹 애플리케이션 프로젝트입니다.
 - **React**: ^18.3.0
 - **TypeScript**: ^5
 - **NextAuth.js**: ^4.24.13 (인증)
+- **MongoDB**: ^5.9.0 (데이터베이스)
+- **@next-auth/mongodb-adapter**: ^1.1.3 (NextAuth MongoDB 어댑터)
 
 ### 개발 도구
 - **ESLint**: ^8
@@ -77,7 +79,8 @@ B4K/
 │   └── SessionProvider.tsx     # NextAuth 세션 프로바이더
 ├── lib/
 │   ├── auth.ts                 # 인증 유틸리티 함수
-│   └── authOptions.ts          # NextAuth 설정
+│   ├── authOptions.ts          # NextAuth 설정
+│   └── mongodb.ts              # MongoDB 연결 유틸리티
 ├── types/
 │   └── next-auth.d.ts          # NextAuth 타입 정의
 ├── public/                     # 정적 파일
@@ -103,6 +106,9 @@ NEXTAUTH_SECRET=your-secret-key-here
 # Google OAuth 설정
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# MongoDB 설정
+MONGODB_URI=mongodb://localhost:27017/B4K_TEST
 ```
 
 > ⚠️ `.env.local` 파일은 Git에 커밋되지 않습니다. (`.gitignore`에 포함됨)
@@ -137,12 +143,15 @@ openssl rand -base64 32
 
 ### 구현 방식
 - **NextAuth.js v4** 사용
-- **JWT 세션 전략** (데이터베이스 불필요)
+- **MongoDB 어댑터** 사용 (users, accounts 컬렉션 자동 관리)
+- **JWT 세션 전략** (세션은 JWT, 사용자 정보는 MongoDB에 저장)
 - **Google OAuth 2.0** 제공자
 - **세션 유지 기간**: 30일
 
 ### 주요 기능
 - ✅ 구글 계정으로 로그인/로그아웃
+- ✅ 구글 로그인 시 MongoDB의 `users` 컬렉션에 자동 저장
+- ✅ `accounts` 컬렉션에 OAuth 계정 정보 저장
 - ✅ JWT 토큰 기반 세션 관리
 - ✅ 서버/클라이언트 컴포넌트에서 세션 접근 가능
 - ✅ 타입 안전성 보장 (TypeScript)
@@ -210,9 +219,120 @@ JWT 토큰에 다음 정보가 포함됩니다:
 }
 ```
 
+### MongoDB 연동
+
+#### 데이터베이스 구조
+
+구글 로그인 시 NextAuth가 자동으로 다음 작업을 수행합니다:
+- `users` 컬렉션에 사용자 정보 저장 (이름, 이메일, 프로필 이미지 등)
+- `accounts` 컬렉션에 OAuth 계정 정보 저장 (provider, providerAccountId 등)
+- `sessions` 컬렉션에 세션 정보 저장 (선택적, JWT 전략 사용 시 미사용)
+
+#### 컬렉션 스키마
+
+**users 컬렉션:**
+```typescript
+{
+  _id: ObjectId
+  name: string
+  email: string
+  emailVerified: Date | null
+  image: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+**accounts 컬렉션:**
+```typescript
+{
+  _id: ObjectId
+  userId: ObjectId  // users 컬렉션 참조
+  type: string      // "oauth"
+  provider: string  // "google"
+  providerAccountId: string
+  refresh_token: string | null
+  access_token: string | null
+  expires_at: number | null
+  token_type: string | null
+  scope: string | null
+  id_token: string | null
+  session_state: string | null
+}
+```
+
+#### MongoDB 연결 설정
+
+**연결 정보:**
+- 연결 URI: `mongodb://localhost:27017/B4K_TEST`
+- 데이터베이스: `B4K_TEST`
+- 필수 컬렉션: `users`, `accounts`
+
+**연결 유틸리티 사용:**
+```typescript
+import clientPromise from "@/lib/mongodb"
+
+// MongoDB 클라이언트 가져오기
+const client = await clientPromise
+const db = client.db("B4K_TEST")
+
+// 컬렉션 접근
+const usersCollection = db.collection("users")
+const accountsCollection = db.collection("accounts")
+```
+
+#### 직접 MongoDB 사용 예시
+
+```typescript
+import clientPromise from "@/lib/mongodb"
+
+export async function getUserByEmail(email: string) {
+  const client = await clientPromise
+  const db = client.db("B4K_TEST")
+  const user = await db.collection("users").findOne({ email })
+  return user
+}
+
+export async function createUser(userData: {
+  name: string
+  email: string
+  image?: string
+}) {
+  const client = await clientPromise
+  const db = client.db("B4K_TEST")
+  const result = await db.collection("users").insertOne({
+    ...userData,
+    emailVerified: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  })
+  return result
+}
+```
+
+#### MongoDB 서버 요구사항
+
+- MongoDB 서버가 실행 중이어야 합니다
+- 기본 포트: `27017`
+- 로컬 개발: `mongodb://localhost:27017/B4K_TEST`
+- 원격 서버: `mongodb://username:password@host:port/database`
+
+#### 트러블슈팅
+
+**연결 오류가 발생하는 경우:**
+1. MongoDB 서버가 실행 중인지 확인
+2. `.env.local`의 `MONGODB_URI`가 올바른지 확인
+3. 방화벽 설정 확인 (원격 서버인 경우)
+4. MongoDB Compass로 직접 연결 테스트
+
+**컬렉션이 자동 생성되지 않는 경우:**
+- 첫 로그인 시 NextAuth가 자동으로 생성합니다
+- 수동으로 생성하려면 MongoDB Compass에서 빈 컬렉션을 생성하세요
+
 ### 인증 관련 파일
 
-- **`lib/authOptions.ts`**: NextAuth 설정 (프로바이더, 세션 전략, 콜백)
+- **`lib/mongodb.ts`**: MongoDB 연결 유틸리티
+- **`lib/authOptions.ts`**: NextAuth 설정 (프로바이더, MongoDB 어댑터, 세션 전략, 콜백)
 - **`lib/auth.ts`**: 서버 컴포넌트용 인증 유틸리티 함수
 - **`app/api/auth/[...nextauth]/route.ts`**: NextAuth API 라우트 핸들러
 - **`components/AuthButton.tsx`**: 로그인/로그아웃 UI 컴포넌트
@@ -246,6 +366,172 @@ JWT 토큰에 다음 정보가 포함됩니다:
 - `.env*.local`
 - 빌드 산출물
 - IDE 설정 파일
+
+---
+
+---
+
+## 🗄️ MongoDB 데이터베이스
+
+### 데이터베이스 개요
+
+이 프로젝트는 MongoDB를 사용하여 사용자 인증 정보를 저장합니다.  
+NextAuth.js의 MongoDB 어댑터를 통해 자동으로 사용자 데이터를 관리합니다.
+
+### 데이터베이스 정보
+
+- **데이터베이스 이름**: `B4K_TEST`
+- **연결 URI**: `mongodb://localhost:27017/B4K_TEST`
+- **사용 컬렉션**: `users`, `accounts`
+
+### 컬렉션 상세 정보
+
+#### users 컬렉션
+
+사용자 기본 정보를 저장하는 컬렉션입니다.
+
+**필드:**
+- `_id`: ObjectId (고유 식별자)
+- `name`: string (사용자 이름)
+- `email`: string (이메일 주소, 고유)
+- `emailVerified`: Date | null (이메일 인증 날짜)
+- `image`: string | null (프로필 이미지 URL)
+- `createdAt`: Date (생성 날짜)
+- `updatedAt`: Date (수정 날짜)
+
+**인덱스:**
+- `email`: 고유 인덱스 (자동 생성)
+
+#### accounts 컬렉션
+
+OAuth 제공자 계정 정보를 저장하는 컬렉션입니다.
+
+**필드:**
+- `_id`: ObjectId (고유 식별자)
+- `userId`: ObjectId (users 컬렉션 참조)
+- `type`: string (계정 타입, "oauth")
+- `provider`: string (제공자, "google")
+- `providerAccountId`: string (제공자 계정 ID)
+- `refresh_token`: string | null (리프레시 토큰)
+- `access_token`: string | null (액세스 토큰)
+- `expires_at`: number | null (만료 시간)
+- `token_type`: string | null (토큰 타입)
+- `scope`: string | null (권한 범위)
+- `id_token`: string | null (ID 토큰)
+- `session_state`: string | null (세션 상태)
+
+**인덱스:**
+- `provider_providerAccountId`: 복합 인덱스 (자동 생성)
+
+### MongoDB 연결 관리
+
+#### 연결 유틸리티 (`lib/mongodb.ts`)
+
+개발 환경과 프로덕션 환경에서 최적화된 연결 관리를 제공합니다.
+
+**특징:**
+- 개발 환경: 핫 리로드 시 연결 재사용 (전역 변수 캐싱)
+- 프로덕션 환경: 새로운 연결 생성
+- 자동 연결 풀 관리
+
+**사용 예시:**
+```typescript
+import clientPromise from "@/lib/mongodb"
+
+// 서버 컴포넌트 또는 API 라우트에서
+export default async function MyComponent() {
+  const client = await clientPromise
+  const db = client.db("B4K_TEST")
+  
+  // users 컬렉션에서 모든 사용자 조회
+  const users = await db.collection("users").find({}).toArray()
+  
+  return <div>{/* ... */}</div>
+}
+```
+
+### 데이터 조작 예시
+
+#### 사용자 조회
+
+```typescript
+import clientPromise from "@/lib/mongodb"
+
+export async function getUserById(userId: string) {
+  const client = await clientPromise
+  const db = client.db("B4K_TEST")
+  const user = await db.collection("users").findOne({ 
+    _id: new ObjectId(userId) 
+  })
+  return user
+}
+
+export async function getUserByEmail(email: string) {
+  const client = await clientPromise
+  const db = client.db("B4K_TEST")
+  const user = await db.collection("users").findOne({ email })
+  return user
+}
+```
+
+#### 사용자 정보 업데이트
+
+```typescript
+import clientPromise from "@/lib/mongodb"
+
+export async function updateUser(userId: string, data: {
+  name?: string
+  image?: string
+}) {
+  const client = await clientPromise
+  const db = client.db("B4K_TEST")
+  const result = await db.collection("users").updateOne(
+    { _id: new ObjectId(userId) },
+    { 
+      $set: { 
+        ...data, 
+        updatedAt: new Date() 
+      } 
+    }
+  )
+  return result
+}
+```
+
+#### 계정 정보 조회
+
+```typescript
+import clientPromise from "@/lib/mongodb"
+
+export async function getUserAccounts(userId: string) {
+  const client = await clientPromise
+  const db = client.db("B4K_TEST")
+  const accounts = await db.collection("accounts")
+    .find({ userId: new ObjectId(userId) })
+    .toArray()
+  return accounts
+}
+```
+
+### MongoDB 관리 도구
+
+**MongoDB Compass:**
+- GUI를 통한 데이터베이스 관리
+- 쿼리 작성 및 실행
+- 인덱스 관리
+- 데이터 시각화
+
+**연결 문자열:**
+```
+mongodb://localhost:27017/B4K_TEST
+```
+
+### 주의사항
+
+1. **환경 변수 보안**: `.env.local` 파일은 절대 Git에 커밋하지 마세요
+2. **연결 풀**: 개발 환경에서 연결이 재사용되므로 서버 재시작 시 연결이 초기화됩니다
+3. **에러 처리**: MongoDB 연결 실패 시 적절한 에러 처리를 구현하세요
+4. **인덱스**: NextAuth가 자동으로 필요한 인덱스를 생성하지만, 추가 쿼리가 많다면 커스텀 인덱스를 고려하세요
 
 ---
 
