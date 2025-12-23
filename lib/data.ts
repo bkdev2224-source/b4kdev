@@ -49,3 +49,21 @@ export function getPOIById(poiId: string): POI | undefined {
   return (poisData as POI[]).find((poi) => poi._id.$oid === poiId)
 }
 
+export function getKContentsByCategory(category: 'kpop' | 'kbeauty' | 'kfood' | 'kfestival'): KContent[] {
+  const categoryMap = {
+    kpop: kpopData,
+    kbeauty: kbeautyData,
+    kfood: kfoodData,
+    kfestival: kfestivalData,
+  }
+  return categoryMap[category] as KContent[]
+}
+
+export function getAllKContents(): KContent[] {
+  return [
+    ...kpopData,
+    ...kbeautyData,
+    ...kfoodData,
+    ...kfestivalData,
+  ] as KContent[]
+}
