@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter, useParams } from 'next/navigation'
+import Sidebar from '@/components/Sidebar'
 import TopNav from '@/components/TopNav'
 import { getPOIById, getKContentsByPOIId } from '@/lib/data'
 
@@ -15,8 +16,9 @@ export default function POIDetailPage() {
   if (!poi) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
+        <Sidebar />
         <TopNav />
-        <main className="container mx-auto px-6 pt-24 pb-8 flex items-center justify-center min-h-screen">
+        <main className="ml-[20%] w-[80%] pt-16 pb-8 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-white mb-4">장소를 찾을 수 없습니다</h1>
             <button
@@ -33,8 +35,9 @@ export default function POIDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
+      <Sidebar />
       <TopNav />
-      <main className="min-h-screen pt-16">
+      <main className="ml-[20%] w-[80%] min-h-screen pt-16">
         {/* 배너 이미지 */}
         <div className="relative h-96">
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-purple-900/50 to-transparent z-10" />

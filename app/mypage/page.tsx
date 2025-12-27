@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Sidebar from '@/components/Sidebar'
 import TopNav from '@/components/TopNav'
 
 export default function MyPage() {
@@ -11,8 +12,9 @@ export default function MyPage() {
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
+        <Sidebar />
         <TopNav />
-        <main className="w-full pt-20 pb-8 px-6">
+        <main className="ml-[20%] w-[80%] pt-16 pb-8 px-6">
           <div className="container mx-auto">
             <p className="text-purple-300">로딩 중...</p>
           </div>
@@ -28,9 +30,10 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
+      <Sidebar />
       <TopNav />
 
-      <main className="w-full pt-20 pb-8 px-6">
+      <main className="ml-[20%] w-[80%] pt-16 pb-8 px-6">
         <div className="container mx-auto max-w-4xl">
           <h1 className="text-3xl font-bold text-white mb-8">MyPage</h1>
           
