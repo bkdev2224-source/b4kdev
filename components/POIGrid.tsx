@@ -6,10 +6,12 @@ import { POI, getAllKContents, getKContentsByPOIId, getContentCategory } from '@
 
 interface POIGridProps {
   pois: POI[]
+  searchQuery?: string
 }
 
-export default function POIGrid({ pois }: POIGridProps) {
-  const [searchQuery, setSearchQuery] = useState('')
+export default function POIGrid({ pois, searchQuery: externalSearchQuery = '' }: POIGridProps) {
+  const [internalSearchQuery, setInternalSearchQuery] = useState('')
+  const searchQuery = externalSearchQuery || internalSearchQuery
   const [selectedHashtags, setSelectedHashtags] = useState<string[]>([])
   const [selectedKContents, setSelectedKContents] = useState<string[]>([])
   
@@ -113,33 +115,7 @@ export default function POIGrid({ pois }: POIGridProps) {
 
   return (
     <div className="w-full">
-      {/* 검색창 */}
-      <div className="mb-4 px-6">
-        <div className="relative w-full max-w-4xl mx-auto">
-          <input
-            type="text"
-            placeholder="FIND YOUR KOREA"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-6 py-4 pl-14 bg-purple-900/60 border-2 border-purple-500/40 rounded-2xl text-white text-lg placeholder-purple-300/60 focus:outline-none focus:border-purple-400/60 focus:ring-2 focus:ring-purple-500/40 transition-all shadow-lg"
-          />
-          <svg
-            className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-purple-300"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
-      </div>
-
-      {/* K-Contents 카테고리 필터 - 검색창 바로 아래 */}
+      {/* K-Contents 카테고리 필터 */}
       <div className="mb-8 px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
           {kContentCategories.map(category => {

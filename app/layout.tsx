@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import SessionProvider from '@/components/SessionProvider'
+import { SidebarProvider } from '@/components/SidebarContext'
 
 export const metadata: Metadata = {
   title: 'B4K',
@@ -15,7 +16,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <SidebarProvider>
+            {children}
+          </SidebarProvider>
+        </SessionProvider>
       </body>
     </html>
   )

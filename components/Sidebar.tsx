@@ -2,9 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSidebar } from './SidebarContext'
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { sidebarOpen, toggleSidebar } = useSidebar()
   
   const navItems = [
     { name: 'Home', href: '/', icon: (
@@ -31,38 +33,67 @@ export default function Sidebar() {
   ]
 
   return (
-    <div className="w-1/5 bg-gradient-to-b from-purple-900/20 to-purple-950/20 backdrop-blur-sm border-r border-purple-500/20 h-screen fixed left-0 top-0 overflow-y-auto">
-      <div className="p-6">
-        <div className="mb-8">
-          <Link href="/" className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-6 block">
-            B-4K
-          </Link>
-        </div>
+    <>
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+        />
+      )}
+      
+      <div className={`w-[17%] bg-gradient-to-b from-purple-900/20 to-purple-950/20 backdrop-blur-sm border-r border-purple-500/20 h-screen fixed left-0 top-0 overflow-y-auto z-40 transition-transform duration-300 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <div className="p-6">
+          {/* 햄버거 버튼과 B-4K 홈 버튼 - 항상 렌더링하되 사이드바가 닫힐 때 투명하게 처리 */}
+          <div className={`mb-6 flex items-center gap-4 transition-opacity duration-300 ${
+            sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}>
+            {/* 햄버거 버튼 */}
+            <button
+              onClick={toggleSidebar}
+              className="p-2 text-white hover:bg-purple-900/30 rounded-full transition-colors"
+              aria-label="Toggle sidebar"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
 
-        <nav className="space-y-2">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href || 
-              (item.href === '/' && pathname === '/') ||
-              (item.href !== '/' && pathname?.startsWith(item.href))
-            
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                  isActive
-                    ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white border-l-4 border-purple-400'
-                    : 'text-gray-400 hover:text-white hover:bg-purple-900/20'
-                }`}
-              >
-                {item.icon}
-                <span className="font-medium">{item.name}</span>
-              </Link>
-            )
-          })}
-        </nav>
+            {/* B-4K 홈 버튼 */}
+            <Link
+              href="/"
+              className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-300 hover:to-pink-300 transition-colors cursor-pointer"
+            >
+              B-4K
+            </Link>
+          </div>
+
+          <nav className="space-y-2">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href || 
+                (item.href === '/' && pathname === '/') ||
+                (item.href !== '/' && pathname?.startsWith(item.href))
+              
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                    isActive
+                      ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white border-l-4 border-purple-400'
+                      : 'text-gray-400 hover:text-white hover:bg-purple-900/20'
+                  }`}
+                >
+                  {item.icon}
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              )
+            })}
+          </nav>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

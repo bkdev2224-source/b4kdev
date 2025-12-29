@@ -17,22 +17,16 @@ const images = [
   },
   {
     id: 3,
-    url: '/image/maincarousel/3.jpg',
+    url: '/image/maincarousel/4.jpg',
     title: 'K-Food',
     description: '맛과 건강을 모두 갖춘 한국의 독특한 요리를 맛보세요'
   },
   {
     id: 4,
-    url: '/image/maincarousel/4.jpg',
+    url: '/image/maincarousel/3.jpg',
     title: 'K-Festival',
     description: '전통과 현대가 어우러진 축제와 이벤트를 즐기세요'
   },
-  {
-    id: 5,
-    url: '/image/maincarousel/5.jpg',
-    title: '눈 덮인 성벽',
-    description: '따뜻한 조명으로 물든 겨울밤의 아름다운 성벽 풍경'
-  }
 ]
 
 export default function MainCarousel() {
@@ -63,7 +57,7 @@ export default function MainCarousel() {
 
   return (
     <div 
-      className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden"
+      className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

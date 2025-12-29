@@ -4,17 +4,21 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Sidebar from '@/components/Sidebar'
 import TopNav from '@/components/TopNav'
+import { useSidebar } from '@/components/SidebarContext'
 
 export default function MyPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const { sidebarOpen } = useSidebar()
 
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
         <Sidebar />
         <TopNav />
-        <main className="ml-[20%] w-[80%] pt-16 pb-8 px-6">
+        <main className={`pt-16 pb-8 px-6 transition-all duration-300 ${
+          sidebarOpen ? 'ml-[17%] w-[83%]' : 'ml-0 w-full'
+        }`}>
           <div className="container mx-auto">
             <p className="text-purple-300">로딩 중...</p>
           </div>
@@ -33,7 +37,9 @@ export default function MyPage() {
       <Sidebar />
       <TopNav />
 
-      <main className="ml-[20%] w-[80%] pt-16 pb-8 px-6">
+      <main className={`pt-16 pb-8 px-6 transition-all duration-300 ${
+        sidebarOpen ? 'ml-[17%] w-[83%]' : 'ml-0 w-full'
+      }`}>
         <div className="container mx-auto max-w-4xl">
           <h1 className="text-3xl font-bold text-white mb-8">MyPage</h1>
           
