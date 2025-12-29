@@ -7,9 +7,11 @@ import { useSidebar } from './SidebarContext'
 interface TopNavProps {
   searchQuery?: string
   onSearchChange?: (query: string) => void
+  onSearchFocus?: () => void
+  onSearchBlur?: () => void
 }
 
-export default function TopNav({ searchQuery = '', onSearchChange }: TopNavProps) {
+export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus, onSearchBlur }: TopNavProps) {
   const { sidebarOpen, toggleSidebar } = useSidebar()
 
   return (
@@ -76,6 +78,8 @@ export default function TopNav({ searchQuery = '', onSearchChange }: TopNavProps
               placeholder="FIND YOUR KOREA"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
+              onFocus={onSearchFocus}
+              onBlur={onSearchBlur}
               className="w-full px-6 py-2 pl-12 bg-purple-900/60 border-2 border-purple-500/40 rounded-xl text-white text-sm placeholder-purple-300/60 focus:outline-none focus:border-purple-400/60 focus:ring-2 focus:ring-purple-500/40 transition-all"
             />
             <svg
