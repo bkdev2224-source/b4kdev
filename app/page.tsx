@@ -4,12 +4,13 @@ import { useState } from 'react'
 import Sidebar from '@/components/Sidebar'
 import TopNav from '@/components/TopNav'
 import MainCarousel from '@/components/MainCarousel'
-import POIGrid from '@/components/POIGrid'
-import { getAllPOIs } from '@/lib/data'
+import BestPackages from '@/components/BestPackages'
+import EditorRecommendations from '@/components/EditorRecommendations'
+import SeoulExploration from '@/components/SeoulExploration'
+import SeasonalRecommendations from '@/components/SeasonalRecommendations'
 import { useSidebar } from '@/components/SidebarContext'
 
 export default function Home() {
-  const allPOIs = getAllPOIs()
   const [searchQuery, setSearchQuery] = useState('')
   const { sidebarOpen } = useSidebar()
 
@@ -24,10 +25,17 @@ export default function Home() {
         {/* 메인 캐러셀 */}
         <MainCarousel />
         
-        <div className="w-full pb-8">
-          {/* POI 그리드 */}
-          <POIGrid pois={allPOIs} searchQuery={searchQuery} />
-        </div>
+        {/* B4K Best 패키지 추천 */}
+        <BestPackages />
+        
+        {/* 에디터 추천 여행 */}
+        <EditorRecommendations />
+        
+        {/* 서울 탐방하기 */}
+        <SeoulExploration />
+        
+        {/* 시즌별 여행 추천 */}
+        <SeasonalRecommendations />
       </main>
     </div>
   )
