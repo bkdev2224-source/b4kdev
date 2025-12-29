@@ -1,32 +1,85 @@
 "use client"
 
-import AuthButton from '@/components/AuthButton'
-import POICarousel from '@/components/POICarousel'
+import { useState } from 'react'
+import Sidebar from '@/components/Sidebar'
+import TopNav from '@/components/TopNav'
+import MainCarousel from '@/components/MainCarousel'
+import BestPackages from '@/components/BestPackages'
+import EditorRecommendations from '@/components/EditorRecommendations'
+import SeoulExploration from '@/components/SeoulExploration'
+import SeasonalRecommendations from '@/components/SeasonalRecommendations'
+import POIGrid from '@/components/POIGrid'
 import { getAllPOIs } from '@/lib/data'
+import { useSidebar } from '@/components/SidebarContext'
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const { sidebarOpen } = useSidebar()
   const allPOIs = getAllPOIs()
 
-  return (
-    <div className="min-h-screen bg-black">
-      <header className="sticky top-0 z-50 bg-black bg-opacity-80 backdrop-blur-sm border-b border-gray-800">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white">B-4K</h1>
-          <AuthButton />
-        </div>
-      </header>
+  const handleSearchFocus = () => {
+    setIsSearchFocused(true)
+  }
 
-      <main className="w-full py-8">
-        <div className="container mx-auto px-6 mb-8">
-          <h2 className="text-3xl font-bold text-white mb-2">추천 장소</h2>
-          <p className="text-gray-400">아래 카테고리를 탐색하여 원하는 K-Culture 여행지를 찾아보세요</p>
-        </div>
-        
-        <div className="w-full px-6">
-          <POICarousel pois={allPOIs} />
-        </div>
+  // blur 이벤트 제거 - 명시적으로 홈 버튼이나 뒤로가기 버튼을 눌러야 홈으로 이동
+  // const handleSearchBlur = () => {
+  //   // 검색어가 없을 때만 포커스 해제
+  //   if (!searchQuery) {
+  //     setIsSearchFocused(false)
+  //   }
+  // }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#2a1a3e] to-[#1a1a2e]">
+      <Sidebar />
+      <TopNav 
+        searchQuery={searchQuery} 
+        onSearchChange={setSearchQuery}
+        onSearchFocus={handleSearchFocus}
+        onBackToHome={() => {
+          setIsSearchFocused(false)
+          setSearchQuery('')
+        }}
+      />
+
+      <main className={`pt-16 transition-all duration-300 ${
+        sidebarOpen ? 'ml-[17%] w-[83%]' : 'ml-0 w-full'
+      }`}>
+        {isSearchFocused || searchQuery ? (
+          /* 검색 모드: POI 그리드 표시 */
+          <div className="w-full pb-8">
+            <POIGrid 
+              pois={allPOIs} 
+              searchQuery={searchQuery} 
+              isSearchFocused={isSearchFocused}
+              onSearchChange={setSearchQuery}
+              onBack={() => {
+                setIsSearchFocused(false)
+                setSearchQuery('')
+              }}
+            />
+          </div>
+        ) : (
+          /* 일반 모드: 메인 페이지 콘텐츠 */
+          <>
+            {/* 메인 캐러셀 */}
+            <MainCarousel />
+            
+            {/* B4K Best 패키지 추천 */}
+            <BestPackages />
+            
+            {/* 에디터 추천 여행 */}
+            <EditorRecommendations />
+            
+            {/* 서울 탐방하기 */}
+            <SeoulExploration />
+            
+            {/* 시즌별 여행 추천 */}
+            <SeasonalRecommendations />
+          </>
+        )}
       </main>
     </div>
   )
 }
-

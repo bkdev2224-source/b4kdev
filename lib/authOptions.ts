@@ -1,10 +1,7 @@
 import { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
-import clientPromise from "./mongodb"
 
 export const authOptions: NextAuthOptions = {
-  adapter: MongoDBAdapter(clientPromise),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -30,18 +27,31 @@ export const authOptions: NextAuthOptions = {
       }
       return token
     },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       // 세션에 토큰 정보 추가
       if (session.user) {
-        session.user.id = token.id as string || user?.id || ""
+        session.user.id = token.id as string || ""
         session.accessToken = token.accessToken as string
       }
       return session
+    },
+    async redirect({ url, baseUrl }) {
+      // 로그인 성공 후 홈으로 리다이렉트
+      // 상대 경로인 경우 baseUrl과 결합
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`
+      }
+      // 같은 도메인인 경우 허용
+      if (new URL(url).origin === baseUrl) {
+        return url
+      }
+      // 기본적으로 홈으로 리다이렉트
+      return baseUrl
     },
   },
   pages: {
     signIn: "/auth/signin",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
 }
-
