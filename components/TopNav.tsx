@@ -23,7 +23,7 @@ export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus
 
   return (
     <>
-      <div className={`bg-black bg-opacity-30 backdrop-blur-sm h-16 fixed top-0 z-40 flex items-center gap-4 px-6 border-b border-purple-500/20 transition-all duration-300 ${
+      <div className={`bg-purple-900/40 backdrop-blur-sm h-16 fixed top-0 z-40 flex items-center gap-4 px-6 border-b border-purple-400/30 transition-all duration-300 ${
         sidebarOpen ? 'left-[17%] right-0' : 'left-0 right-0'
       }`}>
         {/* 햄버거 버튼과 B-4K 홈 버튼 - 항상 표시 (사이드바가 열려있을 때는 투명하게 처리, 닫힐 때는 즉시 나타남) */}
@@ -90,7 +90,7 @@ export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus
             onFocus={() => {
               onSearchFocus?.()
             }}
-            className="w-full px-6 py-2 pl-12 bg-purple-900/60 border-2 border-purple-500/40 rounded-xl text-white text-sm placeholder-purple-300/60 focus:outline-none focus:border-purple-400/60 focus:ring-2 focus:ring-purple-500/40 transition-all"
+            className="w-full px-6 py-2 pl-12 bg-purple-800/70 border-2 border-purple-400/50 rounded-xl text-white text-sm placeholder-purple-200/70 focus:outline-none focus:border-purple-300/70 focus:ring-2 focus:ring-purple-400/50 transition-all"
           />
             <svg
               className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-300"

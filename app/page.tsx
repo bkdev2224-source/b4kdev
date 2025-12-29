@@ -31,7 +31,7 @@ export default function Home() {
   // }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#2a1a3e] to-[#1a1a2e]">
       <Sidebar />
       <TopNav 
         searchQuery={searchQuery} 

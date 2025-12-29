@@ -17,7 +17,7 @@ export default function POIDetailPage() {
 
   if (!poi) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
+      <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#2a1a3e] to-[#1a1a2e]">
         <Sidebar />
         <TopNav />
         <main className={`pt-16 pb-8 flex items-center justify-center min-h-screen transition-all duration-300 ${
@@ -38,7 +38,7 @@ export default function POIDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#2a1a3e] to-[#1a1a2e]">
       <Sidebar />
       <TopNav />
       <main className={`min-h-screen pt-16 transition-all duration-300 ${
@@ -46,7 +46,7 @@ export default function POIDetailPage() {
       }`}>
         {/* 배너 이미지 */}
         <div className="relative h-96">
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-purple-900/50 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a2e] via-purple-900/50 to-transparent z-10" />
           <img
             src={`https://picsum.photos/seed/${poi._id.$oid}/1920/600`}
             alt={poi.name}

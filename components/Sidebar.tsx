@@ -41,7 +41,7 @@ export default function Sidebar() {
         />
       )}
       
-      <div className={`w-[17%] bg-gradient-to-b from-purple-900/20 to-purple-950/20 backdrop-blur-sm border-r border-purple-500/20 h-screen fixed left-0 top-0 overflow-y-auto z-40 transition-transform duration-300 ${
+      <div className={`w-[17%] bg-gradient-to-b from-purple-800/30 to-purple-900/30 backdrop-blur-sm border-r border-purple-400/30 h-screen fixed left-0 top-0 overflow-y-auto z-40 transition-transform duration-300 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="p-6">

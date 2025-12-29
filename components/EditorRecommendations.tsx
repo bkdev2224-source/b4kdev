@@ -64,55 +64,64 @@ const editorRecommendations: RecommendationItem[] = [
 
 export default function EditorRecommendations() {
   return (
-    <div className="w-full px-6 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h2 className="text-3xl font-bold text-white mb-2">
+    <section className="w-full py-16 bg-gradient-to-br from-blue-800/40 via-cyan-700/30 to-teal-800/40 relative overflow-hidden">
+      {/* 배경 장식 요소 */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="relative z-10 px-6">
+        {/* 제목 섹션 - 중앙 정렬 */}
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             B-4K에서 추천하는 다양한 경험
           </h2>
-          <p className="text-purple-300 text-lg">에디터 추천 여행</p>
+          <p className="text-cyan-200 text-lg md:text-xl">에디터 추천 여행</p>
+          <div className="flex justify-center mt-6">
+            <button className="text-sm text-cyan-300 hover:text-cyan-200 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-cyan-500/20">
+              모두 보기 →
+            </button>
+          </div>
         </div>
-        <button className="text-sm text-purple-300 hover:text-purple-200 font-medium transition-colors">
-          모두 보기 →
-        </button>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {editorRecommendations.map((item) => (
-          <Link
-            key={item.id}
-            href={item.href || '#'}
-            className="group no-underline"
-          >
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
-              <div className="relative h-64 overflow-hidden">
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                
-                <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 bg-purple-500/80 backdrop-blur-sm rounded-full text-white text-xs font-semibold">
-                    {item.category}
-                  </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {editorRecommendations.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href || '#'}
+              className="group no-underline"
+            >
+              <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-900/40 to-cyan-900/40 border border-cyan-500/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 hover:scale-105">
+                <div className="relative h-64 overflow-hidden">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1 bg-cyan-500/80 backdrop-blur-sm rounded-full text-white text-xs font-semibold">
+                      {item.category}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-cyan-300 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-cyan-200 text-sm line-clamp-2">
+                    {item.description}
+                  </p>
                 </div>
               </div>
-
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-purple-300 transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-purple-200 text-sm line-clamp-2">
-                  {item.description}
-                </p>
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   )
 }
 

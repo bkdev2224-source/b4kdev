@@ -15,13 +15,13 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #0a0a0f;
+  background: #1a1a2e;
 }
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 10, 10, 15;
-  --background-end-rgb: 10, 10, 15;
+  --background-start-rgb: 26, 26, 46;
+  --background-end-rgb: 26, 26, 46;
   --purple-glow: #a855f7;
   --purple-bright: #c084fc;
   --purple-dark: #6b21a8;
