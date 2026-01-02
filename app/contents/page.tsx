@@ -18,7 +18,7 @@ export default function ContentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#2a1a3e] to-[#1a1a2e]">
+    <div className="min-h-screen bg-white">
       <Sidebar />
       <TopNav 
         searchQuery={searchQuery}
@@ -47,8 +47,8 @@ export default function ContentsPage() {
           /* 일반 모드: Contents 페이지 콘텐츠 */
           <div className="px-6">
             <div className="container mx-auto">
-              <h1 className="text-3xl font-bold text-white mb-8">Contents</h1>
-              <p className="text-purple-300">콘텐츠 페이지입니다.</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-8">Contents</h1>
+              <p className="text-purple-600">콘텐츠 페이지입니다.</p>
             </div>
           </div>
         )}

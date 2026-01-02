@@ -13,14 +13,14 @@ export default function MyPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
+      <div className="min-h-screen bg-white">
         <Sidebar />
         <TopNav />
         <main className={`pt-16 pb-8 px-6 transition-all duration-300 ${
           sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
         }`}>
           <div className="container mx-auto">
-            <p className="text-purple-300">로딩 중...</p>
+            <p className="text-purple-600">로딩 중...</p>
           </div>
         </main>
       </div>
@@ -38,10 +38,10 @@ export default function MyPage() {
       <TopNav />
 
       <main className={`pt-16 pb-8 px-6 transition-all duration-300 ${
-        sidebarOpen ? 'lg:ml-[17%] lg:w-[83%]' : 'lg:ml-20 lg:w-[calc(100%-5rem)]'
+        sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
       }`}>
         <div className="container mx-auto max-w-4xl">
-          <h1 className="text-3xl font-bold text-white mb-8">MyPage</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">MyPage</h1>
           
           <div className="bg-purple-900/40 border border-purple-500/30 rounded-xl p-6">
             <div className="flex items-center gap-4 mb-6">

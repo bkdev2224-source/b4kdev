@@ -41,7 +41,7 @@ export default function Sidebar() {
         />
       )}
       
-      <div className={`${sidebarOpen ? 'w-[12.75%]' : 'w-[80px]'} bg-gradient-to-b from-purple-800/30 to-purple-900/30 backdrop-blur-sm border-r border-purple-400/30 h-screen fixed left-0 top-0 z-40 transition-all duration-300 lg:translate-x-0 flex flex-col ${
+      <div className={`${sidebarOpen ? 'w-[12.75%]' : 'w-[80px]'} bg-white border-r border-gray-200 h-screen fixed left-0 top-0 z-40 transition-all duration-300 lg:translate-x-0 flex flex-col ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
         <div className={`${sidebarOpen ? 'p-6' : 'p-4'} transition-all duration-300 flex-shrink-0`}>
@@ -52,7 +52,7 @@ export default function Sidebar() {
               href="/"
               className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-300 hover:to-pink-300 transition-colors cursor-pointer"
             >
-              B-4K
+              B4K
             </Link>
           </div>
         </div>
@@ -69,12 +69,14 @@ export default function Sidebar() {
                 href={item.href}
                 className={`flex items-center ${sidebarOpen ? 'gap-3 px-4' : 'justify-center px-2'} py-3 rounded-lg transition-all ${
                   isActive
-                    ? `bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white ${sidebarOpen ? 'border-l-4 border-purple-400' : ''}`
-                    : 'text-gray-400 hover:text-white hover:bg-purple-900/20'
+                    ? `bg-purple-100 text-purple-700 ${sidebarOpen ? 'border-l-4 border-purple-500' : ''}`
+                    : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
                 }`}
                 title={!sidebarOpen ? item.name : undefined}
               >
-                {item.icon}
+                <span className={`${isActive ? 'text-purple-600' : 'text-gray-600'} [&>svg]:stroke-current`}>
+                  {item.icon}
+                </span>
                 <span className={`font-medium transition-all duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>{item.name}</span>
               </Link>
             )
@@ -85,7 +87,7 @@ export default function Sidebar() {
         <div className="flex-shrink-0 px-4 pb-4 pt-2">
           <button
             onClick={toggleSidebar}
-            className={`w-full py-3 text-white rounded-lg flex items-center transition-all ${
+            className={`w-full py-3 text-purple-600 rounded-lg flex items-center transition-all ${
               sidebarOpen ? 'justify-end px-4' : 'justify-center'
             }`}
             aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
@@ -93,26 +95,26 @@ export default function Sidebar() {
             {sidebarOpen ? (
               // 접기 버튼: <<< 아이콘 (오른쪽 정렬)
               <>
-                <svg className="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                 </svg>
-                <svg className="w-5 h-5 text-purple-300 -ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-purple-600 -ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                 </svg>
-                <svg className="w-5 h-5 text-purple-300 -ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-purple-600 -ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                 </svg>
               </>
             ) : (
               // 펼치기 버튼: >>> 아이콘
               <>
-                <svg className="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
-                <svg className="w-5 h-5 text-purple-300 -ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-purple-600 -ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
-                <svg className="w-5 h-5 text-purple-300 -ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-purple-600 -ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
               </>

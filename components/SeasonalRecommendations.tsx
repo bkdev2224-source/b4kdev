@@ -71,22 +71,20 @@ export default function SeasonalRecommendations() {
   }
 
   return (
-    <section className="w-full py-16 bg-gradient-to-br from-green-800/40 via-yellow-700/30 to-emerald-800/40 relative overflow-hidden">
-      {/* 배경 장식 요소 */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-green-500 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-500 rounded-full blur-3xl"></div>
-      </div>
-      
-      <div className="relative z-10 px-6">
-        {/* 제목 섹션 - 중앙 정렬 */}
+    <section className="w-full py-16 bg-white">
+      <div className="px-6">
+        {/* 제목 섹션 - 중앙 정렬 with border lines */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            시즌별 여행 추천
-          </h2>
-          <p className="text-green-200 text-lg md:text-xl">계절에 맞는 서울의 매력을 발견하세요</p>
+          <div className="flex items-center justify-center mb-4">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-500 to-emerald-500"></div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 px-8">
+              시즌별 여행 추천
+            </h2>
+            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-emerald-500 to-emerald-500"></div>
+          </div>
+          <p className="text-gray-600 text-lg md:text-xl">계절에 맞는 서울의 매력을 발견하세요</p>
           <div className="flex justify-center mt-6">
-            <button className="text-sm text-green-300 hover:text-green-200 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-green-500/20">
+            <button className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-emerald-50">
               모두 보기 →
             </button>
           </div>
@@ -99,27 +97,25 @@ export default function SeasonalRecommendations() {
               href={item.href || '#'}
               className="group no-underline"
             >
-              <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-green-900/40 to-emerald-900/40 border border-green-500/30 hover:border-green-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20 hover:scale-105">
+              <div className="relative overflow-hidden rounded-xl bg-white border border-gray-200 hover:border-emerald-400 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/20 hover:scale-105">
                 <div className="relative h-64 overflow-hidden">
                   <img
                     src={item.imageUrl}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  
                   <div className="absolute top-4 left-4">
-                    <span className={`px-3 py-1 bg-gradient-to-r ${seasonColors[item.season]} backdrop-blur-sm rounded-full text-white text-xs font-semibold`}>
+                    <span className={`px-3 py-1 bg-gradient-to-r ${seasonColors[item.season]} rounded-full text-white text-xs font-semibold`}>
                       {item.season}
                     </span>
                   </div>
                 </div>
 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-green-300 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-green-200 text-sm line-clamp-2">
+                  <p className="text-gray-600 text-sm line-clamp-2">
                     {item.description}
                   </p>
                 </div>

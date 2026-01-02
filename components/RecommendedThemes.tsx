@@ -68,7 +68,7 @@ export default function RecommendedThemes() {
       {/* 섹션 제목 */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-white mb-2">
-          B-4K에서 추천하는 다양한 경험
+          B4K에서 추천하는 다양한 경험
         </h2>
         <p className="text-purple-300 text-lg">에디터 추천 여행</p>
       </div>

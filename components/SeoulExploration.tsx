@@ -64,22 +64,20 @@ const seoulExplorations: ExplorationItem[] = [
 
 export default function SeoulExploration() {
   return (
-    <section className="w-full py-16 bg-gradient-to-br from-pink-800/40 via-orange-700/30 to-red-800/40 relative overflow-hidden">
-      {/* 배경 장식 요소 */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500 rounded-full blur-3xl"></div>
-      </div>
-      
-      <div className="relative z-10 px-6">
-        {/* 제목 섹션 - 중앙 정렬 */}
+    <section className="w-full py-16 bg-white">
+      <div className="px-6">
+        {/* 제목 섹션 - 중앙 정렬 with border lines */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            서울 탐방하기
-          </h2>
-          <p className="text-pink-200 text-lg md:text-xl">서울의 다양한 지역을 탐험하세요</p>
+          <div className="flex items-center justify-center mb-4">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-500 to-pink-500"></div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 px-8">
+              서울 탐방하기
+            </h2>
+            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-pink-500 to-pink-500"></div>
+          </div>
+          <p className="text-gray-600 text-lg md:text-xl">서울의 다양한 지역을 탐험하세요</p>
           <div className="flex justify-center mt-6">
-            <button className="text-sm text-pink-300 hover:text-pink-200 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-pink-500/20">
+            <button className="text-sm text-pink-600 hover:text-pink-700 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-pink-50">
               모두 보기 →
             </button>
           </div>
@@ -92,27 +90,25 @@ export default function SeoulExploration() {
               href={item.href || '#'}
               className="group no-underline"
             >
-              <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-pink-900/40 to-orange-900/40 border border-pink-500/30 hover:border-pink-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/20 hover:scale-105">
+              <div className="relative overflow-hidden rounded-xl bg-white border border-gray-200 hover:border-pink-400 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/20 hover:scale-105">
                 <div className="relative h-64 overflow-hidden">
                   <img
                     src={item.imageUrl}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  
                   <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-pink-500/80 backdrop-blur-sm rounded-full text-white text-xs font-semibold">
+                    <span className="px-3 py-1 bg-pink-500 rounded-full text-white text-xs font-semibold">
                       {item.area}
                     </span>
                   </div>
                 </div>
 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-pink-300 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-pink-600 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-pink-200 text-sm line-clamp-2">
+                  <p className="text-gray-600 text-sm line-clamp-2">
                     {item.description}
                   </p>
                 </div>

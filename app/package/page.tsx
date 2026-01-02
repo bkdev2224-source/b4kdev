@@ -20,7 +20,7 @@ export default function PackagePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#2a1a3e] to-[#1a1a2e]">
+    <div className="min-h-screen bg-white">
       <Sidebar />
       <TopNav 
         searchQuery={searchQuery}
