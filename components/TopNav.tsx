@@ -15,7 +15,7 @@ export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus
 
   return (
     <>
-      <div className={`bg-purple-900/40 backdrop-blur-sm h-16 fixed top-0 z-40 flex items-center gap-4 px-6 border-b border-purple-400/30 transition-all duration-300 ${
+      <div className={`h-16 fixed top-0 z-40 flex items-center gap-4 px-6 transition-all duration-300 ${
         sidebarOpen ? 'lg:left-[12.75%] lg:right-0' : 'lg:left-[80px] lg:right-0'
       }`}>
         {/* 즐겨찾기 버튼과 AuthButton - 맨 오른쪽 고정 */}
@@ -45,7 +45,7 @@ export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus
       </div>
       
       {/* 검색창 - 화면 전체 기준으로 중앙에 고정 (사이드바 영향 없음) - 항상 표시 */}
-      <div className="fixed left-1/2 -translate-x-1/2 top-4 z-50 w-full max-w-2xl pointer-events-none">
+      <div className="fixed left-1/2 -translate-x-1/2 top-4 z-50 w-full max-w-[470px] pointer-events-none">
         <div className="relative pointer-events-auto">
           <input
             type="text"
@@ -57,7 +57,7 @@ export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus
             onFocus={() => {
               onSearchFocus?.()
             }}
-            className="w-full px-6 py-2 pl-12 bg-purple-800/70 border-2 border-purple-400/50 rounded-xl text-white text-sm placeholder-purple-200/70 focus:outline-none focus:border-purple-300/70 focus:ring-2 focus:ring-purple-400/50 transition-all"
+            className="w-full px-6 py-2 pl-12 bg-purple-800 border-2 border-purple-400 rounded-xl text-white text-sm placeholder-purple-200 focus:outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-400 transition-all"
           />
             <svg
               className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-300"
