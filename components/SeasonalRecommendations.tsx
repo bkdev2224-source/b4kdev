@@ -7,85 +7,85 @@ interface SeasonalItem {
   title: string
   description: string
   imageUrl: string
-  season: '봄' | '여름' | '가을' | '겨울'
+  season: 'Spring' | 'Summer' | 'Autumn' | 'Winter'
   href?: string
 }
 
 const seasonalRecommendations: SeasonalItem[] = [
   {
     id: '1',
-    title: '벚꽃 축제',
-    description: '봄의 대표적인 축제, 아름다운 벚꽃을 감상하며 즐기는 서울의 봄',
+    title: 'Cherry Blossom Festival',
+    description: 'Spring\'s representative festival, enjoying Seoul\'s spring while admiring beautiful cherry blossoms',
     imageUrl: 'https://picsum.photos/seed/spring-cherry/800/600',
-    season: '봄',
+    season: 'Spring',
     href: '/seasons/spring'
   },
   {
     id: '2',
-    title: '여름 한강 피크닉',
-    description: '시원한 한강에서 즐기는 여름밤 피크닉과 야외 콘서트',
+    title: 'Summer Hangang Picnic',
+    description: 'Summer night picnics and outdoor concerts enjoyed at the cool Hangang River',
     imageUrl: 'https://picsum.photos/seed/summer-hangang/800/600',
-    season: '여름',
+    season: 'Summer',
     href: '/seasons/summer'
   },
   {
     id: '3',
-    title: '가을 단풍 여행',
-    description: '화려한 단풍으로 물든 서울의 공원과 산을 탐방하세요',
+    title: 'Autumn Foliage Tour',
+    description: 'Explore Seoul\'s parks and mountains painted with brilliant autumn leaves',
     imageUrl: 'https://picsum.photos/seed/autumn-leaves/800/600',
-    season: '가을',
+    season: 'Autumn',
     href: '/seasons/autumn'
   },
   {
     id: '4',
-    title: '겨울 눈 축제',
-    description: '눈 덮인 서울에서 즐기는 겨울 축제와 따뜻한 온천',
+    title: 'Winter Snow Festival',
+    description: 'Winter festivals and warm hot springs enjoyed in snow-covered Seoul',
     imageUrl: 'https://picsum.photos/seed/winter-snow/800/600',
-    season: '겨울',
+    season: 'Winter',
     href: '/seasons/winter'
   },
   {
     id: '5',
-    title: '봄 꽃 축제',
-    description: '다양한 봄꽃으로 가득한 서울의 공원과 정원',
+    title: 'Spring Flower Festival',
+    description: 'Seoul\'s parks and gardens filled with various spring flowers',
     imageUrl: 'https://picsum.photos/seed/spring-flowers/800/600',
-    season: '봄',
+    season: 'Spring',
     href: '/seasons/spring-flowers'
   },
   {
     id: '6',
-    title: '여름 물 축제',
-    description: '시원한 물놀이와 함께 즐기는 서울의 여름 축제',
+    title: 'Summer Water Festival',
+    description: 'Seoul\'s summer festival enjoyed with cool water activities',
     imageUrl: 'https://picsum.photos/seed/summer-water/800/600',
-    season: '여름',
+    season: 'Summer',
     href: '/seasons/summer-festival'
   }
 ]
 
 export default function SeasonalRecommendations() {
   const seasonColors = {
-    '봄': 'from-green-500/80 to-pink-500/80',
-    '여름': 'from-blue-500/80 to-cyan-500/80',
-    '가을': 'from-orange-500/80 to-red-500/80',
-    '겨울': 'from-blue-400/80 to-purple-500/80'
+    'Spring': 'from-green-500/80 to-pink-500/80',
+    'Summer': 'from-blue-500/80 to-cyan-500/80',
+    'Autumn': 'from-orange-500/80 to-red-500/80',
+    'Winter': 'from-blue-400/80 to-purple-500/80'
   }
 
   return (
-    <section className="w-full py-16 bg-white">
+    <section id="seasonal-recommendations" className="w-full py-16 bg-white">
       <div className="px-6">
-        {/* 제목 섹션 - 중앙 정렬 with border lines */}
+        {/* Title section - centered with border lines */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-500 to-emerald-500"></div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 px-8">
-              시즌별 여행 추천
+              Seasonal Travel Recommendations
             </h2>
             <div className="flex-1 h-px bg-gradient-to-l from-transparent via-emerald-500 to-emerald-500"></div>
           </div>
-          <p className="text-gray-600 text-lg md:text-xl">계절에 맞는 서울의 매력을 발견하세요</p>
+          <p className="text-gray-600 text-lg md:text-xl">Discover Seoul's charm for each season</p>
           <div className="flex justify-center mt-6">
             <button className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-emerald-50">
-              모두 보기 →
+              View All →
             </button>
           </div>
         </div>

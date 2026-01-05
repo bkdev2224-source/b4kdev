@@ -44,10 +44,10 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
     <div className="mb-12">
       <div className="flex items-center justify-between mb-4 px-6">
         <h2 className="text-2xl font-bold text-white hover:text-purple-300 cursor-pointer transition-colors">
-          추천 패키지
+          Recommended Packages
         </h2>
         <button className="text-sm text-purple-300 hover:text-purple-200 font-medium transition-colors">
-          모두 표시
+          Show All
         </button>
       </div>
 
@@ -56,7 +56,7 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
           <button
             onClick={() => scroll('left')}
             className="absolute left-0 top-0 bottom-0 z-10 w-14 flex items-center justify-center bg-gradient-to-r from-[#0a0a0f]/90 to-transparent hover:from-[#0a0a0f] transition-all"
-            aria-label="이전"
+            aria-label="Previous"
           >
             <svg className="w-6 h-6 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -81,7 +81,7 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
               className="flex-shrink-0 w-[360px] group cursor-pointer no-underline"
             >
               <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 rounded-xl overflow-hidden hover:border-purple-400/50 hover:from-purple-800/60 hover:to-pink-800/60 transition-all duration-200 h-full shadow-lg hover:shadow-purple-500/20">
-                {/* 이미지 */}
+                {/* Image */}
                 <div className="relative h-48 overflow-hidden">
                   <img
                     src={pkg.imageUrl}
@@ -92,7 +92,7 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
                   <div className="absolute top-4 left-4 right-4">
                     <div className="flex items-center gap-2">
                       <span className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold rounded-full">
-                        {pkg.duration}일
+                        {pkg.duration} days
                       </span>
                       <span className="px-3 py-1 bg-black/60 backdrop-blur-sm text-white text-xs font-medium rounded-full">
                         {pkg.cities.join(', ')}
@@ -101,7 +101,7 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
                   </div>
                 </div>
 
-                {/* 컨텐츠 */}
+                {/* Content */}
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-purple-300 transition-colors">
                     {pkg.name}
@@ -110,7 +110,7 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
                     {pkg.concept}
                   </p>
                   
-                  {/* 하이라이트 */}
+                  {/* Highlights */}
                   {pkg.highlights && pkg.highlights.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-4">
                       {pkg.highlights.slice(0, 4).map((highlight, idx) => (
@@ -124,11 +124,11 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
                     </div>
                   )}
 
-                  {/* 카테고리 */}
+                  {/* Category */}
                   <div className="flex items-center gap-2 text-purple-300 text-sm">
-                    <span>{pkg.cities.length}개 도시</span>
+                    <span>{pkg.cities.length} cities</span>
                     <span>·</span>
-                    <span>{pkg.itinerary.length}일 일정</span>
+                    <span>{pkg.itinerary.length} day itinerary</span>
                   </div>
                 </div>
               </div>
@@ -140,7 +140,7 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
           <button
             onClick={() => scroll('right')}
             className="absolute right-0 top-0 bottom-0 z-10 w-14 flex items-center justify-center bg-gradient-to-l from-[#0a0a0f]/90 to-transparent hover:from-[#0a0a0f] transition-all"
-            aria-label="다음"
+            aria-label="Next"
           >
             <svg className="w-6 h-6 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

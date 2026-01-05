@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import SessionProvider from '@/components/SessionProvider'
 import { SidebarProvider } from '@/components/SidebarContext'
+import { RouteProvider } from '@/components/RouteContext'
 
 export const metadata: Metadata = {
   title: 'B4K',
@@ -18,7 +19,9 @@ export default function RootLayout({
       <body>
         <SessionProvider>
           <SidebarProvider>
-            {children}
+            <RouteProvider>
+              {children}
+            </RouteProvider>
           </SidebarProvider>
         </SessionProvider>
       </body>

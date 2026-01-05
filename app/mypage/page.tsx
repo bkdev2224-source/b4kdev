@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Sidebar from '@/components/Sidebar'
+import SidePanel from '@/components/SidePanel'
 import TopNav from '@/components/TopNav'
 import { useSidebar } from '@/components/SidebarContext'
 
@@ -15,12 +16,13 @@ export default function MyPage() {
     return (
       <div className="min-h-screen bg-white">
         <Sidebar />
+        <SidePanel />
         <TopNav />
         <main className={`pt-16 pb-8 px-6 transition-all duration-300 ${
-          sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+          sidebarOpen ? 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
         }`}>
           <div className="container mx-auto">
-            <p className="text-purple-600">로딩 중...</p>
+            <p className="text-purple-600">Loading...</p>
           </div>
         </main>
       </div>
@@ -33,12 +35,13 @@ export default function MyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
+    <div className="min-h-screen bg-white">
       <Sidebar />
+      <SidePanel />
       <TopNav />
 
       <main className={`pt-16 pb-8 px-6 transition-all duration-300 ${
-        sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+        sidebarOpen ? 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
       }`}>
         <div className="container mx-auto max-w-4xl">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">MyPage</h1>
@@ -64,8 +67,8 @@ export default function MyPage() {
 
             <div className="space-y-4">
               <div className="p-4 bg-purple-800/30 rounded-lg">
-                <h3 className="text-lg font-semibold text-white mb-2">프로필 정보</h3>
-                <p className="text-purple-200 text-sm">이곳에서 프로필 정보를 관리할 수 있습니다.</p>
+                <h3 className="text-lg font-semibold text-white mb-2">Profile Information</h3>
+                <p className="text-purple-200 text-sm">You can manage your profile information here.</p>
               </div>
             </div>
           </div>

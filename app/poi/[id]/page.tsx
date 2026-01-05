@@ -2,6 +2,7 @@
 
 import { useRouter, useParams } from 'next/navigation'
 import Sidebar from '@/components/Sidebar'
+import SidePanel from '@/components/SidePanel'
 import TopNav from '@/components/TopNav'
 import { getPOIById, getKContentsByPOIId } from '@/lib/data'
 import { useSidebar } from '@/components/SidebarContext'
@@ -19,17 +20,18 @@ export default function POIDetailPage() {
     return (
       <div className="min-h-screen bg-white">
         <Sidebar />
+        <SidePanel />
         <TopNav />
         <main className={`pt-16 pb-8 flex items-center justify-center min-h-screen transition-all duration-300 ${
-          sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+          sidebarOpen ? 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
         }`}>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">장소를 찾을 수 없습니다</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Location Not Found</h1>
             <button
               onClick={() => router.push('/')}
               className="text-purple-600 hover:text-purple-700 transition-colors"
             >
-              홈으로 돌아가기
+              Return to Home
             </button>
           </div>
         </main>
@@ -40,11 +42,12 @@ export default function POIDetailPage() {
   return (
     <div className="min-h-screen bg-white">
       <Sidebar />
+      <SidePanel />
       <TopNav />
       <main className={`min-h-screen pt-16 transition-all duration-300 ${
-        sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+        sidebarOpen ? 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
       }`}>
-        {/* 배너 이미지 */}
+        {/* Banner image */}
         <div className="relative h-96">
           <img
             src={`https://picsum.photos/seed/${poi._id.$oid}/1920/600`}
@@ -63,7 +66,7 @@ export default function POIDetailPage() {
                   ))}
                 </div>
                 <span className="text-white/70">·</span>
-                <span>{kContents.length}개 스팟</span>
+                <span>{kContents.length} spots</span>
                 <span className="text-white/70">·</span>
                 <span>{poi.openingHours}</span>
               </div>
@@ -71,9 +74,9 @@ export default function POIDetailPage() {
           </div>
         </div>
 
-        {/* 컨텐츠 영역 */}
+        {/* Content area */}
         <div className="container mx-auto px-6 pt-8 pb-16">
-          {/* K-Contents 섹션 */}
+          {/* K-Contents section */}
           {kContents.length > 0 && (
             <div className="mb-12">
               <div className="text-center mb-8">
@@ -84,7 +87,7 @@ export default function POIDetailPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    방문할 스팟
+                    Spots to Visit
                   </h2>
                   <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-500 to-purple-500"></div>
                 </div>
@@ -98,9 +101,9 @@ export default function POIDetailPage() {
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        {/* spotName을 제목으로 */}
+                        {/* Use spotName as title */}
                         <h3 className="text-xl font-bold text-gray-900 mb-2">{content.spotName}</h3>
-                        {/* subName을 해시태그로 */}
+                        {/* Use subName as hashtag */}
                         {content.subName && (
                           <span className="inline-block px-3 py-1 bg-purple-100 border border-purple-300 rounded-full text-purple-700 text-sm font-medium mb-3">
                             #{content.subName}
@@ -136,7 +139,7 @@ export default function POIDetailPage() {
             </div>
           )}
 
-          {/* 장소 정보 카드 */}
+          {/* Location information card */}
           <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
             <div className="text-center mb-6">
               <div className="flex items-center justify-center mb-4">
@@ -145,27 +148,27 @@ export default function POIDetailPage() {
                   <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  장소 정보
+                  Location Information
                 </h3>
                 <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-500 to-purple-500"></div>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
-                <p className="text-purple-600 text-sm font-medium mb-2">📍 주소</p>
+                <p className="text-purple-600 text-sm font-medium mb-2">📍 Address</p>
                 <p className="text-gray-900">{poi.address}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-purple-600 text-sm font-medium mb-2">💰 입장료</p>
+                <p className="text-purple-600 text-sm font-medium mb-2">💰 Entry Fee</p>
                 <p className="text-gray-900">{poi.entryFee}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-purple-600 text-sm font-medium mb-2">🕐 운영 시간</p>
+                <p className="text-purple-600 text-sm font-medium mb-2">🕐 Opening Hours</p>
                 <p className="text-gray-900">{poi.openingHours}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-purple-600 text-sm font-medium mb-2">📞 예약 필요</p>
-                <p className="text-gray-900">{poi.needsReservation ? '예' : '아니오'}</p>
+                <p className="text-purple-600 text-sm font-medium mb-2">📞 Reservation Required</p>
+                <p className="text-gray-900">{poi.needsReservation ? 'Yes' : 'No'}</p>
               </div>
             </div>
           </div>

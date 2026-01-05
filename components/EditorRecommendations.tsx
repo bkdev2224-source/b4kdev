@@ -14,71 +14,71 @@ interface RecommendationItem {
 const editorRecommendations: RecommendationItem[] = [
   {
     id: '1',
-    title: '숲속 쉼터',
-    description: '도심 속 고요한 겨울숲에서 잠시 멈춰가는 시간',
+    title: 'Forest Retreat',
+    description: 'A moment to pause in a quiet winter forest in the heart of the city',
     imageUrl: 'https://picsum.photos/seed/forest/800/600',
-    category: '휴식',
+    category: 'Relaxation',
     href: '/themes/forest'
   },
   {
     id: '2',
-    title: '별마당도서관',
-    description: '대형 트리 아래 반짝이는 크리스마스 감성',
+    title: 'Starfield Library',
+    description: 'Sparkling Christmas atmosphere under a giant tree',
     imageUrl: 'https://picsum.photos/seed/library/800/600',
-    category: '문화',
+    category: 'Culture',
     href: '/themes/library'
   },
   {
     id: '3',
-    title: '빛초롱 축제',
-    description: '겨울밤에 펼쳐지는 서울의 야간 빛 축제',
+    title: 'Lantern Festival',
+    description: 'Seoul\'s night light festival that unfolds on winter nights',
     imageUrl: 'https://picsum.photos/seed/festival/800/600',
-    category: '축제',
+    category: 'Festival',
     href: '/themes/festival'
   },
   {
     id: '4',
-    title: '케이팝 데몬 헌터스 따라 떠나는 서울의 1박2일 골든 투어',
-    description: '케이팝 데몬 헌터스의 주요 배경지 따라 떠나는 서울의 매력적인 1박 2일 여행 코스',
+    title: 'K-Pop Demon Hunters: Seoul 2-Day Golden Tour',
+    description: 'An attractive 2-day travel course in Seoul following the main locations from K-Pop Demon Hunters',
     imageUrl: 'https://picsum.photos/seed/kpop-tour/800/600',
     category: 'K-Pop',
     href: '/themes/kpop-tour'
   },
   {
     id: '5',
-    title: '서울의 계절 디저트로 만나는 가을의 맛',
-    description: '서울의 계절 디저트로 만나는 가을의 맛',
+    title: 'Autumn Flavors with Seoul\'s Seasonal Desserts',
+    description: 'Autumn flavors with Seoul\'s seasonal desserts',
     imageUrl: 'https://picsum.photos/seed/dessert/800/600',
     category: 'K-Food',
     href: '/themes/dessert'
   },
   {
     id: '6',
-    title: '서울 실내에서 즐기는 연말 분위기 가득 트리 공간',
-    description: '서울 실내에서 즐기는 연말 분위기 가득 트리 공간',
+    title: 'Year-end Tree Spaces in Seoul',
+    description: 'Year-end atmosphere-filled tree spaces to enjoy indoors in Seoul',
     imageUrl: 'https://picsum.photos/seed/winter/800/600',
-    category: '이벤트',
+    category: 'Event',
     href: '/themes/winter'
   }
 ]
 
 export default function EditorRecommendations() {
   return (
-    <section className="w-full py-16 bg-white">
+    <section id="editor-recommendations" className="w-full py-16 bg-white">
       <div className="px-6">
-        {/* 제목 섹션 - 중앙 정렬 with border lines */}
+        {/* Title section - centered with border lines */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-500 to-cyan-500"></div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 px-8">
-              B4K에서 추천하는 다양한 경험
+              B4K Recommended Experiences
             </h2>
             <div className="flex-1 h-px bg-gradient-to-l from-transparent via-cyan-500 to-cyan-500"></div>
           </div>
-          <p className="text-gray-600 text-lg md:text-xl">에디터 추천 여행</p>
+          <p className="text-gray-600 text-lg md:text-xl">Editor Recommended Travel</p>
           <div className="flex justify-center mt-6">
             <button className="text-sm text-cyan-600 hover:text-cyan-700 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-cyan-50">
-              모두 보기 →
+              View All →
             </button>
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Sidebar from '@/components/Sidebar'
+import SidePanel from '@/components/SidePanel'
 import TopNav from '@/components/TopNav'
 import POIGrid from '@/components/POIGrid'
 import { getAllPOIs } from '@/lib/data'
@@ -17,20 +18,30 @@ export default function ContentsPage() {
     setIsSearchFocused(true)
   }
 
+  const isSearchMode = isSearchFocused || searchQuery
+
   return (
     <div className="min-h-screen bg-white">
       <Sidebar />
+      {!isSearchMode && <SidePanel />}
       <TopNav 
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onSearchFocus={handleSearchFocus}
+        isSearchMode={isSearchMode}
       />
 
       <main className={`pt-16 pb-8 transition-all duration-300 ${
-        sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+        isSearchMode
+          ? sidebarOpen 
+            ? 'lg:ml-[12.75%] lg:w-[calc(100%-12.75%)]' 
+            : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+          : sidebarOpen 
+            ? 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]' 
+            : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
       }`}>
         {isSearchFocused || searchQuery ? (
-          /* 검색 모드: POI 그리드 표시 */
+          /* Search mode: Display POI grid */
           <div className="w-full pb-8">
             <POIGrid 
               pois={allPOIs} 
@@ -44,11 +55,11 @@ export default function ContentsPage() {
             />
           </div>
         ) : (
-          /* 일반 모드: Contents 페이지 콘텐츠 */
+          /* Normal mode: Contents page content */
           <div className="px-6">
             <div className="container mx-auto">
               <h1 className="text-3xl font-bold text-gray-900 mb-8">Contents</h1>
-              <p className="text-purple-600">콘텐츠 페이지입니다.</p>
+              <p className="text-purple-600">Contents page.</p>
             </div>
           </div>
         )}

@@ -2,34 +2,54 @@
 
 import AuthButton from './AuthButton'
 import { useSidebar } from './SidebarContext'
+import { usePathname } from 'next/navigation'
+import { useRoute } from './RouteContext'
 
 interface TopNavProps {
   searchQuery?: string
   onSearchChange?: (query: string) => void
   onSearchFocus?: () => void
   onBackToHome?: () => void
+  isSearchMode?: boolean
 }
 
-export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus, onBackToHome }: TopNavProps) {
+export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus, onBackToHome, isSearchMode = false }: TopNavProps) {
   const { sidebarOpen } = useSidebar()
+  const pathname = usePathname()
+  const { selectedRoute } = useRoute()
+  
+  // Check if side panel should be displayed on current page
+  // Hide side panel when in search mode
+  const isRoutesPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
+  // For routes page, only show panel if there's a selected route or we're on a route detail page
+  const hasRoutePanel = !isSearchMode && isRoutesPage && (selectedRoute || pathname?.startsWith('/maps/route'))
+  const showSidePanel = !isSearchMode && ((sidebarOpen && (pathname === '/' || pathname === '/contents' || pathname?.startsWith('/contents'))) || hasRoutePanel)
 
   return (
     <>
       <div className={`h-16 fixed top-0 z-40 flex items-center gap-4 px-6 transition-all duration-300 ${
-        sidebarOpen ? 'lg:left-[12.75%] lg:right-0' : 'lg:left-[80px] lg:right-0'
+        showSidePanel 
+          ? hasRoutePanel
+            ? sidebarOpen
+              ? 'lg:left-[calc(12.75%+24rem)] lg:right-0'
+              : 'lg:left-[calc(80px+24rem)] lg:right-0'
+            : 'lg:left-[calc(12.75%+16rem)] lg:right-0'
+          : sidebarOpen 
+            ? 'lg:left-[12.75%] lg:right-0' 
+            : 'lg:left-[80px] lg:right-0'
       }`}>
-        {/* 즐겨찾기 버튼과 AuthButton - 맨 오른쪽 고정 */}
+        {/* Favorites button and AuthButton - fixed to the right */}
         <div className="flex items-center gap-3 ml-auto">
-          {/* 즐겨찾기 버튼 */}
+          {/* Favorites button */}
           <button
             onClick={() => {
-              // TODO: 즐겨찾기 페이지로 이동 또는 모달 열기
-              console.log('즐겨찾기 클릭')
+              // TODO: Navigate to favorites page or open modal
+              console.log('Favorites clicked')
             }}
             className="p-2 rounded-full transition-colors hover-primary"
             style={{ color: '#62256e' }}
             aria-label="Favorites"
-            title="즐겨찾기"
+            title="Favorites"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -45,7 +65,7 @@ export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus
         </div>
       </div>
       
-      {/* 검색창 - 화면 전체 기준으로 중앙에 고정 (사이드바 영향 없음) - 항상 표시 */}
+      {/* Search box - fixed to center of screen (not affected by sidebar) - always visible */}
       <div className="fixed left-1/2 -translate-x-1/2 top-4 z-50 w-full max-w-[470px] pointer-events-none">
         <div className="relative pointer-events-auto">
           <input
@@ -76,7 +96,6 @@ export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus
             </svg>
           </div>
         </div>
-      )}
     </>
   )
 }

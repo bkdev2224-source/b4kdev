@@ -29,10 +29,10 @@ export default function PackagePage() {
       />
 
       <main className={`pt-16 pb-8 transition-all duration-300 ${
-        sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+        sidebarOpen ? 'lg:ml-[12.75%] lg:w-[calc(100%-12.75%)]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
       }`}>
         {isSearchFocused || searchQuery ? (
-          /* 검색 모드: POI 그리드 표시 */
+          /* Search mode: Display POI grid */
           <div className="w-full pb-8">
             <POIGrid 
               pois={allPOIs} 
@@ -46,9 +46,9 @@ export default function PackagePage() {
             />
           </div>
         ) : (
-          /* 일반 모드: 패키지 페이지 콘텐츠 */
+          /* Normal mode: Package page content */
           <div className="w-full">
-            {/* 패키지 추천 섹션 */}
+            {/* Recommended packages section */}
             <PackageCarousel packages={allPackages} />
           </div>
         )}

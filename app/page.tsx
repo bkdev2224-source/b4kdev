@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Sidebar from '@/components/Sidebar'
+import SidePanel from '@/components/SidePanel'
 import TopNav from '@/components/TopNav'
 import MainCarousel from '@/components/MainCarousel'
 import BestPackages from '@/components/BestPackages'
@@ -22,17 +23,20 @@ export default function Home() {
     setIsSearchFocused(true)
   }
 
-  // blur 이벤트 제거 - 명시적으로 홈 버튼이나 뒤로가기 버튼을 눌러야 홈으로 이동
+  // Removed blur event - must explicitly click home button or back button to go home
   // const handleSearchBlur = () => {
-  //   // 검색어가 없을 때만 포커스 해제
+  //   // Only remove focus when there's no search query
   //   if (!searchQuery) {
   //     setIsSearchFocused(false)
   //   }
   // }
 
+  const isSearchMode = isSearchFocused || searchQuery
+
   return (
     <div className="min-h-screen bg-white">
       <Sidebar />
+      {!isSearchMode && <SidePanel />}
       <TopNav 
         searchQuery={searchQuery} 
         onSearchChange={setSearchQuery}
@@ -41,13 +45,20 @@ export default function Home() {
           setIsSearchFocused(false)
           setSearchQuery('')
         }}
+        isSearchMode={isSearchMode}
       />
 
       <main className={`pt-16 transition-all duration-300 ${
-        sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+        isSearchMode
+          ? sidebarOpen 
+            ? 'lg:ml-[12.75%] lg:w-[calc(100%-12.75%)]' 
+            : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+          : sidebarOpen 
+            ? 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]' 
+            : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
       }`}>
         {isSearchFocused || searchQuery ? (
-          /* 검색 모드: POI 그리드 표시 */
+          /* Search mode: Display POI grid */
           <div className="w-full pb-8">
             <POIGrid 
               pois={allPOIs} 
@@ -61,21 +72,21 @@ export default function Home() {
             />
           </div>
         ) : (
-          /* 일반 모드: 메인 페이지 콘텐츠 */
+          /* Normal mode: Main page content */
           <>
-            {/* 메인 캐러셀 */}
+            {/* Main carousel */}
             <MainCarousel />
             
-            {/* B4K Best 패키지 추천 */}
+            {/* B4K Best packages */}
             <BestPackages />
             
-            {/* 에디터 추천 여행 */}
+            {/* Editor recommendations */}
             <EditorRecommendations />
             
-            {/* 서울 탐방하기 */}
+            {/* Explore Seoul */}
             <SeoulExploration />
             
-            {/* 시즌별 여행 추천 */}
+            {/* Seasonal travel recommendations */}
             <SeasonalRecommendations />
           </>
         )}

@@ -19,10 +19,9 @@ export default function Sidebar() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
       </svg>
     )},
-    { name: 'Maps', href: '/maps', icon: (
+    { name: 'Routes', href: '/maps', icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
       </svg>
     )},
     { name: 'Contents', href: '/contents', icon: (
@@ -45,9 +44,9 @@ export default function Sidebar() {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
         <div className={`${sidebarOpen ? 'p-6' : 'p-4'} transition-all duration-300 flex-shrink-0`}>
-          {/* 상단 영역: B4K 홈 버튼 */}
+          {/* Top area: B4K Home button */}
           <div className={`mb-6 flex items-center ${sidebarOpen ? 'justify-start' : 'justify-center'}`}>
-            {/* B4K 홈 버튼 */}
+            {/* B4K Home button */}
             <Link
               href="/"
               className="text-xl font-bold transition-colors cursor-pointer"
@@ -89,7 +88,7 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* 하단 버튼 - 항상 표시 */}
+        {/* Bottom button - always visible */}
         <div className="flex-shrink-0 px-4 pb-4 pt-2">
           <button
             onClick={toggleSidebar}
@@ -100,7 +99,7 @@ export default function Sidebar() {
             aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
             {sidebarOpen ? (
-              // 접기 버튼: <<< 아이콘 (오른쪽 정렬)
+              // Collapse button: <<< icon (right aligned)
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#62256e' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
@@ -113,7 +112,7 @@ export default function Sidebar() {
                 </svg>
               </>
             ) : (
-              // 펼치기 버튼: >>> 아이콘
+              // Expand button: >>> icon
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#62256e' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
