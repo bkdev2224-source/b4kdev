@@ -78,7 +78,7 @@ export default function AuthButton() {
                 }}
                 className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-purple-800/50 hover:text-red-300 transition-colors"
               >
-                로그아웃
+                Sign Out
               </button>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function AuthButton() {
       href="/auth/signin"
       className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full hover:from-purple-400 hover:to-pink-400 hover:scale-105 transition-all font-semibold text-sm shadow-lg shadow-purple-500/30"
     >
-      로그인하기
+      Sign In
     </Link>
   )
 }

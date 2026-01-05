@@ -7,25 +7,25 @@ const images = [
     id: 1,
     url: '/image/maincarousel/1.jpg',
     title: 'K-Pop',
-    description: '세계를 매혹하는 한국의 음악과 댄스 문화를 경험하세요'
+    description: 'Experience Korea\'s music and dance culture that captivates the world'
   },
   {
     id: 2,
     url: '/image/maincarousel/2.jpg',
     title: 'K-Beauty',
-    description: '혁신적인 화장품과 스킨케어로 아름다움을 발견하세요'
+    description: 'Discover beauty with innovative cosmetics and skincare'
   },
   {
     id: 3,
     url: '/image/maincarousel/4.jpg',
     title: 'K-Food',
-    description: '맛과 건강을 모두 갖춘 한국의 독특한 요리를 맛보세요'
+    description: 'Taste Korea\'s unique cuisine that combines flavor and health'
   },
   {
     id: 4,
     url: '/image/maincarousel/3.jpg',
     title: 'K-Festival',
-    description: '전통과 현대가 어우러진 축제와 이벤트를 즐기세요'
+    description: 'Enjoy festivals and events where tradition and modernity blend'
   },
 ]
 
@@ -61,7 +61,7 @@ export default function MainCarousel() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* 이미지 슬라이드 */}
+      {/* Image slides */}
       <div 
         className="flex transition-transform duration-1000 ease-in-out h-full"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -91,7 +91,7 @@ export default function MainCarousel() {
         ))}
       </div>
 
-      {/* 이전/다음 버튼 */}
+      {/* Previous/Next buttons */}
       <button
         onClick={prevSlide}
         className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-black/30 hover:bg-black/50 backdrop-blur-sm rounded-full p-3 text-white transition-all"
@@ -111,7 +111,7 @@ export default function MainCarousel() {
         </svg>
       </button>
 
-      {/* 인디케이터 */}
+      {/* Indicators */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
         {images.map((_, index) => (
           <button

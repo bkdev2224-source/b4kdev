@@ -26,12 +26,12 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
     if (onBack) {
       onBack()
     } else {
-      // onBack이 없으면 브라우저 뒤로가기
+      // If onBack is not provided, use browser back
       router.back()
     }
   }
   
-  // 카테고리 이름 매핑
+  // Category name mapping
   const categoryMap: { [key: string]: string } = {
     'k-pop': 'kpop',
     'kpop': 'kpop',
@@ -43,7 +43,7 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
     'kfestival': 'kfestival',
   }
   
-  // 검색어에서 모든 카테고리 자동 감지 (다중 선택 지원)
+  // Auto-detect all categories from search query (supports multiple selection)
   const detectedCategories = useMemo(() => {
     if (!searchQuery) return []
     const lowerQuery = searchQuery.toLowerCase().trim()
@@ -56,35 +56,35 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
     return detected
   }, [searchQuery])
   
-  // 검색어에서 카테고리 이름과 해시태그를 제거한 실제 검색어 추출
+  // Extract actual search query by removing category names and hashtags
   const actualSearchQuery = useMemo(() => {
     if (!searchQuery) return ''
     let cleaned = searchQuery
-    // 카테고리 이름 제거
+    // Remove category names
     for (const [key] of Object.entries(categoryMap)) {
       const regex = new RegExp(`#?${key.replace('-', '[- ]?')}`, 'gi')
       cleaned = cleaned.replace(regex, '')
     }
-    // 해시태그 제거 (#로 시작하는 단어)
+    // Remove hashtags (words starting with #)
     cleaned = cleaned.replace(/#\w+/g, '')
-    // 공백 정리
+    // Clean up whitespace
     cleaned = cleaned.replace(/\s+/g, ' ').trim()
     return cleaned
   }, [searchQuery])
   
-  // 검색어가 카테고리 이름이면 해당 카테고리 자동 선택
-  // 검색창이 포커스되어 있으면 필터 적용
-  // 다중 선택 가능하도록 수정
+  // Auto-select category if search query contains category name
+  // Apply filter if search box is focused
+  // Modified to support multiple selection
   const effectiveSelectedKContents = useMemo(() => {
-    // 검색창이 포커스되지 않고 검색어도 없으면 필터 비활성화
+    // Disable filter if search box is not focused and there's no search query
     if (!isSearchFocused && !searchQuery) {
       return []
     }
     
-    // 선택된 카테고리 목록 생성 (다중 선택 지원)
+    // Create list of selected categories (supports multiple selection)
     let result = [...selectedKContents]
     
-    // 검색어에서 감지된 모든 카테고리 추가 (중복 제거)
+    // Add all categories detected from search query (remove duplicates)
     detectedCategories.forEach(category => {
       if (!result.includes(category)) {
         result.push(category)
@@ -94,7 +94,7 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
     return result
   }, [detectedCategories, selectedKContents, isSearchFocused, searchQuery])
   
-  // 모든 해시태그 추출 (subName들) - 5개만
+  // Extract all hashtags (subNames) - limit to 5
   const allHashtags = useMemo(() => {
     const hashtags = new Set<string>()
     allKContents.forEach(content => {
@@ -105,7 +105,7 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
     return Array.from(hashtags).sort().slice(0, 5)
   }, [allKContents])
 
-  // K-Contents 카테고리
+  // K-Contents categories
   const kContentCategories = [
     { 
       key: 'kpop', 
@@ -145,25 +145,25 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
     },
   ]
 
-  // 필터링된 POI
+  // Filtered POIs
   const filteredPois = useMemo(() => {
     return pois.filter(poi => {
-      // 검색어 필터 - subName 중심으로 검색 (실제 검색어가 있을 때만)
-      // 카테고리 이름이 포함된 경우는 카테고리 필터링으로 처리하므로 검색어 필터는 실제 검색어만 사용
+      // Search query filter - search by subName (only when actual search query exists)
+      // Category names are handled by category filtering, so search filter only uses actual search query
       const matchesSearch = actualSearchQuery === '' || 
         getKContentsByPOIId(poi._id.$oid).some(content => 
           content.subName && content.subName.toLowerCase().includes(actualSearchQuery.toLowerCase())
         )
 
-      // 해시태그 필터
+      // Hashtag filter
       const matchesHashtag = selectedHashtags.length === 0 || 
         getKContentsByPOIId(poi._id.$oid).some(content =>
           selectedHashtags.includes(content.subName)
         )
 
-      // K-Contents 카테고리 필터 (다중 선택 지원)
-      // effectiveSelectedKContents가 비어있으면 모든 카테고리 표시
-      // 하나 이상 선택되어 있으면 선택된 카테고리 중 하나라도 포함된 POI만 표시
+      // K-Contents category filter (supports multiple selection)
+      // If effectiveSelectedKContents is empty, show all categories
+      // If one or more are selected, only show POIs that include at least one of the selected categories
       const matchesKContent = effectiveSelectedKContents.length === 0 ||
         getKContentsByPOIId(poi._id.$oid).some(content => {
           const category = getContentCategory(content)
@@ -194,9 +194,9 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
     const categoryTag = `#${categoryLabels[category]}`
     
     if (isCurrentlySelected) {
-      // 이미 선택된 경우 해제
+      // If already selected, deselect
       setSelectedKContents(prev => prev.filter(c => c !== category))
-      // 검색창에서도 제거
+      // Also remove from search box
       if (onSearchChange) {
         const updatedQuery = searchQuery
           .replace(new RegExp(`\\s*${categoryTag}\\s*`, 'g'), ' ')
@@ -205,9 +205,9 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
         onSearchChange(updatedQuery)
       }
     } else {
-      // 선택되지 않은 경우 추가
+      // If not selected, add
       setSelectedKContents(prev => [...prev, category])
-      // 검색창에 추가
+      // Also add to search box
       if (onSearchChange) {
         const newQuery = searchQuery ? `${searchQuery} ${categoryTag}`.trim() : categoryTag
         onSearchChange(newQuery)
@@ -217,7 +217,7 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
 
   return (
     <div className="w-full">
-      {/* 뒤로가기 버튼 - 검색 상태일 때만 표시 */}
+      {/* Back button - only shown in search state */}
       {isSearchFocused && (
         <div className="mb-4 px-6">
           <button
@@ -228,12 +228,12 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="text-sm font-medium">뒤로가기</span>
+            <span className="text-sm font-medium">Back</span>
           </button>
         </div>
       )}
       
-      {/* K-Contents 카테고리 필터 */}
+      {/* K-Contents category filter */}
       <div className="mb-8 px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
           {kContentCategories.map(category => {
@@ -265,7 +265,7 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
         </div>
       </div>
 
-      {/* POI 그리드 */}
+      {/* POI grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6">
         {filteredPois.map(poi => {
           const kContents = getKContentsByPOIId(poi._id.$oid)
@@ -278,7 +278,7 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
               className="group no-underline"
             >
               <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 rounded-xl p-6 hover:border-purple-400/50 hover:from-purple-800/60 hover:to-pink-800/60 transition-all duration-200 h-full shadow-lg hover:shadow-purple-500/20">
-                {/* 이미지 */}
+                {/* Image */}
                 <div className="relative mb-4">
                   <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-purple-600/20 to-pink-600/20">
                     <img
@@ -289,14 +289,14 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
                   </div>
                 </div>
 
-                {/* 제목 (POI 이름) */}
+                {/* Title (POI name) */}
                 <div className="mb-3">
                   <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-purple-300 transition-colors">
                     {poi.name}
                   </h3>
                 </div>
 
-                {/* 해시태그 (subName들) - 최대 5개 */}
+                {/* Hashtags (subNames) - max 5 */}
                 {allSubNames.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
                     {allSubNames.map(subName => (
@@ -310,14 +310,14 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
                   </div>
                 )}
 
-                {/* 장소 정보 */}
+                {/* Location information */}
                 <div className="space-y-1">
                   <p className="text-purple-300/70 text-xs line-clamp-1">
                     {poi.address}
                   </p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-purple-300 text-xs">
-                      {kContents.length}개 스팟
+                      {kContents.length} spots
                     </span>
                     {poi.categoryTags.length > 0 && (
                       <>
@@ -337,7 +337,7 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
 
       {filteredPois.length === 0 && (
         <div className="text-center py-12 px-6">
-          <p className="text-purple-300 text-lg">검색 결과가 없습니다.</p>
+          <p className="text-purple-300 text-lg">No search results found.</p>
         </div>
       )}
     </div>

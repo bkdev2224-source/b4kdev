@@ -9,7 +9,7 @@ export default function SignIn() {
   const error = searchParams.get("error")
 
   useEffect(() => {
-    // 에러가 있으면 콘솔에 출력
+    // Output error to console if present
     if (error) {
       console.error("Authentication error:", error)
     }
@@ -29,11 +29,11 @@ export default function SignIn() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-[#0a0a0f] via-[#1a0a2e] to-[#0a0a0f]">
       <div className="z-10 max-w-md w-full items-center justify-center">
-        <h1 className="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">로그인</h1>
+        <h1 className="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Sign In</h1>
         {error && (
           <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded-lg">
             <p className="text-red-400 text-sm text-center">
-              로그인 중 오류가 발생했습니다. 다시 시도해주세요.
+              An error occurred during sign in. Please try again.
             </p>
           </div>
         )}
@@ -59,7 +59,7 @@ export default function SignIn() {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          Google로 로그인
+          Sign in with Google
         </button>
       </div>
     </div>

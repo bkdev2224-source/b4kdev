@@ -1,59 +1,18 @@
 "use client"
 
-import { useState } from 'react'
-import Sidebar from '@/components/Sidebar'
-import TopNav from '@/components/TopNav'
-import POIGrid from '@/components/POIGrid'
-import { getAllPOIs } from '@/lib/data'
-import { useSidebar } from '@/components/SidebarContext'
+import PageLayout from '@/components/PageLayout'
 
 export default function ContentsPage() {
-  const allPOIs = getAllPOIs()
-  const { sidebarOpen } = useSidebar()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [isSearchFocused, setIsSearchFocused] = useState(false)
-
-  const handleSearchFocus = () => {
-    setIsSearchFocused(true)
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#2a1a3e] to-[#1a1a2e]">
-      <Sidebar />
-      <TopNav 
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onSearchFocus={handleSearchFocus}
-      />
-
-      <main className={`pt-16 pb-8 transition-all duration-300 ${
-        sidebarOpen ? 'lg:ml-[12.75%] lg:w-[87.25%]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
-      }`}>
-        {isSearchFocused || searchQuery ? (
-          /* 검색 모드: POI 그리드 표시 */
-          <div className="w-full pb-8">
-            <POIGrid 
-              pois={allPOIs} 
-              searchQuery={searchQuery} 
-              isSearchFocused={isSearchFocused}
-              onSearchChange={setSearchQuery}
-              onBack={() => {
-                setIsSearchFocused(false)
-                setSearchQuery('')
-              }}
-            />
-          </div>
-        ) : (
-          /* 일반 모드: Contents 페이지 콘텐츠 */
-          <div className="px-6">
-            <div className="container mx-auto">
-              <h1 className="text-3xl font-bold text-white mb-8">Contents</h1>
-              <p className="text-purple-300">콘텐츠 페이지입니다.</p>
-            </div>
-          </div>
-        )}
-      </main>
-    </div>
+    <PageLayout showSidePanel={true} sidePanelWidth="default" className="pb-8">
+      {/* Normal mode: Contents page content */}
+      <div className="px-6">
+        <div className="container mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">Contents</h1>
+          <p className="text-purple-600">Contents page.</p>
+        </div>
+      </div>
+    </PageLayout>
   )
 }
 
