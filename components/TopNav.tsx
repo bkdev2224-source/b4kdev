@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from 'react'
 import AuthButton from './AuthButton'
 import { useSidebar } from './SidebarContext'
 import { usePathname } from 'next/navigation'
@@ -11,33 +12,45 @@ interface TopNavProps {
   onSearchFocus?: () => void
   onBackToHome?: () => void
   isSearchMode?: boolean
+  topNavClasses?: string
 }
 
-export default function TopNav({ searchQuery = '', onSearchChange, onSearchFocus, onBackToHome, isSearchMode = false }: TopNavProps) {
+export default function TopNav({ 
+  searchQuery = '', 
+  onSearchChange, 
+  onSearchFocus, 
+  onBackToHome, 
+  isSearchMode = false,
+  topNavClasses
+}: TopNavProps) {
+  // Use provided classes or calculate fallback
   const { sidebarOpen } = useSidebar()
   const pathname = usePathname()
   const { selectedRoute } = useRoute()
   
-  // Check if side panel should be displayed on current page
-  // Hide side panel when in search mode
-  const isRoutesPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
-  // For routes page, only show panel if there's a selected route or we're on a route detail page
-  const hasRoutePanel = !isSearchMode && isRoutesPage && (selectedRoute || pathname?.startsWith('/maps/route'))
-  const showSidePanel = !isSearchMode && ((sidebarOpen && (pathname === '/' || pathname === '/contents' || pathname?.startsWith('/contents'))) || hasRoutePanel)
+  const defaultClasses = useMemo(() => {
+    const isRoutesPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
+    const hasRoutePanel = !isSearchMode && isRoutesPage && (selectedRoute || pathname?.startsWith('/maps/route'))
+    const showSidePanel = !isSearchMode && ((sidebarOpen && (pathname === '/' || pathname === '/contents' || pathname?.startsWith('/contents'))) || hasRoutePanel)
+    
+    if (showSidePanel) {
+      if (hasRoutePanel) {
+        return sidebarOpen
+          ? 'lg:left-[calc(12.75%+24rem)] lg:right-0'
+          : 'lg:left-[calc(80px+24rem)] lg:right-0'
+      }
+      return 'lg:left-[calc(12.75%+16rem)] lg:right-0'
+    }
+    return sidebarOpen 
+      ? 'lg:left-[12.75%] lg:right-0' 
+      : 'lg:left-[80px] lg:right-0'
+  }, [isSearchMode, sidebarOpen, pathname, selectedRoute])
+
+  const navClasses = topNavClasses || defaultClasses
 
   return (
     <>
-      <div className={`h-16 fixed top-0 z-40 flex items-center gap-4 px-6 transition-all duration-300 ${
-        showSidePanel 
-          ? hasRoutePanel
-            ? sidebarOpen
-              ? 'lg:left-[calc(12.75%+24rem)] lg:right-0'
-              : 'lg:left-[calc(80px+24rem)] lg:right-0'
-            : 'lg:left-[calc(12.75%+16rem)] lg:right-0'
-          : sidebarOpen 
-            ? 'lg:left-[12.75%] lg:right-0' 
-            : 'lg:left-[80px] lg:right-0'
-      }`}>
+      <div className={`h-16 fixed top-0 z-40 flex items-center gap-4 px-6 transition-all duration-300 ${navClasses}`}>
         {/* Favorites button and AuthButton - fixed to the right */}
         <div className="flex items-center gap-3 ml-auto">
           {/* Favorites button */}

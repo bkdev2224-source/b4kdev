@@ -1,30 +1,21 @@
 "use client"
 
 import { useRouter, useParams } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
-import SidePanel from '@/components/SidePanel'
-import TopNav from '@/components/TopNav'
+import PageLayout from '@/components/PageLayout'
 import { getPOIById, getKContentsByPOIId } from '@/lib/data'
-import { useSidebar } from '@/components/SidebarContext'
 
 export default function POIDetailPage() {
   const router = useRouter()
   const params = useParams()
   const id = params?.id as string || ''
-  const { sidebarOpen } = useSidebar()
   
   const poi = getPOIById(id)
   const kContents = poi ? getKContentsByPOIId(id) : []
 
   if (!poi) {
     return (
-      <div className="min-h-screen bg-white">
-        <Sidebar />
-        <SidePanel />
-        <TopNav />
-        <main className={`pt-16 pb-8 flex items-center justify-center min-h-screen transition-all duration-300 ${
-          sidebarOpen ? 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
-        }`}>
+      <PageLayout showSidePanel={false}>
+        <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Location Not Found</h1>
             <button
@@ -34,19 +25,13 @@ export default function POIDetailPage() {
               Return to Home
             </button>
           </div>
-        </main>
-      </div>
+        </div>
+      </PageLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Sidebar />
-      <SidePanel />
-      <TopNav />
-      <main className={`min-h-screen pt-16 transition-all duration-300 ${
-        sidebarOpen ? 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]' : 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
-      }`}>
+    <PageLayout showSidePanel={false}>
         {/* Banner image */}
         <div className="relative h-96">
           <img
@@ -173,7 +158,6 @@ export default function POIDetailPage() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+    </PageLayout>
   )
 }
