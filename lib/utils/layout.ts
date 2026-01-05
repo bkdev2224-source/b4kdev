@@ -23,23 +23,35 @@ export interface LayoutConfig {
  */
 export function getMainContentClasses(config: LayoutConfig): string {
   const { sidebarOpen, sidePanelWidth } = config
-  const sidebarWidth = sidebarOpen 
-    ? LAYOUT_CONSTANTS.SIDEBAR_OPEN_WIDTH 
-    : LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH
 
+  // No side panel: only account for sidebar
   if (sidePanelWidth === 'none') {
-    return sidebarOpen
-      ? `lg:ml-[${sidebarWidth}] lg:w-[calc(100%-${sidebarWidth})]`
-      : `lg:ml-[${LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH}] lg:w-[calc(100%-${LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH})]`
+    if (sidebarOpen) {
+      return 'lg:ml-[12.75%] lg:w-[calc(100%-12.75%)]'
+    } else {
+      return 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+    }
   }
 
-  const panelWidth = sidePanelWidth === 'routes' 
-    ? LAYOUT_CONSTANTS.SIDE_PANEL_ROUTES_WIDTH 
-    : LAYOUT_CONSTANTS.SIDE_PANEL_DEFAULT_WIDTH
+  // Routes panel (24rem = 384px)
+  if (sidePanelWidth === 'routes') {
+    if (sidebarOpen) {
+      // Sidebar open (12.75%) + Routes panel (24rem)
+      return 'lg:ml-[calc(12.75%+24rem)] lg:w-[calc(100%-12.75%-24rem)]'
+    } else {
+      // Sidebar closed (80px) + Routes panel (24rem)
+      return 'lg:ml-[calc(80px+24rem)] lg:w-[calc(100%-80px-24rem)]'
+    }
+  }
 
-  return sidebarOpen
-    ? `lg:ml-[calc(${sidebarWidth}+${panelWidth})] lg:w-[calc(100%-${sidebarWidth}-${panelWidth})]`
-    : `lg:ml-[calc(${LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH}+${panelWidth})] lg:w-[calc(100%-${LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH}-${panelWidth})]`
+  // Default panel (16rem = 256px) - only shown when sidebar is open
+  if (sidebarOpen) {
+    // Sidebar open (12.75%) + Default panel (16rem)
+    return 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]'
+  } else {
+    // Sidebar closed: no default panel shown, only account for sidebar
+    return 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+  }
 }
 
 /**
@@ -47,23 +59,31 @@ export function getMainContentClasses(config: LayoutConfig): string {
  */
 export function getTopNavClasses(config: LayoutConfig): string {
   const { sidebarOpen, sidePanelWidth } = config
-  const sidebarWidth = sidebarOpen 
-    ? LAYOUT_CONSTANTS.SIDEBAR_OPEN_WIDTH 
-    : LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH
 
+  // No side panel: only account for sidebar
   if (sidePanelWidth === 'none') {
-    return sidebarOpen
-      ? `lg:left-[${sidebarWidth}] lg:right-0`
-      : `lg:left-[${LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH}] lg:right-0`
+    if (sidebarOpen) {
+      return 'lg:left-[12.75%] lg:right-0'
+    } else {
+      return 'lg:left-[80px] lg:right-0'
+    }
   }
 
-  const panelWidth = sidePanelWidth === 'routes' 
-    ? LAYOUT_CONSTANTS.SIDE_PANEL_ROUTES_WIDTH 
-    : LAYOUT_CONSTANTS.SIDE_PANEL_DEFAULT_WIDTH
+  // Routes panel (24rem)
+  if (sidePanelWidth === 'routes') {
+    if (sidebarOpen) {
+      return 'lg:left-[calc(12.75%+24rem)] lg:right-0'
+    } else {
+      return 'lg:left-[calc(80px+24rem)] lg:right-0'
+    }
+  }
 
-  return sidebarOpen
-    ? `lg:left-[calc(${sidebarWidth}+${panelWidth})] lg:right-0`
-    : `lg:left-[calc(${LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH}+${panelWidth})] lg:right-0`
+  // Default panel (16rem) - only shown when sidebar is open
+  if (sidebarOpen) {
+    return 'lg:left-[calc(12.75%+16rem)] lg:right-0'
+  } else {
+    return 'lg:left-[80px] lg:right-0'
+  }
 }
 
 /**
@@ -81,4 +101,3 @@ export function getSidePanelLeft(sidebarOpen: boolean): string {
 export function getSidePanelWidthClass(type: 'home' | 'contents' | 'route' | null): string {
   return type === 'route' ? 'w-96' : 'w-64'
 }
-

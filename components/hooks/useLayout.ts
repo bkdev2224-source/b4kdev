@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { useSidebar } from '../SidebarContext'
 import { useRoute } from '../RouteContext'
-import { usePathname } from 'next/navigation'
+import { usePathname, useParams } from 'next/navigation'
 import { 
   getMainContentClasses, 
   getTopNavClasses, 
@@ -11,9 +11,11 @@ import {
   getSidePanelWidthClass,
   type SidePanelWidth 
 } from '@/lib/utils/layout'
+import { getRouteById } from '@/lib/routes'
 
 interface UseLayoutOptions {
   isSearchMode?: boolean
+  showSidePanel?: boolean
   sidePanelWidth?: SidePanelWidth
 }
 
@@ -21,39 +23,59 @@ export function useLayout(options: UseLayoutOptions = {}) {
   const { sidebarOpen } = useSidebar()
   const { selectedRoute } = useRoute()
   const pathname = usePathname()
-  const { isSearchMode = false, sidePanelWidth = 'default' } = options
+  const params = useParams()
+  const { 
+    isSearchMode = false, 
+    showSidePanel = true,
+    sidePanelWidth = 'default' 
+  } = options
 
-  // Determine side panel width based on page type
+  // Determine route for side panel
+  const isRoutesPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
+  const routeId = pathname?.startsWith('/maps/route/') ? params?.id as string : null
+  const routeFromUrl = routeId ? getRouteById(routeId) : null
+  const hasRoute = !!(selectedRoute || routeFromUrl)
+
+  // Calculate effective side panel width
   const effectiveSidePanelWidth = useMemo((): SidePanelWidth => {
+    // Always hide panel in search mode
     if (isSearchMode) return 'none'
     
-    // Check if we're on routes page
-    const isRoutesPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
+    // If panel is disabled, return none
+    if (!showSidePanel) return 'none'
     
-    // For routes pages with 'routes' sidePanelWidth
-    // Only use routes width if there's actually a route to display (dynamic panel)
+    // For routes pages with 'routes' width
     if (isRoutesPage && sidePanelWidth === 'routes') {
-      // Check if we have a route from URL (route detail page) or selected route (marker click)
-      const hasRouteFromUrl = pathname?.startsWith('/maps/route')
-      if (selectedRoute || hasRouteFromUrl) {
-        return 'routes' // 24rem - only when route is available
-      }
-      return 'none' // No space reserved until route is selected
+      return hasRoute ? 'routes' : 'none'
     }
     
-    if (sidePanelWidth === 'none') return 'none'
+    // For fixed panels (default), only show if sidebar is open
+    if (sidePanelWidth === 'default') {
+      return sidebarOpen ? 'default' : 'none'
+    }
     
-    // Default: check if side panel should be shown (fixed panel)
-    const shouldShowPanel = sidebarOpen && (
-      pathname === '/' || 
-      pathname === '/contents' || 
-      pathname?.startsWith('/contents')
-    )
-    
-    return shouldShowPanel ? 'default' : 'none' // 16rem or none
-  }, [isSearchMode, sidePanelWidth, pathname, selectedRoute, sidebarOpen])
+    return sidePanelWidth
+  }, [isSearchMode, showSidePanel, sidePanelWidth, isRoutesPage, hasRoute, sidebarOpen])
 
-  // Calculate main content margin and width using utility function
+  // Determine side panel type
+  const sidePanelType = useMemo(() => {
+    if (isSearchMode || effectiveSidePanelWidth === 'none') return null
+    
+    // For routes pages
+    if (isRoutesPage && sidePanelWidth === 'routes' && hasRoute) {
+      return 'route'
+    }
+    
+    // For fixed panels
+    if (sidePanelWidth === 'default' && sidebarOpen) {
+      if (pathname === '/') return 'home'
+      if (pathname === '/contents' || pathname?.startsWith('/contents')) return 'contents'
+    }
+    
+    return null
+  }, [isSearchMode, effectiveSidePanelWidth, isRoutesPage, sidePanelWidth, hasRoute, sidebarOpen, pathname])
+
+  // Calculate main content classes
   const mainClasses = useMemo(() => {
     return getMainContentClasses({
       sidebarOpen,
@@ -61,7 +83,7 @@ export function useLayout(options: UseLayoutOptions = {}) {
     })
   }, [sidebarOpen, effectiveSidePanelWidth])
 
-  // Calculate TopNav position using utility function
+  // Calculate TopNav classes
   const topNavClasses = useMemo(() => {
     return getTopNavClasses({
       sidebarOpen,
@@ -69,76 +91,22 @@ export function useLayout(options: UseLayoutOptions = {}) {
     })
   }, [sidebarOpen, effectiveSidePanelWidth])
 
-  // Determine side panel type
-  const sidePanelType = useMemo(() => {
-    if (isSearchMode) return null
-    
-    const isRoutesPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
-    
-    // For routes pages with 'routes' sidePanelWidth
-    if (isRoutesPage && sidePanelWidth === 'routes') {
-      // Show route panel if:
-      // 1. There's a selected route (from marker click), OR
-      // 2. We're on a route detail page (from URL - PageLayout will pass the route)
-      if (selectedRoute || pathname?.startsWith('/maps/route')) {
-        return 'route'
-      }
-      return null
-    }
-    
-    if (sidePanelWidth === 'none') return null
-    
-    // Default: check if side panel should be shown
-    const shouldShowPanel = sidebarOpen && (
-      pathname === '/' || 
-      pathname === '/contents' || 
-      pathname?.startsWith('/contents')
-    )
-    
-    if (!shouldShowPanel) return null
-    
-    if (pathname === '/') return 'home'
-    if (pathname === '/contents' || pathname?.startsWith('/contents')) return 'contents'
-    
-    return null
-  }, [isSearchMode, sidePanelWidth, pathname, selectedRoute, sidebarOpen])
+  // Side panel visibility
+  const showSidePanelVisible = effectiveSidePanelWidth !== 'none' && sidePanelType !== null
 
-  // Calculate side panel left position
-  const sidePanelLeft = useMemo(() => {
-    return getSidePanelLeft(sidebarOpen)
-  }, [sidebarOpen])
-
-  // Get side panel width class
-  const sidePanelWidthClass = useMemo(() => {
-    return getSidePanelWidthClass(sidePanelType)
-  }, [sidePanelType])
-
-  // Determine if side panel should be visible
-  // For fixed panels: based on sidebar state and pathname
-  // For dynamic panels (routes): only when route is available
-  const showSidePanel = useMemo(() => {
-    if (effectiveSidePanelWidth === 'none') return false
-    
-    // For routes pages, only show if there's a route
-    const isRoutesPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
-    if (isRoutesPage && sidePanelWidth === 'routes') {
-      const hasRouteFromUrl = pathname?.startsWith('/maps/route')
-      return !!(selectedRoute || hasRouteFromUrl)
-    }
-    
-    // For fixed panels, show based on sidebar state
-    return true
-  }, [effectiveSidePanelWidth, pathname, sidePanelWidth, selectedRoute])
+  // Get display route for side panel
+  const displayRoute = selectedRoute || routeFromUrl || null
 
   return {
     sidebarOpen,
     effectiveSidePanelWidth,
     mainClasses,
     topNavClasses,
-    showSidePanel,
+    showSidePanel: showSidePanelVisible,
     sidePanelType,
-    sidePanelLeft,
-    sidePanelWidthClass,
+    sidePanelLeft: getSidePanelLeft(sidebarOpen),
+    sidePanelWidthClass: getSidePanelWidthClass(sidePanelType),
+    displayRoute,
+    routeId,
   }
 }
-

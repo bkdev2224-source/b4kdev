@@ -1,16 +1,13 @@
 "use client"
 
-import { ReactNode, useMemo } from 'react'
-import { usePathname, useParams } from 'next/navigation'
+import { ReactNode } from 'react'
 import Sidebar from './Sidebar'
 import SidePanel from './SidePanel'
 import TopNav from './TopNav'
 import POIGrid from './POIGrid'
 import { useSearch } from './hooks/useSearch'
 import { useLayout } from './hooks/useLayout'
-import { useRoute } from './RouteContext'
 import { getAllPOIs } from '@/lib/data'
-import { getRouteById } from '@/lib/routes'
 
 interface PageLayoutProps {
   children: ReactNode
@@ -28,31 +25,12 @@ export default function PageLayout({
   className = '',
 }: PageLayoutProps) {
   const search = useSearch()
-  const pathname = usePathname()
-  const params = useParams()
-  const { selectedRoute } = useRoute()
   
-  // Determine route for side panel
-  const routeId = pathname?.startsWith('/maps/route/') ? params?.id as string : null
-  const routeFromUrl = routeId ? getRouteById(routeId) : null
-  const displayRoute = selectedRoute || routeFromUrl
-  
-  // For routes pages, dynamically adjust sidePanelWidth based on route availability
-  const effectiveSidePanelWidth = useMemo(() => {
-    if (!showSidePanel) return 'none'
-    
-    // For routes pages, only reserve space if route is available
-    const isRoutesPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
-    if (isRoutesPage && sidePanelWidth === 'routes') {
-      return displayRoute ? 'routes' : 'none'
-    }
-    
-    return sidePanelWidth
-  }, [showSidePanel, sidePanelWidth, pathname, displayRoute])
-  
+  // Use layout hook - it handles all calculations including route detection
   const layout = useLayout({
     isSearchMode: search.isSearchMode,
-    sidePanelWidth: effectiveSidePanelWidth,
+    showSidePanel,
+    sidePanelWidth,
   })
 
   // Default search content (POIGrid)
@@ -73,8 +51,8 @@ export default function PageLayout({
       <Sidebar />
       <SidePanel
         type={layout.sidePanelType}
-        route={displayRoute || undefined}
-        routeId={routeId || undefined}
+        route={layout.displayRoute || undefined}
+        routeId={layout.routeId || undefined}
         visible={layout.showSidePanel && !search.isSearchMode}
         sidebarOpen={layout.sidebarOpen}
       />
