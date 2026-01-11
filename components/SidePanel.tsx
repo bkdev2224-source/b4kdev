@@ -5,7 +5,7 @@ import { Route } from '@/lib/routes'
 import { getSidePanelLeft, getSidePanelWidthClass } from '@/lib/utils/layout'
 
 interface SidePanelProps {
-  type: 'home' | 'contents' | 'route' | null
+  type: 'home' | 'contents' | 'route' | 'search' | null
   route?: Route | null
   routeId?: string | null
   visible?: boolean
@@ -29,7 +29,7 @@ export default function SidePanel({
   return (
     <div 
       className={`${panelWidth} bg-white border-r border-gray-200 h-screen fixed z-30 transition-all duration-300 lg:block hidden ${
-        type === 'route' ? 'overflow-y-auto' : ''
+        type === 'route' || type === 'search' ? 'overflow-y-auto' : ''
       }`}
       style={{ left: panelLeft }}
     >

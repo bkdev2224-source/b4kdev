@@ -38,7 +38,7 @@ export default function PageLayout({
         type={layout.sidePanelType}
         route={layout.displayRoute || undefined}
         routeId={layout.routeId || undefined}
-        visible={layout.showSidePanel && !search.isSearchMode}
+        visible={layout.showSidePanel}
         sidebarOpen={layout.sidebarOpen}
       />
       <TopNav

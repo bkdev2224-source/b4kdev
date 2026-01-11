@@ -3,6 +3,7 @@ import './globals.css'
 import SessionProvider from '@/components/SessionProvider'
 import { SidebarProvider } from '@/components/SidebarContext'
 import { RouteProvider } from '@/components/RouteContext'
+import { SearchProvider } from '@/components/SearchContext'
 
 export const metadata: Metadata = {
   title: 'B4K',
@@ -34,7 +35,9 @@ export default function RootLayout({
         <SessionProvider>
           <SidebarProvider>
             <RouteProvider>
-              {children}
+              <SearchProvider>
+                {children}
+              </SearchProvider>
             </RouteProvider>
           </SidebarProvider>
         </SessionProvider>

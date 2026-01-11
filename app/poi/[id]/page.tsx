@@ -3,14 +3,29 @@
 import { useRouter, useParams } from 'next/navigation'
 import PageLayout from '@/components/PageLayout'
 import { getPOIById, getKContentsByPOIId } from '@/lib/data'
+import { useSearchResult } from '@/components/SearchContext'
 
 export default function POIDetailPage() {
   const router = useRouter()
   const params = useParams()
+  const { setSearchResult } = useSearchResult()
   const id = params?.id as string || ''
   
   const poi = getPOIById(id)
   const kContents = poi ? getKContentsByPOIId(id) : []
+
+  const handleMapClick = () => {
+    if (poi) {
+      // SearchContext에 POI 검색 결과 저장
+      setSearchResult({
+        name: poi.name,
+        type: 'poi',
+        poiId: poi._id.$oid
+      })
+      // Maps 페이지로 이동
+      router.push('/maps')
+    }
+  }
 
   if (!poi) {
     return (
@@ -41,19 +56,57 @@ export default function POIDetailPage() {
           />
           <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 to-transparent">
             <div className="container mx-auto">
-              <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-2xl">{poi.name}</h1>
-              <div className="flex flex-wrap items-center gap-3 text-white/90 text-sm md:text-base">
-                <div className="flex gap-2 flex-wrap">
-                  {poi.categoryTags.map((tag, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white">
-                      {tag}
-                    </span>
-                  ))}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  {/* 1. 이름 */}
+                  <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-2xl">{poi.name}</h1>
+                  
+                  {/* 2. 카테고리, 장소 개수 */}
+                  <div className="mb-4 flex flex-wrap items-center gap-3 text-white/90 text-sm md:text-base">
+                    <div className="flex gap-2 flex-wrap">
+                      {poi.categoryTags.map((tag, idx) => (
+                        <span key={idx} className="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-white/70">·</span>
+                    <span>{kContents.length} spots</span>
+                  </div>
+
+                  {/* 3. Location Information */}
+                  <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 max-w-2xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-white">
+                      <div className="space-y-1">
+                        <p className="text-white/80 text-xs font-medium mb-1">📍 Address</p>
+                        <p className="text-white text-sm">{poi.address}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-white/80 text-xs font-medium mb-1">💰 Entry Fee</p>
+                        <p className="text-white text-sm">{poi.entryFee}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-white/80 text-xs font-medium mb-1">🕐 Opening Hours</p>
+                        <p className="text-white text-sm">{poi.openingHours}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-white/80 text-xs font-medium mb-1">📞 Reservation Required</p>
+                        <p className="text-white text-sm">{poi.needsReservation ? 'Yes' : 'No'}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <span className="text-white/70">·</span>
-                <span>{kContents.length} spots</span>
-                <span className="text-white/70">·</span>
-                <span>{poi.openingHours}</span>
+                {/* 지도 아이콘 - 눈에 띄게 수정 */}
+                <button
+                  onClick={handleMapClick}
+                  className="ml-4 p-4 bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                  aria-label="View on Map"
+                  title="View on Map"
+                >
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
@@ -123,40 +176,6 @@ export default function POIDetailPage() {
               </div>
             </div>
           )}
-
-          {/* Location information card */}
-          <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center mb-4">
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500 to-purple-500"></div>
-                <h3 className="text-2xl font-bold text-gray-900 px-8 flex items-center gap-3">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Location Information
-                </h3>
-                <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-500 to-purple-500"></div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <p className="text-purple-600 text-sm font-medium mb-2">📍 Address</p>
-                <p className="text-gray-900">{poi.address}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-purple-600 text-sm font-medium mb-2">💰 Entry Fee</p>
-                <p className="text-gray-900">{poi.entryFee}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-purple-600 text-sm font-medium mb-2">🕐 Opening Hours</p>
-                <p className="text-gray-900">{poi.openingHours}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-purple-600 text-sm font-medium mb-2">📞 Reservation Required</p>
-                <p className="text-gray-900">{poi.needsReservation ? 'Yes' : 'No'}</p>
-              </div>
-            </div>
-          </div>
         </div>
     </PageLayout>
   )

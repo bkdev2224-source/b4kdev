@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import { useSidebar } from '../SidebarContext'
 import { useRoute } from '../RouteContext'
+import { useSearchResult } from '../SearchContext'
 import { usePathname, useParams } from 'next/navigation'
 import { 
   getMainContentClasses, 
@@ -22,6 +23,7 @@ interface UseLayoutOptions {
 export function useLayout(options: UseLayoutOptions = {}) {
   const { sidebarOpen } = useSidebar()
   const { selectedRoute } = useRoute()
+  const { searchResult } = useSearchResult()
   const pathname = usePathname()
   const params = useParams()
   const { 
@@ -38,11 +40,13 @@ export function useLayout(options: UseLayoutOptions = {}) {
 
   // Calculate effective side panel width
   const effectiveSidePanelWidth = useMemo((): SidePanelWidth => {
-    // Always hide panel in search mode
-    if (isSearchMode) return 'none'
-    
     // If panel is disabled, return none
     if (!showSidePanel) return 'none'
+    
+    // For search results on Maps page, use routes width
+    if (isRoutesPage && searchResult) {
+      return 'routes'
+    }
     
     // For routes pages with 'routes' width
     if (isRoutesPage && sidePanelWidth === 'routes') {
@@ -50,33 +54,36 @@ export function useLayout(options: UseLayoutOptions = {}) {
       return 'none'
     }
     
-    // For fixed panels (default), only show on pages that actually have a panel
+    // For fixed panels (default), always show on pages that actually have a panel (regardless of sidebar state)
     if (sidePanelWidth === 'default') {
       const supportsDefaultPanel =
         pathname === '/' || pathname === '/contents' || pathname?.startsWith('/contents')
-      return sidebarOpen && supportsDefaultPanel ? 'default' : 'none'
+      return supportsDefaultPanel ? 'default' : 'none'
     }
     
     return sidePanelWidth
-  }, [isSearchMode, showSidePanel, sidePanelWidth, isRoutesPage, hasRoute, sidebarOpen, pathname])
+  }, [showSidePanel, sidePanelWidth, isRoutesPage, hasRoute, sidebarOpen, pathname, searchResult])
 
   // Determine side panel type
   const sidePanelType = useMemo(() => {
-    if (isSearchMode) return null
+    // For search results on Maps page
+    if (isRoutesPage && searchResult) {
+      return 'search'
+    }
     
     // For routes pages
     if (isRoutesPage && sidePanelWidth === 'routes' && hasRoute) {
       return 'route'
     }
     
-    // For fixed panels
-    if (sidePanelWidth === 'default' && sidebarOpen) {
+    // For fixed panels (always show regardless of sidebar state)
+    if (sidePanelWidth === 'default') {
       if (pathname === '/') return 'home'
       if (pathname === '/contents' || pathname?.startsWith('/contents')) return 'contents'
     }
     
     return null
-  }, [isSearchMode, isRoutesPage, sidePanelWidth, hasRoute, sidebarOpen, pathname])
+  }, [isRoutesPage, sidePanelWidth, hasRoute, sidebarOpen, pathname, searchResult])
 
   // Calculate main content classes
   const mainClasses = useMemo(() => {
@@ -97,9 +104,8 @@ export function useLayout(options: UseLayoutOptions = {}) {
   // Side panel visibility (routes panel overlays on maps page even when effective width is 'none')
   const showSidePanelVisible =
     !!showSidePanel &&
-    !isSearchMode &&
     sidePanelType !== null &&
-    (sidePanelType !== 'route' ? effectiveSidePanelWidth !== 'none' : true)
+    (sidePanelType === 'route' || sidePanelType === 'search' ? true : effectiveSidePanelWidth !== 'none')
 
   // Get display route for side panel
   const displayRoute = selectedRoute || routeFromUrl || null

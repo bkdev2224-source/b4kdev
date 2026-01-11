@@ -6,6 +6,7 @@ import AuthButton from './AuthButton'
 import { useSidebar } from './SidebarContext'
 import { usePathname } from 'next/navigation'
 import { useRoute } from './RouteContext'
+import { useSearchResult } from './SearchContext'
 import { getAllPOIs, getAllKContents } from '@/lib/data'
 
 interface TopNavProps {
@@ -46,10 +47,14 @@ export default function TopNav({
   const { sidebarOpen } = useSidebar()
   const pathname = usePathname()
   const { selectedRoute } = useRoute()
+  const { setSearchResult } = useSearchResult()
   const [isFocused, setIsFocused] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const searchRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  
+  // Maps 페이지인지 확인
+  const isMapsPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
   
   const defaultClasses = useMemo(() => {
     const isRoutesPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
@@ -150,12 +155,16 @@ export default function TopNav({
   }, [isFocused])
 
   const handleSearchSelect = (result: SearchResult) => {
-    if (result.type === 'poi' && result.poiId) {
-      // POI Detail Page로 이동
-      router.push(`/poi/${result.poiId}`)
-    } else if (result.type === 'content' && result.subName) {
-      // Contents Detail Page로 이동
-      router.push(`/contents/${encodeURIComponent(result.subName)}`)
+    if (isMapsPage) {
+      // Maps 페이지일 때: 사이드 패널에 검색 결과 표시
+      setSearchResult(result)
+    } else {
+      // 다른 페이지일 때: Detail Page로 이동
+      if (result.type === 'poi' && result.poiId) {
+        router.push(`/poi/${result.poiId}`)
+      } else if (result.type === 'content' && result.subName) {
+        router.push(`/contents/${encodeURIComponent(result.subName)}`)
+      }
     }
     onSearchChange?.(result.name)
     setIsFocused(false)

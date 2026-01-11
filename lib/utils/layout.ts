@@ -7,8 +7,8 @@
 export const LAYOUT_CONSTANTS = {
   SIDEBAR_OPEN_WIDTH: '12.75%',
   SIDEBAR_CLOSED_WIDTH: '80px',
-  SIDE_PANEL_DEFAULT_WIDTH: '16rem',
-  SIDE_PANEL_ROUTES_WIDTH: '24rem',
+  SIDE_PANEL_DEFAULT_WIDTH: '14.4rem', // 16rem * 0.9 (10% 감소)
+  SIDE_PANEL_ROUTES_WIDTH: '24rem', // 원래 크기 유지
 } as const
 
 export type SidePanelWidth = 'default' | 'routes' | 'none'
@@ -44,13 +44,13 @@ export function getMainContentClasses(config: LayoutConfig): string {
     }
   }
 
-  // Default panel (16rem = 256px) - only shown when sidebar is open
+  // Default panel (14.4rem = 230.4px) - always shown regardless of sidebar state
   if (sidebarOpen) {
-    // Sidebar open (12.75%) + Default panel (16rem)
-    return 'lg:ml-[calc(12.75%+16rem)] lg:w-[calc(100%-12.75%-16rem)]'
+    // Sidebar open (12.75%) + Default panel (14.4rem)
+    return 'lg:ml-[calc(12.75%+14.4rem)] lg:w-[calc(100%-12.75%-14.4rem)]'
   } else {
-    // Sidebar closed: no default panel shown, only account for sidebar
-    return 'lg:ml-[80px] lg:w-[calc(100%-80px)]'
+    // Sidebar closed: Default panel still shown
+    return 'lg:ml-[calc(80px+14.4rem)] lg:w-[calc(100%-80px-14.4rem)]'
   }
 }
 
@@ -78,11 +78,11 @@ export function getTopNavClasses(config: LayoutConfig): string {
     }
   }
 
-  // Default panel (16rem) - only shown when sidebar is open
+  // Default panel (14.4rem) - always shown regardless of sidebar state
   if (sidebarOpen) {
-    return 'lg:left-[calc(12.75%+16rem)] lg:right-0'
+    return 'lg:left-[calc(12.75%+14.4rem)] lg:right-0'
   } else {
-    return 'lg:left-[80px] lg:right-0'
+    return 'lg:left-[calc(80px+14.4rem)] lg:right-0'
   }
 }
 
@@ -98,6 +98,7 @@ export function getSidePanelLeft(sidebarOpen: boolean): string {
 /**
  * Get SidePanel width class based on type
  */
-export function getSidePanelWidthClass(type: 'home' | 'contents' | 'route' | null): string {
-  return type === 'route' ? 'w-96' : 'w-64'
+export function getSidePanelWidthClass(type: 'home' | 'contents' | 'route' | 'search' | null): string {
+  // Routes panel and search: original size, Default panel: 10% reduction
+  return type === 'route' || type === 'search' ? 'w-96' : 'w-[14.4rem]'
 }

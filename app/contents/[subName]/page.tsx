@@ -3,11 +3,13 @@
 import { useRouter, useParams } from 'next/navigation'
 import PageLayout from '@/components/PageLayout'
 import { getKContentsBySubName, getPOIById, getContentCategory, KContent } from '@/lib/data'
+import { useSearchResult } from '@/components/SearchContext'
 import Link from 'next/link'
 
 export default function ContentDetailPage() {
   const router = useRouter()
   const params = useParams()
+  const { setSearchResult } = useSearchResult()
   const subName = params?.subName as string || ''
   
   const contents = getKContentsBySubName(subName)
@@ -34,6 +36,17 @@ export default function ContentDetailPage() {
   const firstContent = contents[0]
   const poi = getPOIById(firstContent.poiId.$oid)
   const category = getContentCategory(firstContent)
+
+  const handleMapClick = () => {
+    // SearchContext에 Content 검색 결과 저장
+    setSearchResult({
+      name: subName,
+      type: 'content',
+      subName: subName
+    })
+    // Maps 페이지로 이동
+    router.push('/maps')
+  }
 
   // 카테고리별 아이콘
   const categoryIcons = {
@@ -77,28 +90,43 @@ export default function ContentDetailPage() {
         />
         <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 to-transparent">
           <div className="container mx-auto">
-            <div className="flex items-center gap-3 mb-4">
-              {category && (
-                <div className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white">
-                  {categoryIcons[category]}
-                  <span className="text-sm font-medium">{categoryLabels[category]}</span>
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  {category && (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white">
+                      {categoryIcons[category]}
+                      <span className="text-sm font-medium">{categoryLabels[category]}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-2xl">{subName}</h1>
-            <div className="flex flex-wrap items-center gap-3 text-white/90 text-sm md:text-base">
-              <span>{contents.length} spots</span>
-              {poi && (
-                <>
-                  <span className="text-white/70">·</span>
-                  <Link 
-                    href={`/poi/${poi._id.$oid}`}
-                    className="hover:text-white underline transition-colors"
-                  >
-                    {poi.name}
-                  </Link>
-                </>
-              )}
+                <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-2xl">{subName}</h1>
+                <div className="flex flex-wrap items-center gap-3 text-white/90 text-sm md:text-base">
+                  <span>{contents.length} spots</span>
+                  {poi && (
+                    <>
+                      <span className="text-white/70">·</span>
+                      <Link 
+                        href={`/poi/${poi._id.$oid}`}
+                        className="hover:text-white underline transition-colors"
+                      >
+                        {poi.name}
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+              {/* 지도 아이콘 */}
+              <button
+                onClick={handleMapClick}
+                className="ml-4 p-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full hover:bg-white/30 transition-all"
+                aria-label="View on Map"
+                title="View on Map"
+              >
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>

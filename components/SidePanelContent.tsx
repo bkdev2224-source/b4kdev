@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Route } from '@/lib/routes'
+import { useSearchResult } from './SearchContext'
+import { getPOIById, getKContentsBySubName, getKContentsByPOIId, getContentCategory } from '@/lib/data'
 
 interface SidePanelItem {
   id: string
@@ -12,13 +14,14 @@ interface SidePanelItem {
 }
 
 interface SidePanelContentProps {
-  type: 'home' | 'contents' | 'route' | null
+  type: 'home' | 'contents' | 'route' | 'search' | null
   route?: Route | null
   routeId?: string | null
 }
 
 export function SidePanelContent({ type, route, routeId }: SidePanelContentProps) {
   const [activeTab, setActiveTab] = useState<'home' | 'reviews' | 'photos' | 'info'>('home')
+  const { searchResult, setSearchResult } = useSearchResult()
 
   // Home page section list
   const homeSections: SidePanelItem[] = [
@@ -334,6 +337,135 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
             </Link>
           ))}
         </nav>
+      </div>
+    )
+  }
+
+  // Render search result
+  if (type === 'search' && searchResult) {
+    const poi = searchResult.type === 'poi' && searchResult.poiId 
+      ? getPOIById(searchResult.poiId) 
+      : null
+    const contents = searchResult.type === 'content' && searchResult.subName
+      ? getKContentsBySubName(searchResult.subName)
+      : searchResult.type === 'poi' && searchResult.poiId
+      ? getKContentsByPOIId(searchResult.poiId)
+      : []
+
+    return (
+      <div className="flex flex-col h-full">
+        {/* Top Bar */}
+        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
+          <button
+            onClick={() => {
+              setSearchResult(null)
+            }}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="Close"
+          >
+            <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <h1 className="text-base font-semibold text-gray-900 flex-1 text-center px-4 truncate">
+            {searchResult.name}
+          </h1>
+          <div className="w-9" />
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          {poi && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 mb-2">{poi.name}</h2>
+                <p className="text-gray-600 text-sm mb-3">{poi.address}</p>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {poi.categoryTags.map((tag, idx) => (
+                    <span key={idx} className="px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-xs">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p><span className="font-medium">Opening Hours:</span> {poi.openingHours}</p>
+                  <p><span className="font-medium">Entry Fee:</span> {poi.entryFee}</p>
+                  <p><span className="font-medium">Reservation Required:</span> {poi.needsReservation ? 'Yes' : 'No'}</p>
+                </div>
+              </div>
+
+              {contents.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Related Spots ({contents.length})</h3>
+                  <div className="space-y-2">
+                    {contents.slice(0, 5).map((content, idx) => (
+                      <div key={idx} className="p-3 bg-gray-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 text-sm mb-1">{content.spotName}</h4>
+                        <p className="text-gray-600 text-xs line-clamp-2">{content.description}</p>
+                        {content.tags && content.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {content.tags.slice(0, 3).map((tag, tagIdx) => (
+                              <span key={tagIdx} className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <Link
+                href={`/poi/${poi._id.$oid}`}
+                className="block w-full py-3 px-4 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors text-center"
+              >
+                View Full Details &gt;
+              </Link>
+            </div>
+          )}
+
+          {searchResult.type === 'content' && contents.length > 0 && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 mb-2">{searchResult.name}</h2>
+                <p className="text-gray-600 text-sm mb-3">{contents.length} spots found</p>
+              </div>
+
+              <div className="space-y-2">
+                {contents.slice(0, 5).map((content, idx) => {
+                  const contentPoi = getPOIById(content.poiId.$oid)
+                  return (
+                    <div key={idx} className="p-3 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium text-gray-900 text-sm mb-1">{content.spotName}</h4>
+                      <p className="text-gray-600 text-xs line-clamp-2 mb-2">{content.description}</p>
+                      {contentPoi && (
+                        <p className="text-purple-600 text-xs mb-2">📍 {contentPoi.name}</p>
+                      )}
+                      {content.tags && content.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {content.tags.slice(0, 3).map((tag, tagIdx) => (
+                            <span key={tagIdx} className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+
+              <Link
+                href={`/contents/${encodeURIComponent(searchResult.subName || '')}`}
+                className="block w-full py-3 px-4 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors text-center"
+              >
+                View All Spots &gt;
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     )
   }
