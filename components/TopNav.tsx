@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import AuthButton from './AuthButton'
 import { useSidebar } from './SidebarContext'
@@ -137,12 +137,15 @@ export default function TopNav({
     return [...relatedSearches, ...recommendedResults]
   }, [relatedSearches, recommendedResults])
 
-  // 외부 클릭 시 포커스 해제
+  // 외부 클릭 시 포커스 해제 (단, 검색어가 있으면 유지하지 않음)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsFocused(false)
-        setSelectedIndex(-1)
+        // 검색어가 없을 때만 포커스 해제
+        if (!searchQuery.trim()) {
+          setIsFocused(false)
+          setSelectedIndex(-1)
+        }
       }
     }
 
@@ -152,9 +155,9 @@ export default function TopNav({
         document.removeEventListener('mousedown', handleClickOutside)
       }
     }
-  }, [isFocused])
+  }, [isFocused, searchQuery])
 
-  const handleSearchSelect = (result: SearchResult) => {
+  const handleSearchSelect = useCallback((result: SearchResult) => {
     if (isMapsPage) {
       // Maps 페이지일 때: 사이드 패널에 검색 결과 표시
       setSearchResult(result)
@@ -169,11 +172,11 @@ export default function TopNav({
     onSearchChange?.(result.name)
     setIsFocused(false)
     setSelectedIndex(-1)
-  }
+  }, [isMapsPage, setSearchResult, router, onSearchChange])
 
-  const handleSearchClick = (result: SearchResult) => {
+  const handleSearchClick = useCallback((result: SearchResult) => {
     handleSearchSelect(result)
-  }
+  }, [handleSearchSelect])
 
   const handleFocus = () => {
     setIsFocused(true)
@@ -257,8 +260,14 @@ export default function TopNav({
             placeholder="FIND YOUR KOREA"
             value={searchQuery}
             onChange={(e) => {
-              onSearchChange?.(e.target.value)
+              const newValue = e.target.value
+              onSearchChange?.(newValue)
               setSelectedIndex(-1)
+              // 검색어를 입력할 때 포커스 유지 (드롭다운 표시)
+              if (!isFocused) {
+                setIsFocused(true)
+              }
+              // 검색어를 지워도 SearchContext는 유지 (사이드 패널 유지)
             }}
             onFocus={handleFocus}
             className="w-full px-6 py-2 pl-12 rounded-full text-white text-sm placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-purple-300/50 transition-all"
