@@ -8,11 +8,14 @@ interface TMapProps {
   center: number[] // [longitude, latitude]
   zoom?: number
   pois?: POI[]
+  cartOrderMap?: Map<string, number> // POI ID -> cart order number
+  hasSearchResult?: boolean // Whether there's an active search result
+  showRoute?: boolean // Whether to show route lines connecting cart items
 }
 
 declare global {
   interface Window {
-    Tmapv3: {
+      Tmapv3: {
       Map: new (element: HTMLElement | string, options: {
         center: any
         width: string
@@ -27,19 +30,39 @@ declare global {
         iconSize?: any
         title?: string
       }) => any
+      Polyline: new (options: {
+        path: any[]
+        map: any
+        strokeColor?: string
+        strokeWeight?: number
+        strokeOpacity?: number
+      }) => any
       Size: new (width: number, height: number) => any
     }
   }
 }
 
-export default function TMap({ center, zoom = 16, pois = [] }: TMapProps) {
+export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new Map(), hasSearchResult = false, showRoute = false }: TMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const markersRef = useRef<any[]>([])
+  const polylineRef = useRef<any>(null)
   const { setSearchResult } = useSearchResult()
   const [isReady, setIsReady] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
+
+  // Create numbered marker icon SVG data URL
+  const createNumberedMarkerIcon = (number: number): string => {
+    const svg = `
+      <svg width="40" height="50" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 0C8.954 0 0 8.954 0 20c0 11.046 20 30 20 30s20-18.954 20-30C40 8.954 31.046 0 20 0z" fill="#62256e"/>
+        <circle cx="20" cy="20" r="14" fill="white"/>
+        <text x="20" y="26" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#62256e" text-anchor="middle">${number}</text>
+      </svg>
+    `
+    return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)))
+  }
 
   // Ensure component is mounted on client side
   useEffect(() => {
@@ -199,13 +222,23 @@ export default function TMap({ center, zoom = 16, pois = [] }: TMapProps) {
           }
           poiDataMap.set(poi._id.$oid, poiData)
 
-          // Create marker with minimal options - use default marker icon
-          // Don't set title to prevent tooltip from appearing
-          const marker = new window.Tmapv3.Marker({
+          // Determine marker icon: use numbered marker if in cart and no search result, otherwise use default
+          const cartOrder = !hasSearchResult ? cartOrderMap.get(poi._id.$oid) : undefined
+          const markerOptions: any = {
             position: new window.Tmapv3.LatLng(lat, lng),
             map: mapInstanceRef.current
-            // title is not set - tooltip will not appear
-          })
+          }
+
+          // If POI is in cart and no search result, use numbered marker
+          if (cartOrder !== undefined) {
+            const numberedIconUrl = createNumberedMarkerIcon(cartOrder)
+            markerOptions.icon = numberedIconUrl
+            markerOptions.iconSize = new window.Tmapv3.Size(40, 50)
+          }
+          // Otherwise use default marker (no icon specified)
+
+          // Create marker
+          const marker = new window.Tmapv3.Marker(markerOptions)
           
           // Store POI name in marker object for identification
           ;(marker as any).poiName = poi.name
@@ -392,7 +425,7 @@ export default function TMap({ center, zoom = 16, pois = [] }: TMapProps) {
       })
       markersRef.current = []
     }
-  }, [isReady, pois, setSearchResult])
+  }, [isReady, pois, setSearchResult, cartOrderMap, hasSearchResult])
 
   // Update map center when center prop changes
   useEffect(() => {
@@ -416,6 +449,100 @@ export default function TMap({ center, zoom = 16, pois = [] }: TMapProps) {
       console.error('Error updating map zoom:', error)
     }
   }, [zoom, isReady])
+
+  // Draw route line connecting cart items in order
+  useEffect(() => {
+    if (!isReady || !mapInstanceRef.current || !window.Tmapv3 || !showRoute || hasSearchResult) {
+      // Clear polyline if route should not be shown
+      if (polylineRef.current) {
+        try {
+          polylineRef.current.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+        polylineRef.current = null
+      }
+      return
+    }
+
+    try {
+      // Get POIs in cart order
+      const orderedPois: POI[] = []
+      const orderToPoi = new Map<number, POI>()
+      
+      pois.forEach(poi => {
+        const order = cartOrderMap.get(poi._id.$oid)
+        if (order !== undefined) {
+          orderToPoi.set(order, poi)
+        }
+      })
+
+      // Sort by order
+      const sortedOrders = Array.from(orderToPoi.keys()).sort((a, b) => a - b)
+      sortedOrders.forEach(order => {
+        const poi = orderToPoi.get(order)
+        if (poi) orderedPois.push(poi)
+      })
+
+      // Need at least 2 POIs to draw a route
+      if (orderedPois.length < 2) {
+        if (polylineRef.current) {
+          polylineRef.current.setMap(null)
+          polylineRef.current = null
+        }
+        return
+      }
+
+      // Create path array for polyline
+      const path = orderedPois
+        .filter(poi => poi.location?.coordinates && poi.location.coordinates.length >= 2)
+        .map(poi => {
+          const [lng, lat] = poi.location!.coordinates
+          return new window.Tmapv3.LatLng(lat, lng)
+        })
+
+      if (path.length < 2) {
+        if (polylineRef.current) {
+          polylineRef.current.setMap(null)
+          polylineRef.current = null
+        }
+        return
+      }
+
+      // Remove existing polyline
+      if (polylineRef.current) {
+        try {
+          polylineRef.current.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+      }
+
+      // Create new polyline
+      if (window.Tmapv3.Polyline) {
+        polylineRef.current = new window.Tmapv3.Polyline({
+          path: path,
+          map: mapInstanceRef.current,
+          strokeColor: '#62256e',
+          strokeWeight: 4,
+          strokeOpacity: 0.7
+        })
+      }
+    } catch (error) {
+      console.error('Error drawing route:', error)
+    }
+
+    return () => {
+      if (polylineRef.current) {
+        try {
+          polylineRef.current.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+        polylineRef.current = null
+      }
+    }
+  }, [isReady, showRoute, hasSearchResult, pois, cartOrderMap])
 
   // Don't render until mounted (prevents hydration mismatch)
   if (!isMounted || (!isReady && !loadError)) {

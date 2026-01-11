@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { useSidebar } from '../SidebarContext'
 import { useRoute } from '../RouteContext'
 import { useSearchResult } from '../SearchContext'
+import { useCart } from '../CartContext'
 import { usePathname, useParams } from 'next/navigation'
 import { 
   getMainContentClasses, 
@@ -24,6 +25,7 @@ export function useLayout(options: UseLayoutOptions = {}) {
   const { sidebarOpen } = useSidebar()
   const { selectedRoute } = useRoute()
   const { searchResult } = useSearchResult()
+  const { cartItems } = useCart()
   const pathname = usePathname()
   const params = useParams()
   const { 
@@ -48,6 +50,14 @@ export function useLayout(options: UseLayoutOptions = {}) {
       return 'routes'
     }
     
+    // For cart on Maps page, use routes width
+    if (isRoutesPage && !searchResult) {
+      const poiCartItems = cartItems.filter(item => item.type === 'poi')
+      if (poiCartItems.length > 0) {
+        return 'routes'
+      }
+    }
+    
     // For routes pages with 'routes' width
     if (isRoutesPage && sidePanelWidth === 'routes') {
       // Maps page exception: show route panel as an overlay (do NOT shrink map/main)
@@ -62,13 +72,21 @@ export function useLayout(options: UseLayoutOptions = {}) {
     }
     
     return sidePanelWidth
-  }, [showSidePanel, sidePanelWidth, isRoutesPage, hasRoute, sidebarOpen, pathname, searchResult])
+  }, [showSidePanel, sidePanelWidth, isRoutesPage, hasRoute, sidebarOpen, pathname, searchResult, cartItems])
 
   // Determine side panel type
   const sidePanelType = useMemo(() => {
     // For search results on Maps page
     if (isRoutesPage && searchResult) {
       return 'search'
+    }
+    
+    // For cart on Maps page (if cart has items and no search result)
+    if (isRoutesPage && !searchResult) {
+      const poiCartItems = cartItems.filter(item => item.type === 'poi')
+      if (poiCartItems.length > 0) {
+        return 'cart'
+      }
     }
     
     // For routes pages
@@ -83,7 +101,7 @@ export function useLayout(options: UseLayoutOptions = {}) {
     }
     
     return null
-  }, [isRoutesPage, sidePanelWidth, hasRoute, sidebarOpen, pathname, searchResult])
+  }, [isRoutesPage, sidePanelWidth, hasRoute, sidebarOpen, pathname, searchResult, cartItems])
 
   // Calculate main content classes
   const mainClasses = useMemo(() => {
@@ -105,7 +123,7 @@ export function useLayout(options: UseLayoutOptions = {}) {
   const showSidePanelVisible =
     !!showSidePanel &&
     sidePanelType !== null &&
-    (sidePanelType === 'route' || sidePanelType === 'search' ? true : effectiveSidePanelWidth !== 'none')
+    (sidePanelType === 'route' || sidePanelType === 'search' || sidePanelType === 'cart' ? true : effectiveSidePanelWidth !== 'none')
 
   // Get display route for side panel
   const displayRoute = selectedRoute || routeFromUrl || null

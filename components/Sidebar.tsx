@@ -3,10 +3,15 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSidebar } from './SidebarContext'
+import { useCart } from './CartContext'
 
 export default function Sidebar() {
   const pathname = usePathname()
   const { sidebarOpen, toggleSidebar } = useSidebar()
+  const { cartItems } = useCart()
+  
+  // POI 타입만 필터링하여 개수 계산
+  const poiCartCount = cartItems.filter(item => item.type === 'poi').length
   
   const navItems = [
     { name: 'Home', href: '/', icon: (
@@ -23,7 +28,7 @@ export default function Sidebar() {
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
       </svg>
-    )},
+    ), badgeCount: poiCartCount },
   ]
 
   return (
@@ -74,8 +79,13 @@ export default function Sidebar() {
                 } : {}}
                 title={!sidebarOpen ? item.name : undefined}
               >
-                <span className={`${isActive ? '' : 'text-gray-600'} [&>svg]:stroke-current`} style={isActive ? { color: '#62256e' } : {}}>
+                <span className={`${isActive ? '' : 'text-gray-600'} [&>svg]:stroke-current relative flex-shrink-0`} style={isActive ? { color: '#62256e' } : {}}>
                   {item.icon}
+                  {item.badgeCount !== undefined && item.badgeCount > 0 && (
+                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 translate-x-1/2 -translate-y-1/2">
+                      {item.badgeCount > 9 ? '9+' : item.badgeCount}
+                    </span>
+                  )}
                 </span>
                 <span className={`font-medium transition-all duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>{item.name}</span>
               </Link>

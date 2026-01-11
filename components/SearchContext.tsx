@@ -12,15 +12,18 @@ interface SearchResult {
 interface SearchContextType {
   searchResult: SearchResult | null
   setSearchResult: (result: SearchResult | null) => void
+  showRoute: boolean
+  setShowRoute: (show: boolean) => void
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined)
 
 export function SearchProvider({ children }: { children: ReactNode }) {
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null)
+  const [showRoute, setShowRoute] = useState(false)
 
   return (
-    <SearchContext.Provider value={{ searchResult, setSearchResult }}>
+    <SearchContext.Provider value={{ searchResult, setSearchResult, showRoute, setShowRoute }}>
       {children}
     </SearchContext.Provider>
   )

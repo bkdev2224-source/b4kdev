@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Route } from '@/lib/routes'
 import { useSearchResult } from './SearchContext'
+import { useCart } from './CartContext'
 import { getPOIById, getKContentsBySubName, getKContentsByPOIId, getContentCategory } from '@/lib/data'
 
 interface SidePanelItem {
@@ -14,14 +15,15 @@ interface SidePanelItem {
 }
 
 interface SidePanelContentProps {
-  type: 'home' | 'contents' | 'route' | 'search' | null
+  type: 'home' | 'contents' | 'route' | 'search' | 'cart' | null
   route?: Route | null
   routeId?: string | null
 }
 
 export function SidePanelContent({ type, route, routeId }: SidePanelContentProps) {
   const [activeTab, setActiveTab] = useState<'home' | 'reviews' | 'photos' | 'info'>('home')
-  const { searchResult, setSearchResult } = useSearchResult()
+  const { searchResult, setSearchResult, showRoute, setShowRoute } = useSearchResult()
+  const { cartItems, addToCart, removeFromCart, isInCart } = useCart()
 
   // Home page section list
   const homeSections: SidePanelItem[] = [
@@ -351,6 +353,10 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
       : searchResult.type === 'poi' && searchResult.poiId
       ? getKContentsByPOIId(searchResult.poiId)
       : []
+    
+    // Check if cart has items
+    const poiCartItems = cartItems.filter(item => item.type === 'poi')
+    const hasCartItems = poiCartItems.length > 0
 
     return (
       <div className="flex flex-col h-full">
@@ -361,70 +367,110 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
               setSearchResult(null)
             }}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            aria-label="Close"
+            aria-label={hasCartItems ? "Go Back" : "Close"}
           >
-            <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            {hasCartItems ? (
+              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            )}
           </button>
-          <h1 className="text-base font-semibold text-gray-900 flex-1 text-center px-4 truncate">
-            {searchResult.name}
-          </h1>
           <div className="w-9" />
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-4 py-6">
-          {poi && (
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900 mb-2">{poi.name}</h2>
-                <p className="text-gray-600 text-sm mb-3">{poi.address}</p>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {poi.categoryTags.map((tag, idx) => (
-                    <span key={idx} className="px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-xs">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <div className="text-sm text-gray-600 space-y-1">
-                  <p><span className="font-medium">Opening Hours:</span> {poi.openingHours}</p>
-                  <p><span className="font-medium">Entry Fee:</span> {poi.entryFee}</p>
-                  <p><span className="font-medium">Reservation Required:</span> {poi.needsReservation ? 'Yes' : 'No'}</p>
-                </div>
-              </div>
-
-              {contents.length > 0 && (
+          {poi && (() => {
+            const cartItemId = `poi-${poi._id.$oid}`
+            const inCart = isInCart(cartItemId)
+            
+            return (
+              <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Related Spots ({contents.length})</h3>
-                  <div className="space-y-2">
-                    {contents.slice(0, 5).map((content, idx) => (
-                      <div key={idx} className="p-3 bg-gray-50 rounded-lg">
-                        <h4 className="font-medium text-gray-900 text-sm mb-1">{content.spotName}</h4>
-                        <p className="text-gray-600 text-xs line-clamp-2">{content.description}</p>
-                        {content.tags && content.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {content.tags.slice(0, 3).map((tag, tagIdx) => (
-                              <span key={tagIdx} className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
+                  <div className="flex items-start justify-between mb-2">
+                    <h2 className="text-lg font-bold text-gray-900 flex-1">{poi.name}</h2>
+                    {/* 장바구니 버튼 */}
+                    <button
+                      onClick={() => {
+                        if (inCart) {
+                          removeFromCart(cartItemId)
+                        } else {
+                          addToCart({
+                            id: cartItemId,
+                            name: poi.name,
+                            type: 'poi',
+                            poiId: poi._id.$oid
+                          })
+                        }
+                      }}
+                      className={`p-2 rounded-full transition-all ${
+                        inCart 
+                          ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                      aria-label={inCart ? "Remove from Cart" : "Add to Cart"}
+                      title={inCart ? "Remove from Cart" : "Add to Cart"}
+                    >
+                      <svg className={`w-5 h-5 transition-colors ${inCart ? 'text-white' : 'text-gray-600'}`} fill={inCart ? "currentColor" : "none"} stroke={inCart ? "none" : "currentColor"} viewBox="0 0 24 24">
+                        {inCart ? (
+                          <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.15.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                        ) : (
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         )}
-                      </div>
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-3">{poi.address}</p>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {poi.categoryTags.map((tag, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-xs">
+                        {tag}
+                      </span>
                     ))}
                   </div>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <p><span className="font-medium">Opening Hours:</span> {poi.openingHours}</p>
+                    <p><span className="font-medium">Entry Fee:</span> {poi.entryFee}</p>
+                    <p><span className="font-medium">Reservation Required:</span> {poi.needsReservation ? 'Yes' : 'No'}</p>
+                  </div>
                 </div>
-              )}
 
-              <Link
-                href={`/poi/${poi._id.$oid}`}
-                className="block w-full py-3 px-4 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors text-center"
-              >
-                View Full Details &gt;
-              </Link>
-            </div>
-          )}
+                {contents.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-2">Related Spots ({contents.length})</h3>
+                    <div className="space-y-2">
+                      {contents.slice(0, 5).map((content, idx) => (
+                        <div key={idx} className="p-3 bg-gray-50 rounded-lg">
+                          <h4 className="font-medium text-gray-900 text-sm mb-1">{content.spotName}</h4>
+                          <p className="text-gray-600 text-xs line-clamp-2">{content.description}</p>
+                          {content.tags && content.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {content.tags.slice(0, 3).map((tag, tagIdx) => (
+                                <span key={tagIdx} className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <Link
+                  href={`/poi/${poi._id.$oid}`}
+                  className="block w-full py-3 px-4 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors text-center"
+                >
+                  View Full Details &gt;
+                </Link>
+              </div>
+            )
+          })()}
 
           {searchResult.type === 'content' && contents.length > 0 && (
             <div className="space-y-4">
@@ -479,6 +525,111 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
             </div>
           )}
         </div>
+      </div>
+    )
+  }
+
+  // Render cart list
+  if (type === 'cart') {
+    // POI 타입만 필터링
+    const poiCartItems = cartItems.filter(item => item.type === 'poi')
+    
+    return (
+      <div className="flex flex-col h-full">
+        {/* Top Bar */}
+        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
+          <h1 className="text-base font-semibold text-gray-900 flex-1 text-center px-4 truncate">
+            Cart ({poiCartItems.length})
+          </h1>
+        </div>
+
+        {/* Cart Items List */}
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          {poiCartItems.length === 0 ? (
+            <div className="text-center py-12">
+              <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <p className="text-gray-500 text-sm">Your cart is empty</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {poiCartItems.map((item) => {
+                const poi = item.poiId ? getPOIById(item.poiId) : null
+                if (!poi) return null
+                
+                return (
+                  <div
+                    key={item.id}
+                    className="bg-white border border-gray-200 rounded-lg p-4 hover:border-purple-400 transition-all"
+                  >
+                    <button
+                      onClick={() => {
+                        setSearchResult({
+                          name: poi.name,
+                          type: 'poi',
+                          poiId: poi._id.$oid
+                        })
+                      }}
+                      className="w-full text-left"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-1">{poi.name}</h3>
+                          <p className="text-gray-600 text-sm mb-2">{poi.address}</p>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {poi.categoryTags.slice(0, 3).map((tag, idx) => (
+                              <span key={idx} className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            removeFromCart(item.id)
+                          }}
+                          className="ml-2 p-2 text-gray-400 hover:text-red-500 transition-colors"
+                          aria-label="Remove from Cart"
+                          title="Remove from Cart"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </button>
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                      <Link
+                        href={`/poi/${poi._id.$oid}`}
+                        className="text-purple-600 text-sm font-medium hover:text-purple-700 transition-colors"
+                      >
+                        View Details &gt;
+                      </Link>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Create Route Button */}
+        {poiCartItems.length > 1 && (
+          <div className="border-t border-gray-200 px-4 py-4 flex-shrink-0">
+            <button
+              onClick={() => setShowRoute(!showRoute)}
+              className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+                showRoute
+                  ? 'bg-purple-600 text-white hover:bg-purple-700'
+                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+              }`}
+            >
+              {showRoute ? 'Hide Route' : 'Create Route'}
+            </button>
+          </div>
+        )}
       </div>
     )
   }
