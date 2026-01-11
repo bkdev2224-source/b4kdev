@@ -148,12 +148,27 @@ export default function POIGrid({ pois, searchQuery: externalSearchQuery = '', i
   // Filtered POIs
   const filteredPois = useMemo(() => {
     return pois.filter(poi => {
-      // Search query filter - search by subName (only when actual search query exists)
+      // Search query filter - search by POI name, address, tags, and subName
       // Category names are handled by category filtering, so search filter only uses actual search query
-      const matchesSearch = actualSearchQuery === '' || 
-        getKContentsByPOIId(poi._id.$oid).some(content => 
-          content.subName && content.subName.toLowerCase().includes(actualSearchQuery.toLowerCase())
+      const matchesSearch = actualSearchQuery === '' || (() => {
+        const query = actualSearchQuery.toLowerCase()
+        
+        // Check POI name
+        const nameMatch = poi.name.toLowerCase().includes(query)
+        
+        // Check POI address
+        const addressMatch = poi.address.toLowerCase().includes(query)
+        
+        // Check POI category tags
+        const tagMatch = poi.categoryTags.some(tag => tag.toLowerCase().includes(query))
+        
+        // Check subName in KContents
+        const subNameMatch = getKContentsByPOIId(poi._id.$oid).some(content => 
+          content.subName && content.subName.toLowerCase().includes(query)
         )
+        
+        return nameMatch || addressMatch || tagMatch || subNameMatch
+      })()
 
       // Hashtag filter
       const matchesHashtag = selectedHashtags.length === 0 || 

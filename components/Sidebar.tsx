@@ -59,9 +59,15 @@ export default function Sidebar() {
 
         <nav className="flex-1 overflow-y-auto space-y-2 px-4">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || 
-              (item.href === '/' && pathname === '/') ||
-              (item.href !== '/' && pathname?.startsWith(item.href))
+            // Contents의 경우 정확히 /contents일 때만 활성화 (검색으로 /contents/[subName]으로 이동했을 때는 비활성화)
+            let isActive: boolean
+            if (item.href === '/contents') {
+              isActive = pathname === '/contents'
+            } else {
+              isActive = pathname === item.href || 
+                (item.href === '/' && pathname === '/') ||
+                (item.href !== '/' && pathname?.startsWith(item.href))
+            }
             
             return (
               <Link

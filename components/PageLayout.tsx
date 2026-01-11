@@ -4,10 +4,8 @@ import { ReactNode } from 'react'
 import Sidebar from './Sidebar'
 import SidePanel from './SidePanel'
 import TopNav from './TopNav'
-import POIGrid from './POIGrid'
 import { useSearch } from './hooks/useSearch'
 import { useLayout } from './hooks/useLayout'
-import { getAllPOIs } from '@/lib/data'
 
 interface PageLayoutProps {
   children: ReactNode
@@ -33,19 +31,6 @@ export default function PageLayout({
     sidePanelWidth,
   })
 
-  // Default search content (POIGrid)
-  const defaultSearchContent = (
-    <div className="w-full pb-8">
-      <POIGrid
-        pois={getAllPOIs()}
-        searchQuery={search.searchQuery}
-        isSearchFocused={search.isSearchFocused}
-        onSearchChange={search.handleSearchChange}
-        onBack={search.handleSearchBack}
-      />
-    </div>
-  )
-
   return (
     <div className="min-h-screen bg-white">
       <Sidebar />
@@ -65,11 +50,7 @@ export default function PageLayout({
       />
 
       <main className={`pt-16 transition-all duration-300 overflow-x-hidden ${layout.mainClasses} ${className}`}>
-        {search.isSearchMode ? (
-          searchModeContent || defaultSearchContent
-        ) : (
-          children
-        )}
+        {children}
       </main>
     </div>
   )

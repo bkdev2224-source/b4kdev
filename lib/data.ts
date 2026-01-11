@@ -110,3 +110,15 @@ export function getAllPackages(): TravelPackage[] {
 export function getPackageById(packageId: string): TravelPackage | undefined {
   return (packagesData as TravelPackage[]).find((pkg) => pkg._id.$oid === packageId)
 }
+
+// subName으로 KContents 찾기
+export function getKContentsBySubName(subName: string): KContent[] {
+  const allKContents = getAllKContents()
+  return allKContents.filter(content => content.subName === subName)
+}
+
+// subName이 존재하는지 확인
+export function hasSubName(subName: string): boolean {
+  const allKContents = getAllKContents()
+  return allKContents.some(content => content.subName === subName)
+}

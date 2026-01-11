@@ -1,0 +1,184 @@
+"use client"
+
+import { useRouter, useParams } from 'next/navigation'
+import PageLayout from '@/components/PageLayout'
+import { getKContentsBySubName, getPOIById, getContentCategory, KContent } from '@/lib/data'
+import Link from 'next/link'
+
+export default function ContentDetailPage() {
+  const router = useRouter()
+  const params = useParams()
+  const subName = params?.subName as string || ''
+  
+  const contents = getKContentsBySubName(subName)
+  
+  if (contents.length === 0) {
+    return (
+      <PageLayout showSidePanel={false}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Content Not Found</h1>
+            <button
+              onClick={() => router.push('/')}
+              className="text-purple-600 hover:text-purple-700 transition-colors"
+            >
+              Return to Home
+            </button>
+          </div>
+        </div>
+      </PageLayout>
+    )
+  }
+
+  // 첫 번째 content의 정보 사용
+  const firstContent = contents[0]
+  const poi = getPOIById(firstContent.poiId.$oid)
+  const category = getContentCategory(firstContent)
+
+  // 카테고리별 아이콘
+  const categoryIcons = {
+    kpop: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+      </svg>
+    ),
+    kbeauty: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+      </svg>
+    ),
+    kfood: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
+      </svg>
+    ),
+    kfestival: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+      </svg>
+    ),
+  }
+
+  const categoryLabels = {
+    kpop: 'K-Pop',
+    kbeauty: 'K-Beauty',
+    kfood: 'K-Food',
+    kfestival: 'K-Festival',
+  }
+
+  return (
+    <PageLayout showSidePanel={false}>
+      {/* Banner image */}
+      <div className="relative h-96">
+        <img
+          src={`https://picsum.photos/seed/${subName}/1920/600`}
+          alt={subName}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 to-transparent">
+          <div className="container mx-auto">
+            <div className="flex items-center gap-3 mb-4">
+              {category && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white">
+                  {categoryIcons[category]}
+                  <span className="text-sm font-medium">{categoryLabels[category]}</span>
+                </div>
+              )}
+            </div>
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-2xl">{subName}</h1>
+            <div className="flex flex-wrap items-center gap-3 text-white/90 text-sm md:text-base">
+              <span>{contents.length} spots</span>
+              {poi && (
+                <>
+                  <span className="text-white/70">·</span>
+                  <Link 
+                    href={`/poi/${poi._id.$oid}`}
+                    className="hover:text-white underline transition-colors"
+                  >
+                    {poi.name}
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content area */}
+      <div className="container mx-auto px-6 pt-8 pb-16">
+        {/* Contents section */}
+        {contents.length > 0 && (
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center mb-4">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500 to-purple-500"></div>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 px-8 flex items-center gap-3">
+                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Related Spots
+                  </h2>
+                  <div className="flex-1 h-px bg-gradient-to-l from-transparent via-purple-500 to-purple-500"></div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {contents.map((content, index) => {
+                  const contentPoi = getPOIById(content.poiId.$oid)
+                  return (
+                    <Link
+                      key={index}
+                      href={`/poi/${content.poiId.$oid}`}
+                      className="group"
+                    >
+                      <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-purple-400 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-purple-500/20 h-full">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">{content.spotName}</h3>
+                            {content.subName && (
+                              <span className="inline-block px-3 py-1 bg-purple-100 border border-purple-300 rounded-full text-purple-700 text-sm font-medium mb-3">
+                                #{content.subName}
+                              </span>
+                            )}
+                          </div>
+                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                            <img
+                              src={`https://picsum.photos/seed/${content.poiId.$oid}-${content.spotName}/100/100`}
+                              alt={content.spotName}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        </div>
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                          {content.description}
+                        </p>
+                        {contentPoi && (
+                          <p className="text-purple-600 text-xs mb-2">
+                            📍 {contentPoi.name}
+                          </p>
+                        )}
+                        {content.tags && content.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {content.tags.map((tag, tagIdx) => (
+                              <span
+                                key={tagIdx}
+                                className="px-2 py-1 bg-purple-50 border border-purple-200 rounded-md text-purple-700 text-xs"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+    </PageLayout>
+  )
+}
+
