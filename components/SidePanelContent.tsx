@@ -434,10 +434,23 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
               </div>
 
               <div className="space-y-2">
-                {contents.slice(0, 5).map((content, idx) => {
+                {contents.map((content, idx) => {
                   const contentPoi = getPOIById(content.poiId.$oid)
                   return (
-                    <div key={idx} className="p-3 bg-gray-50 rounded-lg">
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        if (contentPoi) {
+                          // POI 검색 결과로 변경하여 상세 정보 표시
+                          setSearchResult({
+                            name: contentPoi.name,
+                            type: 'poi',
+                            poiId: contentPoi._id.$oid
+                          })
+                        }
+                      }}
+                      className="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
                       <h4 className="font-medium text-gray-900 text-sm mb-1">{content.spotName}</h4>
                       <p className="text-gray-600 text-xs line-clamp-2 mb-2">{content.description}</p>
                       {contentPoi && (
@@ -452,7 +465,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                           ))}
                         </div>
                       )}
-                    </div>
+                    </button>
                   )
                 })}
               </div>

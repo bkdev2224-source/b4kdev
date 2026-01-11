@@ -54,3 +54,21 @@ a:hover {
   background-color: rgba(98, 37, 110, 0.1);
 }
 
+/* Hide all tooltips in map area */
+#map_div [title] {
+  pointer-events: auto;
+}
+
+/* Prevent browser tooltip from showing */
+#map_div [title]:hover::after,
+#map_div [title]::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Additional CSS to hide native browser tooltips */
+#map_div * {
+  -webkit-tooltip: none;
+  tooltip: none;
+}
+

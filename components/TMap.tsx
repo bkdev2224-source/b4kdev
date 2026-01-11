@@ -1,10 +1,13 @@
 "use client"
 
 import { useEffect, useRef, useState } from 'react'
+import { POI } from '@/lib/data'
+import { useSearchResult } from './SearchContext'
 
 interface TMapProps {
   center: number[] // [longitude, latitude]
   zoom?: number
+  pois?: POI[]
 }
 
 declare global {
@@ -17,13 +20,23 @@ declare global {
         zoom: number
       }) => any
       LatLng: new (lat: number, lng: number) => any
+      Marker: new (options: {
+        position: any
+        map: any
+        icon?: string
+        iconSize?: any
+        title?: string
+      }) => any
+      Size: new (width: number, height: number) => any
     }
   }
 }
 
-export default function TMap({ center, zoom = 16 }: TMapProps) {
+export default function TMap({ center, zoom = 16, pois = [] }: TMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
+  const markersRef = useRef<any[]>([])
+  const { setSearchResult } = useSearchResult()
   const [isReady, setIsReady] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -108,6 +121,16 @@ export default function TMap({ center, zoom = 16 }: TMapProps) {
     }
 
     return () => {
+      // Cleanup markers
+      markersRef.current.forEach(marker => {
+        try {
+          marker.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+      })
+      markersRef.current = []
+
       // Cleanup on unmount
       if (mapInstanceRef.current) {
         try {
@@ -119,6 +142,257 @@ export default function TMap({ center, zoom = 16 }: TMapProps) {
       }
     }
   }, [isReady, isMounted, center, zoom])
+
+  // Add POI markers to map
+  useEffect(() => {
+    if (!isReady || !mapInstanceRef.current || !window.Tmapv3 || pois.length === 0) return
+
+    // Clear existing markers
+    markersRef.current.forEach(marker => {
+      try {
+        marker.setMap(null)
+      } catch (error) {
+        // Ignore errors
+      }
+    })
+    markersRef.current = []
+
+    try {
+      // Check if Marker is available
+      if (!window.Tmapv3.Marker) {
+        console.error('Tmapv3.Marker is not available')
+        return
+      }
+
+      // Helper function to calculate distance between two coordinates
+      const getDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+        const R = 6371e3 // Earth's radius in meters
+        const φ1 = lat1 * Math.PI / 180
+        const φ2 = lat2 * Math.PI / 180
+        const Δφ = (lat2 - lat1) * Math.PI / 180
+        const Δλ = (lng2 - lng1) * Math.PI / 180
+
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2)
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+
+        return R * c
+      }
+
+      // Store POI data for click handlers
+      const poiDataMap = new Map<string, { name: string; poiId: string }>()
+
+      // Add markers for each POI
+      pois.forEach(poi => {
+        if (!poi.location?.coordinates || poi.location.coordinates.length < 2) return
+
+        // POI coordinates are [longitude, latitude] (GeoJSON format)
+        // TMapv3.LatLng expects (latitude, longitude)
+        const [lng, lat] = poi.location.coordinates
+
+        try {
+          // Store POI data
+          const poiData = {
+            name: poi.name,
+            poiId: poi._id.$oid
+          }
+          poiDataMap.set(poi._id.$oid, poiData)
+
+          // Create marker with minimal options - use default marker icon
+          // Don't set title to prevent tooltip from appearing
+          const marker = new window.Tmapv3.Marker({
+            position: new window.Tmapv3.LatLng(lat, lng),
+            map: mapInstanceRef.current
+            // title is not set - tooltip will not appear
+          })
+          
+          // Store POI name in marker object for identification
+          ;(marker as any).poiName = poi.name
+
+          // Store marker with POI data
+          ;(marker as any).poiData = poiData
+          markersRef.current.push(marker)
+        } catch (markerError) {
+          console.error(`Error creating marker for ${poi.name}:`, markerError)
+        }
+      })
+
+
+      // Function to attach click events to marker DOM elements
+      const attachMarkerClickEvents = () => {
+        if (!mapRef.current) return
+
+        // Instead of finding by title, attach click handlers directly to marker objects
+        // and then find their DOM elements
+        markersRef.current.forEach((marker: any) => {
+          const poiName = (marker as any).poiName
+          if (!poiName) return
+          
+          // Skip if already has click handler
+          if ((marker as any).__domClickHandlerAdded) return
+          
+          // Try to find DOM element for this marker
+          // TMapv3 markers are typically rendered as images or divs
+          setTimeout(() => {
+            if (!mapRef.current) return
+            
+            // Find all potential marker elements
+            const allElements = mapRef.current.querySelectorAll('img, div')
+            allElements.forEach((element: Element) => {
+              // Skip if already processed
+              if ((element as any).__poiClickHandler) return
+              
+              // Check if this element is near the marker's position
+              // We'll use a simpler approach: attach click to marker object directly
+            })
+          }, 100)
+        })
+
+        // Alternative approach: attach click to map and find nearest marker
+        // But we already tried that... Let's use marker objects directly
+        markersRef.current.forEach((marker: any, index: number) => {
+          if ((marker as any).__clickHandlerAdded) return
+          
+          const poiData = (marker as any).poiData
+          if (!poiData) return
+
+          // Try to add click listener to marker object
+          if (marker && typeof marker.addListener === 'function') {
+            try {
+              marker.addListener('click', () => {
+                console.log('Marker clicked:', poiData.name)
+                setSearchResult({
+                  name: poiData.name,
+                  type: 'poi',
+                  poiId: poiData.poiId
+                })
+              })
+              ;(marker as any).__clickHandlerAdded = true
+            } catch (e) {
+              console.warn('Could not add listener to marker:', e)
+            }
+          } else if (marker && typeof marker.on === 'function') {
+            try {
+              marker.on('click', () => {
+                console.log('Marker clicked:', poiData.name)
+                setSearchResult({
+                  name: poiData.name,
+                  type: 'poi',
+                  poiId: poiData.poiId
+                })
+              })
+              ;(marker as any).__clickHandlerAdded = true
+            } catch (e) {
+              console.warn('Could not add on handler to marker:', e)
+            }
+          }
+        })
+
+        // Also try DOM-based approach for elements that might be markers
+        setTimeout(() => {
+          if (!mapRef.current) return
+          
+          // Find elements that might be marker images or containers
+          const markerElements = mapRef.current.querySelectorAll('img[src*="marker"], img[src*="pin"], div[style*="position: absolute"]')
+          
+          markerElements.forEach((element: Element) => {
+            if ((element as any).__poiClickHandler) return
+
+            // Try to match by position - find nearest POI
+            const rect = element.getBoundingClientRect()
+            const mapRect = mapRef.current!.getBoundingClientRect()
+            
+            // Add click handler that removes title
+            const title = element.getAttribute('title')
+            if (title) {
+              const matchingPoi = pois.find(p => p.name === title)
+              if (matchingPoi) {
+                const poiData = poiDataMap.get(matchingPoi._id.$oid)
+                if (poiData) {
+                  const clickHandler = (e: Event) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    console.log('Marker clicked (DOM):', poiData.name)
+                    setSearchResult({
+                      name: poiData.name,
+                      type: 'poi',
+                      poiId: poiData.poiId
+                    })
+                  }
+                  
+                  element.addEventListener('click', clickHandler, true)
+                  ;(element as any).__poiClickHandler = true
+                }
+              }
+            }
+          })
+        }, 500)
+      }
+
+      // Try to attach events immediately and after delays
+      attachMarkerClickEvents()
+      setTimeout(attachMarkerClickEvents, 300)
+      setTimeout(attachMarkerClickEvents, 1000)
+
+      // Add map click handler (optional - for future use)
+      const handleMapClick = () => {
+        // Can be used for other purposes if needed
+      }
+
+      let mapClickListener: any = null
+      if (mapInstanceRef.current) {
+        if (typeof mapInstanceRef.current.addListener === 'function') {
+          mapClickListener = mapInstanceRef.current.addListener('click', handleMapClick)
+        } else if (typeof mapInstanceRef.current.on === 'function') {
+          mapInstanceRef.current.on('click', handleMapClick)
+          mapClickListener = true
+        }
+      }
+
+      // Use MutationObserver to catch dynamically added markers
+      const observer = new MutationObserver(() => {
+        attachMarkerClickEvents()
+      })
+
+      if (mapRef.current) {
+        observer.observe(mapRef.current, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['title']
+        })
+      }
+
+      // Cleanup function
+      return () => {
+        observer.disconnect()
+        if (mapClickListener && mapInstanceRef.current) {
+          if (typeof mapInstanceRef.current.removeListener === 'function') {
+            mapInstanceRef.current.removeListener(mapClickListener)
+          } else if (typeof mapInstanceRef.current.off === 'function') {
+            mapInstanceRef.current.off('click', handleMapClick)
+          }
+        }
+      }
+
+      console.log(`Added ${markersRef.current.length} POI markers to map`)
+    } catch (error) {
+      console.error('Error adding POI markers:', error)
+    }
+
+    return () => {
+      // Cleanup markers when POIs change
+      markersRef.current.forEach(marker => {
+        try {
+          marker.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+      })
+      markersRef.current = []
+    }
+  }, [isReady, pois, setSearchResult])
 
   // Update map center when center prop changes
   useEffect(() => {
