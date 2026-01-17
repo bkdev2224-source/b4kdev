@@ -166,6 +166,154 @@ export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new 
     }
   }, [isReady, isMounted, center, zoom])
 
+  // Draw map route line connecting cart items in order
+  // This should run FIRST to ensure polyline is drawn before markers
+  // Check POI existence and cart order before drawing
+  useEffect(() => {
+    // Only check if map is ready and showMapRoute is true
+    // Don't block route drawing when hasSearchResult is true - cart route should always be visible
+    if (!isReady || !mapInstanceRef.current || !window.Tmapv3 || !showMapRoute) {
+      // Clear polyline if map route should not be shown
+      if (polylineRef.current) {
+        try {
+          polylineRef.current.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+        polylineRef.current = null
+      }
+      return
+    }
+
+    // First, check if there are POIs in cart
+    if (!cartOrderMap || cartOrderMap.size === 0) {
+      // No cart items, clear polyline
+      if (polylineRef.current) {
+        try {
+          polylineRef.current.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+        polylineRef.current = null
+      }
+      return
+    }
+
+    // Check if there are POIs available
+    if (!pois || pois.length === 0) {
+      // No POIs available, clear polyline
+      if (polylineRef.current) {
+        try {
+          polylineRef.current.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+        polylineRef.current = null
+      }
+      return
+    }
+
+    try {
+      // Get POIs in cart order - verify POI existence
+      // Use cartOrderMap to get all cart POIs, regardless of pois prop
+      const orderedPois: POI[] = []
+      const orderToPoi = new Map<number, POI>()
+      
+      // Get all POIs that are in cart (from cartOrderMap)
+      // This ensures polyline is drawn even if pois prop doesn't include all cart POIs
+      pois.forEach(poi => {
+        // Verify POI has valid location data
+        if (!poi.location?.coordinates || poi.location.coordinates.length < 2) {
+          return
+        }
+        
+        const order = cartOrderMap.get(poi._id.$oid)
+        if (order !== undefined) {
+          orderToPoi.set(order, poi)
+        }
+      })
+
+      // Sort by order
+      const sortedOrders = Array.from(orderToPoi.keys()).sort((a, b) => a - b)
+      sortedOrders.forEach(order => {
+        const poi = orderToPoi.get(order)
+        if (poi) orderedPois.push(poi)
+      })
+      
+      // Debug: log if we have cart POIs but no ordered POIs
+      if (cartOrderMap.size >= 2 && orderedPois.length < 2) {
+        console.warn('Cart has POIs but polyline cannot be drawn. Cart order map size:', cartOrderMap.size, 'Ordered POIs:', orderedPois.length, 'Available POIs:', pois.length)
+      }
+
+      // Need at least 2 POIs to draw a route
+      if (orderedPois.length < 2) {
+        if (polylineRef.current) {
+          try {
+            polylineRef.current.setMap(null)
+          } catch (error) {
+            // Ignore errors
+          }
+          polylineRef.current = null
+        }
+        return
+      }
+
+      // Create path array for polyline
+      const path = orderedPois
+        .filter(poi => poi.location?.coordinates && poi.location.coordinates.length >= 2)
+        .map(poi => {
+          const [lng, lat] = poi.location!.coordinates
+          return new window.Tmapv3.LatLng(lat, lng)
+        })
+
+      if (path.length < 2) {
+        if (polylineRef.current) {
+          try {
+            polylineRef.current.setMap(null)
+          } catch (error) {
+            // Ignore errors
+          }
+          polylineRef.current = null
+        }
+        return
+      }
+
+      // Remove existing polyline
+      if (polylineRef.current) {
+        try {
+          polylineRef.current.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+      }
+
+      // Create new polyline
+      if (window.Tmapv3.Polyline) {
+        polylineRef.current = new window.Tmapv3.Polyline({
+          path: path,
+          map: mapInstanceRef.current,
+          strokeColor: '#62256e',
+          strokeWeight: 4,
+          strokeOpacity: 0.7
+        })
+        console.log(`Map route polyline drawn with ${path.length} points`)
+      }
+    } catch (error) {
+      console.error('Error drawing map route:', error)
+    }
+
+    return () => {
+      if (polylineRef.current) {
+        try {
+          polylineRef.current.setMap(null)
+        } catch (error) {
+          // Ignore errors
+        }
+        polylineRef.current = null
+      }
+    }
+  }, [isReady, showMapRoute, pois, cartOrderMap])
+
   // Add POI markers to map
   useEffect(() => {
     if (!isReady || !mapInstanceRef.current || !window.Tmapv3 || pois.length === 0) return
@@ -449,100 +597,6 @@ export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new 
       console.error('Error updating map zoom:', error)
     }
   }, [zoom, isReady])
-
-  // Draw map route line connecting cart items in order
-  useEffect(() => {
-    if (!isReady || !mapInstanceRef.current || !window.Tmapv3 || !showMapRoute || hasSearchResult) {
-      // Clear polyline if map route should not be shown
-      if (polylineRef.current) {
-        try {
-          polylineRef.current.setMap(null)
-        } catch (error) {
-          // Ignore errors
-        }
-        polylineRef.current = null
-      }
-      return
-    }
-
-    try {
-      // Get POIs in cart order
-      const orderedPois: POI[] = []
-      const orderToPoi = new Map<number, POI>()
-      
-      pois.forEach(poi => {
-        const order = cartOrderMap.get(poi._id.$oid)
-        if (order !== undefined) {
-          orderToPoi.set(order, poi)
-        }
-      })
-
-      // Sort by order
-      const sortedOrders = Array.from(orderToPoi.keys()).sort((a, b) => a - b)
-      sortedOrders.forEach(order => {
-        const poi = orderToPoi.get(order)
-        if (poi) orderedPois.push(poi)
-      })
-
-      // Need at least 2 POIs to draw a route
-      if (orderedPois.length < 2) {
-        if (polylineRef.current) {
-          polylineRef.current.setMap(null)
-          polylineRef.current = null
-        }
-        return
-      }
-
-      // Create path array for polyline
-      const path = orderedPois
-        .filter(poi => poi.location?.coordinates && poi.location.coordinates.length >= 2)
-        .map(poi => {
-          const [lng, lat] = poi.location!.coordinates
-          return new window.Tmapv3.LatLng(lat, lng)
-        })
-
-      if (path.length < 2) {
-        if (polylineRef.current) {
-          polylineRef.current.setMap(null)
-          polylineRef.current = null
-        }
-        return
-      }
-
-      // Remove existing polyline
-      if (polylineRef.current) {
-        try {
-          polylineRef.current.setMap(null)
-        } catch (error) {
-          // Ignore errors
-        }
-      }
-
-      // Create new polyline
-      if (window.Tmapv3.Polyline) {
-        polylineRef.current = new window.Tmapv3.Polyline({
-          path: path,
-          map: mapInstanceRef.current,
-          strokeColor: '#62256e',
-          strokeWeight: 4,
-          strokeOpacity: 0.7
-        })
-      }
-    } catch (error) {
-      console.error('Error drawing map route:', error)
-    }
-
-    return () => {
-      if (polylineRef.current) {
-        try {
-          polylineRef.current.setMap(null)
-        } catch (error) {
-          // Ignore errors
-        }
-        polylineRef.current = null
-      }
-    }
-  }, [isReady, showMapRoute, hasSearchResult, pois, cartOrderMap])
 
   // Don't render until mounted (prevents hydration mismatch)
   if (!isMounted || (!isReady && !loadError)) {
