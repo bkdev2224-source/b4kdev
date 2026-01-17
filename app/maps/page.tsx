@@ -16,7 +16,7 @@ export default function MapsPage() {
   const allRoutes = getAllRoutes()
   const { selectedRoute, setSelectedRoute } = useRoute()
   const { searchResult } = useSearchResult()
-  const { cartItems } = useCart()
+  const { cartItems, removeFromCart } = useCart()
   const { sidebarOpen } = useSidebar()
   const layout = useLayout({ showSidePanel: true, sidePanelWidth: 'routes' })
   const allPOIs = getAllPOIs()
@@ -37,26 +37,29 @@ export default function MapsPage() {
       ? LAYOUT_CONSTANTS.SIDEBAR_OPEN_WIDTH 
       : LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH
     
-    // Calculate side panel width (if visible)
-    const hasSidePanel = layout.sidePanelType === 'search' || layout.sidePanelType === 'route'
+    // Check if side panel is actually visible using layout.showSidePanel
+    // This is the most accurate way to determine if side panel is shown
+    const hasSidePanel = layout.showSidePanel && (layout.sidePanelType === 'search' || layout.sidePanelType === 'route')
     const sidePanelWidth = hasSidePanel ? LAYOUT_CONSTANTS.SIDE_PANEL_ROUTES_WIDTH : '0px'
     
-    // Left position: start after sidebar + side panel, then add 10% padding of available width
-    // Available width = 100vw - sidebar - side panel (use vw for viewport width)
+    // Calculate left position: start after sidebar + side panel, then add 10% padding
+    // Available width = 100% - sidebar - side panel
     // Left = sidebar + sidePanel + 10% of available width
     const left = hasSidePanel
-      ? `calc(${sidebarWidth} + ${sidePanelWidth} + (100vw - ${sidebarWidth} - ${sidePanelWidth}) * 0.1)`
-      : `calc(${sidebarWidth} + (100vw - ${sidebarWidth}) * 0.1)`
+      ? `calc(${sidebarWidth} + ${sidePanelWidth} + (100% - ${sidebarWidth} - ${sidePanelWidth}) * 0.1)`
+      : `calc(${sidebarWidth} + (100% - ${sidebarWidth}) * 0.1)`
     
-    // Width: 80% of available map area (with 10% padding on each side)
-    // Available width = 100vw - sidebar - side panel
-    // Width = 80% of available = 0.8 * (100vw - sidebar - sidePanel)
-    const width = hasSidePanel
-      ? `calc((100vw - ${sidebarWidth} - ${sidePanelWidth}) * 0.8)`
-      : `calc((100vw - ${sidebarWidth}) * 0.8)`
+    // Calculate right position: 10% padding from right edge (same as left padding)
+    // Right = 10% of available width (same calculation as left)
+    const right = hasSidePanel
+      ? `calc((100% - ${sidebarWidth} - ${sidePanelWidth}) * 0.1)`
+      : `calc((100% - ${sidebarWidth}) * 0.1)`
     
-    return { left, width }
-  }, [sidebarOpen, layout.sidePanelType])
+    // Max width to prevent unlimited expansion
+    const maxWidth = '1200px'
+    
+    return { left, right, maxWidth }
+  }, [sidebarOpen, layout.showSidePanel, layout.sidePanelType])
 
   // Get POIs to display based on search result or cart
   // ALWAYS include cart POIs for map route drawing - this is critical for polyline
@@ -162,9 +165,13 @@ export default function MapsPage() {
       .map(item => {
         if (!item.poiId) return null
         const poi = getPOIById(item.poiId)
-        return poi ? { poi, order: cartOrderMap.get(item.poiId) || 0 } : null
+        return poi ? { 
+          poi, 
+          order: cartOrderMap.get(item.poiId) || 0,
+          cartItemId: item.id // Include cart item ID for deletion
+        } : null
       })
-      .filter((item): item is { poi: NonNullable<ReturnType<typeof getPOIById>>; order: number } => item !== null)
+      .filter((item): item is { poi: NonNullable<ReturnType<typeof getPOIById>>; order: number; cartItemId: string } => item !== null)
       .sort((a, b) => a.order - b.order)
   }, [cartItems, cartOrderMap, allPOIs])
 
@@ -186,6 +193,22 @@ export default function MapsPage() {
     if (scrollElement) {
       scrollElement.addEventListener('scroll', checkScrollButtons)
       window.addEventListener('resize', checkScrollButtons)
+      
+      // Center scroll position when items change (add/remove)
+      // Only center if content is smaller than container
+      const centerScroll = () => {
+        if (scrollElement.scrollWidth <= scrollElement.clientWidth) {
+          scrollElement.scrollLeft = 0
+        } else {
+          // If content is larger, try to center the scroll
+          const maxScroll = scrollElement.scrollWidth - scrollElement.clientWidth
+          scrollElement.scrollLeft = maxScroll / 2
+        }
+      }
+      
+      // Small delay to ensure DOM is updated
+      setTimeout(centerScroll, 0)
+      
       return () => {
         scrollElement.removeEventListener('scroll', checkScrollButtons)
         window.removeEventListener('resize', checkScrollButtons)
@@ -216,16 +239,17 @@ export default function MapsPage() {
             className="fixed bottom-6 z-10 flex justify-center items-center pointer-events-none"
             style={{ 
               left: bottomCartPosition.left,
-              width: bottomCartPosition.width,
-              maxWidth: '1200px' // Limit maximum width to prevent unlimited expansion
+              right: bottomCartPosition.right,
+              maxWidth: bottomCartPosition.maxWidth,
+              margin: '0 auto'
             }}
           >
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-200/50 px-4 py-3 pointer-events-auto relative w-full max-w-full">
+            <div className="pointer-events-auto relative w-full flex justify-center" style={{ paddingLeft: canScrollLeft ? '3rem' : '1rem', paddingRight: canScrollRight ? '3rem' : '1rem' }}>
               {/* Left scroll button */}
               {canScrollLeft && (
                 <button
                   onClick={() => scrollCart('left')}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg border border-gray-200 transition-all"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg border border-gray-200 transition-all"
                   aria-label="Scroll left"
                 >
                   <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +262,7 @@ export default function MapsPage() {
               {canScrollRight && (
                 <button
                   onClick={() => scrollCart('right')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg border border-gray-200 transition-all"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg border border-gray-200 transition-all"
                   aria-label="Scroll right"
                 >
                   <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -249,8 +273,14 @@ export default function MapsPage() {
 
               <div 
                 ref={cartScrollRef}
-                className="flex gap-4 overflow-x-auto scrollbar-hide w-full"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="flex items-center gap-3 overflow-x-auto scrollbar-hide w-full"
+                style={{ 
+                  scrollbarWidth: 'none', 
+                  msOverflowStyle: 'none',
+                  justifyContent: 'center',
+                  paddingLeft: '1rem',
+                  paddingRight: '1rem'
+                }}
                 onScroll={checkScrollButtons}
               >
                 <style jsx>{`
@@ -258,18 +288,39 @@ export default function MapsPage() {
                     display: none;
                   }
                 `}</style>
-                {orderedCartPOIs.map(({ poi, order }) => (
-                  <div
-                    key={poi._id.$oid}
-                    className="flex-shrink-0 flex items-center gap-3 rounded-lg p-3 min-w-[280px] transition-colors"
-                  >
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">
-                      {order}
+                {orderedCartPOIs.map(({ poi, order, cartItemId }, index) => (
+                  <div key={poi._id.$oid} className="flex items-center gap-3 flex-shrink-0">
+                    {/* Floating Box for each POI */}
+                    <div className="relative bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200/50 p-3 min-w-[200px] max-w-[200px] transition-all hover:shadow-xl hover:scale-105">
+                      {/* Delete button - top right */}
+                      <button
+                        onClick={() => removeFromCart(cartItemId)}
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg transition-all z-10"
+                        aria-label="Remove from cart"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                      
+                      {/* Order badge */}
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs">
+                          {order}
+                        </div>
+                        <h3 className="font-semibold text-gray-900 text-sm truncate flex-1">{poi.name}</h3>
+                      </div>
+                      <p className="text-gray-600 text-xs line-clamp-2 ml-9">{poi.address}</p>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 text-sm mb-1 truncate">{poi.name}</h3>
-                      <p className="text-gray-600 text-xs line-clamp-2">{poi.address}</p>
-                    </div>
+                    
+                    {/* Arrow connector - show between items, not after last item */}
+                    {index < orderedCartPOIs.length - 1 && (
+                      <div className="flex-shrink-0 flex items-center">
+                        <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
