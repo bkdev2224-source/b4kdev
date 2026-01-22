@@ -10,10 +10,7 @@ export interface KContent {
   tags: string[]
   popularity?: number
   category: 'kpop' | 'kbeauty' | 'kfood' | 'kfestival'
-  imageUrl?: string // Cloudinary 이미지 URL
-  cloudinaryPublicId?: string // Cloudinary public ID
   images?: string[] // 여러 이미지 URL 배열
-  cloudinaryPublicIds?: string[] // 여러 Cloudinary public ID 배열
   createdAt?: Date
   updatedAt?: Date
 }
@@ -191,68 +188,16 @@ export async function updateKContent(
       { returnDocument: 'after' }
     )
     
-    if (!result) return null
-    
+    const updated = result?.value
+    if (!updated) return null
+
     return {
-      ...result,
-      _id: result._id.toString(),
-      poiId: result.poiId instanceof ObjectId ? result.poiId.toString() : result.poiId,
+      ...updated,
+      _id: updated._id.toString(),
+      poiId: updated.poiId instanceof ObjectId ? updated.poiId.toString() : updated.poiId,
     }
   } catch (error) {
     console.error('Error updating KContent:', error)
-    return null
-  }
-}
-
-/**
- * KContent 이미지 업데이트 (Cloudinary 연동)
- */
-export async function updateKContentImage(
-  contentId: string,
-  imageUrl: string,
-  cloudinaryPublicId: string
-): Promise<KContent | null> {
-  return updateKContent(contentId, {
-    imageUrl,
-    cloudinaryPublicId,
-  })
-}
-
-/**
- * KContent에 여러 이미지 추가
- */
-export async function addKContentImages(
-  contentId: string,
-  imageUrls: string[],
-  cloudinaryPublicIds: string[]
-): Promise<KContent | null> {
-  try {
-    const client = await clientPromise
-    const db = client.db(DB_NAME)
-    
-    const result = await db.collection<KContent>(COLLECTION_NAME).findOneAndUpdate(
-      { _id: new ObjectId(contentId) },
-      {
-        $push: {
-          images: { $each: imageUrls },
-          cloudinaryPublicIds: { $each: cloudinaryPublicIds },
-        },
-        $set: {
-          updatedAt: new Date(),
-        },
-      },
-      { returnDocument: 'after' }
-    )
-    
-    if (!result) return null
-    
-    return {
-      ...result,
-      _id: result._id.toString(),
-      poiId: result.poiId instanceof ObjectId ? result.poiId.toString() : result.poiId,
-    }
-  } catch (error) {
-    console.error('Error adding KContent images:', error)
     return null
   }
 }

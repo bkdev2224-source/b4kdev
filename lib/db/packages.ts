@@ -15,10 +15,8 @@ export interface TravelPackage {
     activities: string[]
   }>
   category: 'kpop' | 'kdrama' | 'all'
-  imageUrl: string // Cloudinary 이미지 URL
-  cloudinaryPublicId?: string // Cloudinary public ID
+  imageUrl: string
   images?: string[] // 여러 이미지 URL 배열
-  cloudinaryPublicIds?: string[] // 여러 Cloudinary public ID 배열
   createdAt?: Date
   updatedAt?: Date
 }
@@ -143,66 +141,15 @@ export async function updatePackage(
       { returnDocument: 'after' }
     )
     
-    if (!result) return null
-    
+    const updated = result?.value
+    if (!updated) return null
+
     return {
-      ...result,
-      _id: result._id.toString(),
+      ...updated,
+      _id: updated._id.toString(),
     }
   } catch (error) {
     console.error('Error updating package:', error)
-    return null
-  }
-}
-
-/**
- * 패키지 이미지 업데이트 (Cloudinary 연동)
- */
-export async function updatePackageImage(
-  packageId: string,
-  imageUrl: string,
-  cloudinaryPublicId: string
-): Promise<TravelPackage | null> {
-  return updatePackage(packageId, {
-    imageUrl,
-    cloudinaryPublicId,
-  })
-}
-
-/**
- * 패키지에 여러 이미지 추가
- */
-export async function addPackageImages(
-  packageId: string,
-  imageUrls: string[],
-  cloudinaryPublicIds: string[]
-): Promise<TravelPackage | null> {
-  try {
-    const client = await clientPromise
-    const db = client.db(DB_NAME)
-    
-    const result = await db.collection<TravelPackage>(COLLECTION_NAME).findOneAndUpdate(
-      { _id: new ObjectId(packageId) },
-      {
-        $push: {
-          images: { $each: imageUrls },
-          cloudinaryPublicIds: { $each: cloudinaryPublicIds },
-        },
-        $set: {
-          updatedAt: new Date(),
-        },
-      },
-      { returnDocument: 'after' }
-    )
-    
-    if (!result) return null
-    
-    return {
-      ...result,
-      _id: result._id.toString(),
-    }
-  } catch (error) {
-    console.error('Error adding package images:', error)
     return null
   }
 }

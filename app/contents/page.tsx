@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import PageLayout from '@/components/PageLayout'
-import { getKContentsByCategory, getPOIById, KContent } from '@/lib/data'
+import { getPOIById, KContent } from '@/lib/data'
+import { getKContentsByCategory as getKContentsByCategoryDB } from '@/lib/db/kcontents'
 
 type AccentKey = 'purple' | 'pink' | 'amber' | 'emerald'
 
@@ -145,7 +146,16 @@ export default async function ContentsPage() {
     <PageLayout showSidePanel={true} sidePanelWidth="default">
       {await Promise.all(categorySections.map(async (section) => {
         const accentStyle = accentClasses[section.accent]
-        const contents = await getKContentsByCategory(section.id as 'kpop' | 'kbeauty' | 'kfood' | 'kfestival')
+        const dbContents = await getKContentsByCategoryDB(section.id as 'kpop' | 'kbeauty' | 'kfood' | 'kfestival')
+        const contents = dbContents.map((content) => ({
+          subName: content.subName,
+          poiId: { $oid: typeof content.poiId === 'string' ? content.poiId : content.poiId.toString() },
+          spotName: content.spotName,
+          description: content.description,
+          tags: content.tags,
+          popularity: content.popularity,
+          category: content.category,
+        })) as KContent[]
         const previewItems = contents.slice(0, 6)
 
         return (

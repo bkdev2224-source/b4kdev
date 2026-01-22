@@ -6,13 +6,15 @@ import {
   getKContentsBySubName 
 } from '@/lib/db/kcontents'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * GET /api/kcontents
  * 모든 KContents 조회
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const searchParams = request.nextUrl.searchParams
     const category = searchParams.get('category') as 'kpop' | 'kbeauty' | 'kfood' | 'kfestival' | null
     const poiId = searchParams.get('poiId')
     const subName = searchParams.get('subName')
@@ -38,8 +40,6 @@ export async function GET(request: NextRequest) {
       tags: content.tags,
       popularity: content.popularity,
       category: content.category,
-      ...(content.imageUrl && { imageUrl: content.imageUrl }),
-      ...(content.cloudinaryPublicId && { cloudinaryPublicId: content.cloudinaryPublicId }),
     }))
 
     return NextResponse.json(formattedContents)

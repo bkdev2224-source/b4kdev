@@ -26,6 +26,15 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
   const { searchResult, setSearchResult, showMapRoute, setShowMapRoute } = useSearchResult()
   const { cartItems, addToCart, removeFromCart, isInCart } = useCart()
 
+  // Hooks must be called unconditionally (rules-of-hooks)
+  const searchSubName =
+    searchResult?.type === 'content' && searchResult.subName ? searchResult.subName : ''
+  const searchPoiId =
+    searchResult?.type === 'poi' && searchResult.poiId ? searchResult.poiId : ''
+
+  const { contents: contentsBySubName } = useKContentsBySubName(searchSubName)
+  const { contents: contentsByPOIId } = useKContentsByPOIId(searchPoiId)
+
   // Home page section list
   const homeSections: SidePanelItem[] = [
     { id: 'best-packages', name: 'B4K Best Packages', href: '#best-packages' },
@@ -349,12 +358,6 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
     const poi = searchResult.type === 'poi' && searchResult.poiId 
       ? getPOIById(searchResult.poiId) 
       : null
-    const { contents: contentsBySubName } = useKContentsBySubName(
-      searchResult.type === 'content' && searchResult.subName ? searchResult.subName : ''
-    )
-    const { contents: contentsByPOIId } = useKContentsByPOIId(
-      searchResult.type === 'poi' && searchResult.poiId ? searchResult.poiId : ''
-    )
     
     const contents = searchResult.type === 'content' && searchResult.subName
       ? contentsBySubName

@@ -13,8 +13,6 @@ export interface POI {
   openingHours: string
   entryFee: string
   needsReservation: boolean
-  imageUrl?: string // Cloudinary 이미지 URL
-  cloudinaryPublicId?: string // Cloudinary public ID
   createdAt?: Date
   updatedAt?: Date
 }
@@ -120,30 +118,17 @@ export async function updatePOI(
       { returnDocument: 'after' }
     )
     
-    if (!result) return null
-    
+    const updated = result?.value
+    if (!updated) return null
+
     return {
-      ...result,
-      _id: result._id.toString(),
+      ...updated,
+      _id: updated._id.toString(),
     }
   } catch (error) {
     console.error('Error updating POI:', error)
     return null
   }
-}
-
-/**
- * POI 이미지 업데이트 (Cloudinary 연동)
- */
-export async function updatePOIImage(
-  poiId: string,
-  imageUrl: string,
-  cloudinaryPublicId: string
-): Promise<POI | null> {
-  return updatePOI(poiId, {
-    imageUrl,
-    cloudinaryPublicId,
-  })
 }
 
 /**
