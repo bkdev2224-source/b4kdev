@@ -1,13 +1,23 @@
 import { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 
+// Vercel Preview/Production 환경에서는 배포 도메인이 매번 바뀔 수 있으므로
+// 현재 배포 도메인(VERCEL_URL)로 NEXTAUTH_URL을 강제 맞춰 500(호스트 불일치) 이슈를 피합니다.
+if (process.env.VERCEL_URL) {
+  const inferred = `https://${process.env.VERCEL_URL}`
+  process.env.NEXTAUTH_URL = inferred
+}
+
 export const authOptions: NextAuthOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
+  providers:
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : [],
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30일
@@ -54,4 +64,17 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
+  logger: {
+    error(code, metadata) {
+      console.error("[next-auth][error]", code, metadata)
+    },
+    warn(code) {
+      console.warn("[next-auth][warn]", code)
+    },
+    debug(code, metadata) {
+      if (process.env.NODE_ENV === "development") {
+        console.log("[next-auth][debug]", code, metadata)
+      }
+    },
+  },
 }
