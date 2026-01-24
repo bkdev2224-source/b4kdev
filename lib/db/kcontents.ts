@@ -163,10 +163,9 @@ export async function updateKContent(
       { returnDocument: 'after' }
     )
     
-    const updated = result?.value
-    if (!updated) return null
+    if (!result) return null
 
-    return convertKContent(updated)
+    return convertKContent(result)
   } catch (error) {
     console.error('Error updating KContent:', error)
     return null
