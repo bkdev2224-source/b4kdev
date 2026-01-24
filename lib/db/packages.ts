@@ -119,10 +119,9 @@ export async function updatePackage(
       { returnDocument: 'after' }
     )
     
-    const updated = result?.value
-    if (!updated) return null
+    if (!result) return null
 
-    return convertIdToString(updated)
+    return convertIdToString(result)
   } catch (error) {
     console.error('Error updating package:', error)
     return null
