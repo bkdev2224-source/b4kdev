@@ -31,8 +31,12 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
+        {/* TMAP Vector SDK uses document.write() internally.
+            We must use a raw <script> tag (not Next.js Script component)
+            to ensure it loads synchronously during initial HTML parse. */}
         {tmapVectorSdkSrc ? (
-          <Script src={tmapVectorSdkSrc} strategy="beforeInteractive" />
+          // eslint-disable-next-line @next/next/no-sync-scripts
+          <script src={tmapVectorSdkSrc} />
         ) : null}
         
         {/* Microsoft Clarity Analytics */}

@@ -1,6 +1,5 @@
 "use client"
 
-import Link from 'next/link'
 import Image from 'next/image'
 
 interface ExplorationItem {
@@ -9,7 +8,6 @@ interface ExplorationItem {
   description: string
   imageUrl: string
   area: string
-  href?: string
 }
 
 const seoulExplorations: ExplorationItem[] = [
@@ -19,7 +17,6 @@ const seoulExplorations: ExplorationItem[] = [
     description: 'Explore the modern and vibrant attractions of Gangnam',
     imageUrl: 'https://picsum.photos/seed/gangnam/800/600',
     area: 'Gangnam-gu',
-    href: '/explore/gangnam'
   },
   {
     id: '2',
@@ -27,7 +24,6 @@ const seoulExplorations: ExplorationItem[] = [
     description: 'Experience the unique culture of Hongdae, overflowing with youth and creativity',
     imageUrl: 'https://picsum.photos/seed/hongdae/800/600',
     area: 'Mapo-gu',
-    href: '/explore/hongdae'
   },
   {
     id: '3',
@@ -35,7 +31,6 @@ const seoulExplorations: ExplorationItem[] = [
     description: 'Explore the palace and hanok of the Joseon Dynasty, where tradition and history come alive',
     imageUrl: 'https://picsum.photos/seed/palace/800/600',
     area: 'Jongno-gu',
-    href: '/explore/palace'
   },
   {
     id: '4',
@@ -43,7 +38,6 @@ const seoulExplorations: ExplorationItem[] = [
     description: 'Seoul\'s representative center for shopping and entertainment',
     imageUrl: 'https://picsum.photos/seed/myeongdong/800/600',
     area: 'Jung-gu',
-    href: '/explore/myeongdong'
   },
   {
     id: '5',
@@ -51,7 +45,6 @@ const seoulExplorations: ExplorationItem[] = [
     description: 'Various leisure activities along the Hangang River, the heart of Seoul',
     imageUrl: 'https://picsum.photos/seed/hangang/800/600',
     area: 'Yongsan-gu',
-    href: '/explore/hangang'
   },
   {
     id: '6',
@@ -59,7 +52,6 @@ const seoulExplorations: ExplorationItem[] = [
     description: 'A beautiful village where traditional hanok and modern cafes coexist',
     imageUrl: 'https://picsum.photos/seed/bukchon/800/600',
     area: 'Jongno-gu',
-    href: '/explore/bukchon'
   }
 ]
 
@@ -85,20 +77,25 @@ export default function SeoulExploration() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {seoulExplorations.map((item) => (
-            <Link
+            <div
               key={item.id}
-              href={item.href || '#'}
-              className="group no-underline"
+              className="group"
             >
-              <div className="relative overflow-hidden rounded-xl bg-white border border-gray-200 hover:border-pink-400 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/20 hover:scale-105">
+              <div className="relative overflow-hidden rounded-xl bg-white border border-gray-200 transition-all duration-300">
                 <div className="relative h-64 overflow-hidden">
                   <Image
                     src={item.imageUrl}
                     alt={item.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="object-cover"
                   />
+                  {/* Coming Soon overlay */}
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <span className="px-4 py-2 bg-white/90 rounded-full text-gray-800 text-sm font-semibold">
+                      Coming Soon
+                    </span>
+                  </div>
                   <div className="absolute top-4 left-4">
                     <span className="px-3 py-1 bg-pink-500 rounded-full text-white text-xs font-semibold">
                       {item.area}
@@ -107,7 +104,7 @@ export default function SeoulExploration() {
                 </div>
 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-pink-600 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
                     {item.title}
                   </h3>
                   <p className="text-gray-600 text-sm line-clamp-2">
@@ -115,7 +112,7 @@ export default function SeoulExploration() {
                   </p>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

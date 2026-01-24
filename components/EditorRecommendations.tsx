@@ -1,6 +1,5 @@
 "use client"
 
-import Link from 'next/link'
 import Image from 'next/image'
 
 interface RecommendationItem {
@@ -9,7 +8,6 @@ interface RecommendationItem {
   description: string
   imageUrl: string
   category: string
-  href?: string
 }
 
 const editorRecommendations: RecommendationItem[] = [
@@ -19,7 +17,6 @@ const editorRecommendations: RecommendationItem[] = [
     description: 'A moment to pause in a quiet winter forest in the heart of the city',
     imageUrl: 'https://picsum.photos/seed/forest/800/600',
     category: 'Relaxation',
-    href: '/themes/forest'
   },
   {
     id: '2',
@@ -27,7 +24,6 @@ const editorRecommendations: RecommendationItem[] = [
     description: 'Sparkling Christmas atmosphere under a giant tree',
     imageUrl: 'https://picsum.photos/seed/library/800/600',
     category: 'Culture',
-    href: '/themes/library'
   },
   {
     id: '3',
@@ -35,7 +31,6 @@ const editorRecommendations: RecommendationItem[] = [
     description: 'Seoul\'s night light festival that unfolds on winter nights',
     imageUrl: 'https://picsum.photos/seed/festival/800/600',
     category: 'Festival',
-    href: '/themes/festival'
   },
   {
     id: '4',
@@ -43,7 +38,6 @@ const editorRecommendations: RecommendationItem[] = [
     description: 'An attractive 2-day travel course in Seoul following the main locations from K-Pop Demon Hunters',
     imageUrl: 'https://picsum.photos/seed/kpop-tour/800/600',
     category: 'K-Pop',
-    href: '/themes/kpop-tour'
   },
   {
     id: '5',
@@ -51,7 +45,6 @@ const editorRecommendations: RecommendationItem[] = [
     description: 'Autumn flavors with Seoul\'s seasonal desserts',
     imageUrl: 'https://picsum.photos/seed/dessert/800/600',
     category: 'K-Food',
-    href: '/themes/dessert'
   },
   {
     id: '6',
@@ -59,7 +52,6 @@ const editorRecommendations: RecommendationItem[] = [
     description: 'Year-end atmosphere-filled tree spaces to enjoy indoors in Seoul',
     imageUrl: 'https://picsum.photos/seed/winter/800/600',
     category: 'Event',
-    href: '/themes/winter'
   }
 ]
 
@@ -85,20 +77,25 @@ export default function EditorRecommendations() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {editorRecommendations.map((item) => (
-            <Link
+            <div
               key={item.id}
-              href={item.href || '#'}
-              className="group no-underline"
+              className="group"
             >
-              <div className="relative overflow-hidden rounded-xl bg-white border border-gray-200 hover:border-cyan-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 hover:scale-105">
+              <div className="relative overflow-hidden rounded-xl bg-white border border-gray-200 transition-all duration-300">
                 <div className="relative h-64 overflow-hidden">
                   <Image
                     src={item.imageUrl}
                     alt={item.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="object-cover"
                   />
+                  {/* Coming Soon overlay */}
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <span className="px-4 py-2 bg-white/90 rounded-full text-gray-800 text-sm font-semibold">
+                      Coming Soon
+                    </span>
+                  </div>
                   <div className="absolute top-4 left-4">
                     <span className="px-3 py-1 bg-cyan-500 rounded-full text-white text-xs font-semibold">
                       {item.category}
@@ -107,7 +104,7 @@ export default function EditorRecommendations() {
                 </div>
 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-cyan-600 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
                     {item.title}
                   </h3>
                   <p className="text-gray-600 text-sm line-clamp-2">
@@ -115,7 +112,7 @@ export default function EditorRecommendations() {
                   </p>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>
