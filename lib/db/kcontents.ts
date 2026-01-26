@@ -6,7 +6,7 @@ import clientPromise from '@/lib/config/mongodb'
 import { ObjectId } from 'mongodb'
 import { getMongoDbName } from '@/lib/config/env'
 import type { KContent, KContentCategory, CreateInput, UpdateInput } from '@/types'
-import { convertKContent, convertKContents, createTimestamps, updateTimestamp } from './utils'
+import { buildIdQuery, convertKContent, convertKContents, createTimestamps, updateTimestamp } from './utils'
 
 const COLLECTION_NAME = 'kcontents'
 
@@ -153,7 +153,7 @@ export async function updateKContent(
     const db = client.db(getMongoDbName())
     
     const result = await db.collection<KContent>(COLLECTION_NAME).findOneAndUpdate(
-      { _id: new ObjectId(contentId) },
+      buildIdQuery(contentId) as any,
       {
         $set: {
           ...updateData,
@@ -163,9 +163,9 @@ export async function updateKContent(
       { returnDocument: 'after' }
     )
     
-    if (!result) return null
+    if (!result?.value) return null
 
-    return convertKContent(result)
+    return convertKContent(result.value)
   } catch (error) {
     console.error('Error updating KContent:', error)
     return null

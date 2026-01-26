@@ -10,8 +10,9 @@ import { useSidebar } from '@/components/SidebarContext'
 import { useLayout } from '@/lib/hooks/useLayout'
 import { LAYOUT_CONSTANTS } from '@/lib/utils/layout'
 import TMap from '@/components/TMap'
-import { getAllPOIs, getPOIById } from '@/lib/data/mock'
 import { useKContentsBySubName } from '@/lib/hooks/useKContents'
+import { usePOIs } from '@/lib/hooks/usePOIs'
+import type { POIJson } from '@/types'
 
 export default function MapsPage() {
   const allRoutes = getAllRoutes()
@@ -20,7 +21,8 @@ export default function MapsPage() {
   const { cartItems, removeFromCart } = useCart()
   const { sidebarOpen } = useSidebar()
   const layout = useLayout({ showSidePanel: true, sidePanelWidth: 'routes' })
-  const allPOIs = getAllPOIs()
+  const { pois: allPOIs } = usePOIs()
+  const poiById = useMemo(() => new Map(allPOIs.map((p) => [p._id.$oid, p])), [allPOIs])
 
   // Automatically show map route when cart has 2+ POIs
   // Map route should ALWAYS be shown when cart has 2+ POIs, regardless of search result
@@ -75,7 +77,7 @@ export default function MapsPage() {
     if (searchResult) {
       if (searchResult.type === 'poi' && searchResult.poiId) {
         // POI search: show searched POI + cart POIs
-        const poi = getPOIById(searchResult.poiId)
+        const poi = poiById.get(searchResult.poiId)
         const searchPoi = poi ? [poi] : []
         // Combine and deduplicate - ensure cart POIs are always included
         const combined = [...searchPoi, ...cartPois]
@@ -100,7 +102,7 @@ export default function MapsPage() {
   const mapCenter = useMemo(() => {
     // If searching for a POI, center on that POI
     if (searchResult?.type === 'poi' && searchResult.poiId) {
-      const poi = getPOIById(searchResult.poiId)
+      const poi = poiById.get(searchResult.poiId)
       if (poi?.location?.coordinates && poi.location.coordinates.length >= 2) {
         return poi.location.coordinates as [number, number]
       }
@@ -154,16 +156,16 @@ export default function MapsPage() {
     return poiCartItems
       .map(item => {
         if (!item.poiId) return null
-        const poi = getPOIById(item.poiId)
+        const poi = poiById.get(item.poiId)
         return poi ? { 
           poi, 
           order: cartOrderMap.get(item.poiId) || 0,
           cartItemId: item.id // Include cart item ID for deletion
         } : null
       })
-      .filter((item): item is { poi: NonNullable<ReturnType<typeof getPOIById>>; order: number; cartItemId: string } => item !== null)
+      .filter((item): item is { poi: POIJson; order: number; cartItemId: string } => item !== null)
       .sort((a, b) => a.order - b.order)
-  }, [cartItems, cartOrderMap])
+  }, [cartItems, cartOrderMap, poiById])
 
   // Cart scroll functionality
   const cartScrollRef = useRef<HTMLDivElement>(null)
