@@ -6,6 +6,7 @@ import { SidebarProvider } from '@/components/SidebarContext'
 import { RouteProvider } from '@/components/RouteContext'
 import { SearchProvider } from '@/components/SearchContext'
 import { CartProvider } from '@/components/CartContext'
+import { ThemeProvider } from '@/components/ThemeContext'
 import { getTmapApiKey } from '@/lib/config/env'
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export default function RootLayout({
     : undefined
 
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       <head>
         {/* TMAP Vector SDK uses document.write() internally.
             We must use a raw <script> tag (not Next.js Script component)
@@ -72,18 +73,20 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>
-        <SessionProvider>
-          <SidebarProvider>
-            <RouteProvider>
-              <SearchProvider>
-                <CartProvider>
-                  {children}
-                </CartProvider>
-              </SearchProvider>
-            </RouteProvider>
-          </SidebarProvider>
-        </SessionProvider>
+      <body className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50 transition-colors">
+        <ThemeProvider>
+          <SessionProvider>
+            <SidebarProvider>
+              <RouteProvider>
+                <SearchProvider>
+                  <CartProvider>
+                    {children}
+                  </CartProvider>
+                </SearchProvider>
+              </RouteProvider>
+            </SidebarProvider>
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
