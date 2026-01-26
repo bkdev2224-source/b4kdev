@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSidebar } from '@/components/providers/SidebarContext'
 import { useCart } from '@/components/providers/CartContext'
-import AuthButton from '@/components/auth/AuthButton'
 
 export default function Sidebar() {
   const pathname = usePathname()
