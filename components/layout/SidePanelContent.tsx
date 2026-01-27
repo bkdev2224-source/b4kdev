@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Route } from '@/lib/services/routes'
-import { useSearchResult } from './SearchContext'
-import { useCart } from './CartContext'
+import { useSearchResult } from '@/components/providers/SearchContext'
+import { useCart } from '@/components/providers/CartContext'
 import { getPOIById, getContentCategory } from '@/lib/data/mock'
 import { useKContentsBySubName, useKContentsByPOIId } from '@/lib/hooks/useKContents'
 

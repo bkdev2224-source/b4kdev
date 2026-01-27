@@ -2,11 +2,11 @@
 
 import { useRouter, useParams } from 'next/navigation'
 import Image from 'next/image'
-import PageLayout from '@/components/PageLayout'
+import PageLayout from '@/components/layout/PageLayout'
 import { getPOIById } from '@/lib/data/mock'
 import { useKContentsByPOIId } from '@/lib/hooks/useKContents'
-import { useSearchResult } from '@/components/SearchContext'
-import { useCart } from '@/components/CartContext'
+import { useSearchResult } from '@/components/providers/SearchContext'
+import { useCart } from '@/components/providers/CartContext'
 import { useState } from 'react'
 
 export default function POIDetailPage() {

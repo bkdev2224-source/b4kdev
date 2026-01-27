@@ -2,11 +2,11 @@
 
 import { useRouter, useParams } from 'next/navigation'
 import Image from 'next/image'
-import PageLayout from '@/components/PageLayout'
+import PageLayout from '@/components/layout/PageLayout'
 import { getPOIById, getContentCategory } from '@/lib/data/mock'
 import type { KContentJson } from '@/types'
 import { useKContentsBySubName } from '@/lib/hooks/useKContents'
-import { useSearchResult } from '@/components/SearchContext'
+import { useSearchResult } from '@/components/providers/SearchContext'
 import Link from 'next/link'
 
 export default function ContentDetailPage() {

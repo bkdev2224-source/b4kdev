@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { POIJson as POI } from '@/types'
-import { useSearchResult } from './SearchContext'
+import { useSearchResult } from '@/components/providers/SearchContext'
 
 interface TMapProps {
   center: number[] // [longitude, latitude]
@@ -335,22 +335,6 @@ export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new 
         return
       }
 
-      // Helper function to calculate distance between two coordinates
-      const getDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
-        const R = 6371e3 // Earth's radius in meters
-        const φ1 = lat1 * Math.PI / 180
-        const φ2 = lat2 * Math.PI / 180
-        const Δφ = (lat2 - lat1) * Math.PI / 180
-        const Δλ = (lng2 - lng1) * Math.PI / 180
-
-        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                  Math.cos(φ1) * Math.cos(φ2) *
-                  Math.sin(Δλ/2) * Math.sin(Δλ/2)
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-
-        return R * c
-      }
-
       // Store POI data for click handlers
       const poiDataMap = new Map<string, { name: string; poiId: string }>()
 
@@ -399,40 +383,12 @@ export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new 
         }
       })
 
-
       // Function to attach click events to marker DOM elements
       const attachMarkerClickEvents = () => {
         if (!mapRef.current) return
 
-        // Instead of finding by title, attach click handlers directly to marker objects
-        // and then find their DOM elements
+        // Alternative approach: attach click to marker objects directly
         markersRef.current.forEach((marker: any) => {
-          const poiName = (marker as any).poiName
-          if (!poiName) return
-          
-          // Skip if already has click handler
-          if ((marker as any).__domClickHandlerAdded) return
-          
-          // Try to find DOM element for this marker
-          // TMapv3 markers are typically rendered as images or divs
-          setTimeout(() => {
-            if (!mapRef.current) return
-            
-            // Find all potential marker elements
-            const allElements = mapRef.current.querySelectorAll('img, div')
-            allElements.forEach((element: Element) => {
-              // Skip if already processed
-              if ((element as any).__poiClickHandler) return
-              
-              // Check if this element is near the marker's position
-              // We'll use a simpler approach: attach click to marker object directly
-            })
-          }, 100)
-        })
-
-        // Alternative approach: attach click to map and find nearest marker
-        // But we already tried that... Let's use marker objects directly
-        markersRef.current.forEach((marker: any, index: number) => {
           if ((marker as any).__clickHandlerAdded) return
           
           const poiData = (marker as any).poiData
@@ -470,7 +426,7 @@ export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new 
           }
         })
 
-        // Also try DOM-based approach for elements that might be markers
+        // DOM-based fallback (title matching)
         setTimeout(() => {
           if (!mapRef.current) return
           
@@ -480,11 +436,6 @@ export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new 
           markerElements.forEach((element: Element) => {
             if ((element as any).__poiClickHandler) return
 
-            // Try to match by position - find nearest POI
-            const rect = element.getBoundingClientRect()
-            const mapRect = mapRef.current!.getBoundingClientRect()
-            
-            // Add click handler that removes title
             const title = element.getAttribute('title')
             if (title) {
               const matchingPoi = pois.find(p => p.name === title)
@@ -516,21 +467,6 @@ export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new 
       setTimeout(attachMarkerClickEvents, 300)
       setTimeout(attachMarkerClickEvents, 1000)
 
-      // Add map click handler (optional - for future use)
-      const handleMapClick = () => {
-        // Can be used for other purposes if needed
-      }
-
-      let mapClickListener: any = null
-      if (mapInstanceRef.current) {
-        if (typeof mapInstanceRef.current.addListener === 'function') {
-          mapClickListener = mapInstanceRef.current.addListener('click', handleMapClick)
-        } else if (typeof mapInstanceRef.current.on === 'function') {
-          mapInstanceRef.current.on('click', handleMapClick)
-          mapClickListener = true
-        }
-      }
-
       // Use MutationObserver to catch dynamically added markers
       const observer = new MutationObserver(() => {
         attachMarkerClickEvents()
@@ -548,13 +484,6 @@ export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new 
       // Cleanup function
       return () => {
         observer.disconnect()
-        if (mapClickListener && mapInstanceRef.current) {
-          if (typeof mapInstanceRef.current.removeListener === 'function') {
-            mapInstanceRef.current.removeListener(mapClickListener)
-          } else if (typeof mapInstanceRef.current.off === 'function') {
-            mapInstanceRef.current.off('click', handleMapClick)
-          }
-        }
       }
 
       console.log(`Added ${markersRef.current.length} POI markers to map`)
@@ -629,3 +558,4 @@ export default function TMap({ center, zoom = 16, pois = [], cartOrderMap = new 
     />
   )
 }
+

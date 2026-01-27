@@ -1,9 +1,9 @@
 "use client"
 
 import { useMemo } from 'react'
-import { useSidebar } from '@/components/SidebarContext'
-import { useRoute } from '@/components/RouteContext'
-import { useSearchResult } from '@/components/SearchContext'
+import { useSidebar } from '@/components/providers/SidebarContext'
+import { useRoute } from '@/components/providers/RouteContext'
+import { useSearchResult } from '@/components/providers/SearchContext'
 import { usePathname, useParams } from 'next/navigation'
 import { 
   getMainContentClasses, 

@@ -1,7 +1,7 @@
 "use client"
 
-import PageLayout from '@/components/PageLayout'
-import PackageCarousel from '@/components/PackageCarousel'
+import PageLayout from '@/components/layout/PageLayout'
+import PackageCarousel from '@/components/features/package/PackageCarousel'
 import { getAllPackages } from '@/lib/data/mock'
 
 export default function PackagePage() {

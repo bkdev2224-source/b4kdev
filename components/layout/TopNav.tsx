@@ -2,11 +2,11 @@
 
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import AuthButton from './AuthButton'
-import { useSidebar } from './SidebarContext'
 import { usePathname } from 'next/navigation'
-import { useRoute } from './RouteContext'
-import { useSearchResult } from './SearchContext'
+import AuthButton from '@/components/auth/AuthButton'
+import { useSidebar } from '@/components/providers/SidebarContext'
+import { useRoute } from '@/components/providers/RouteContext'
+import { useSearchResult } from '@/components/providers/SearchContext'
 import { getAllPOIs } from '@/lib/data/mock'
 import { useKContents } from '@/lib/hooks/useKContents'
 

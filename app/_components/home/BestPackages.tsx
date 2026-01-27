@@ -1,6 +1,6 @@
 "use client"
 
-import PackageCarousel from './PackageCarousel'
+import PackageCarousel from '@/components/features/package/PackageCarousel'
 import { getAllPackages } from '@/lib/data/mock'
 
 export default function BestPackages() {

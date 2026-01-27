@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useSidebar } from './SidebarContext'
-import { useCart } from './CartContext'
+import { useSidebar } from '@/components/providers/SidebarContext'
+import { useCart } from '@/components/providers/CartContext'
 
 export default function Sidebar() {
   const pathname = usePathname()

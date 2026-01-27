@@ -2,9 +2,9 @@
 
 import { useRouter, useParams } from 'next/navigation'
 import Image from 'next/image'
-import PageLayout from '@/components/PageLayout'
+import PageLayout from '@/components/layout/PageLayout'
 import { getPackageById } from '@/lib/data/mock'
-import { useCart } from '@/components/CartContext'
+import { useCart } from '@/components/providers/CartContext'
 
 export default function PackageDetailPage() {
   const router = useRouter()

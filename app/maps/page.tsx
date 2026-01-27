@@ -1,15 +1,15 @@
 "use client"
 
 import { useMemo, useState, useRef, useEffect } from 'react'
-import PageLayout from '@/components/PageLayout'
+import PageLayout from '@/components/layout/PageLayout'
 import { getAllRoutes } from '@/lib/services/routes'
-import { useRoute } from '@/components/RouteContext'
-import { useSearchResult } from '@/components/SearchContext'
-import { useCart } from '@/components/CartContext'
-import { useSidebar } from '@/components/SidebarContext'
+import { useRoute } from '@/components/providers/RouteContext'
+import { useSearchResult } from '@/components/providers/SearchContext'
+import { useCart } from '@/components/providers/CartContext'
+import { useSidebar } from '@/components/providers/SidebarContext'
 import { useLayout } from '@/lib/hooks/useLayout'
 import { LAYOUT_CONSTANTS } from '@/lib/utils/layout'
-import TMap from '@/components/TMap'
+import TMap from './_components/TMap'
 import { getAllPOIs, getPOIById } from '@/lib/data/mock'
 import { useKContentsBySubName } from '@/lib/hooks/useKContents'
 
