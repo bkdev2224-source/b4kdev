@@ -151,7 +151,6 @@ export async function updateKContent(
   try {
     const client = await clientPromise
     const db = client.db(getMongoDbName())
-    
     const result = await db.collection<KContent>(COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(contentId) },
       {
@@ -162,10 +161,11 @@ export async function updateKContent(
       },
       { returnDocument: 'after' }
     )
-    
-    if (!result) return null
+    const updated = result.value
 
-    return convertKContent(result)
+    if (!updated) return null
+
+    return convertKContent(updated)
   } catch (error) {
     console.error('Error updating KContent:', error)
     return null

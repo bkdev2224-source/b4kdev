@@ -107,7 +107,6 @@ export async function updatePackage(
   try {
     const client = await clientPromise
     const db = client.db(getMongoDbName())
-    
     const result = await db.collection<TravelPackage>(COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(packageId) },
       {
@@ -118,10 +117,11 @@ export async function updatePackage(
       },
       { returnDocument: 'after' }
     )
-    
-    if (!result) return null
+    const updated = result.value
 
-    return convertIdToString(result)
+    if (!updated) return null
+
+    return convertIdToString(updated)
   } catch (error) {
     console.error('Error updating package:', error)
     return null

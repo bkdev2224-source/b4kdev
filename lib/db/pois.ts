@@ -80,7 +80,6 @@ export async function updatePOI(
   try {
     const client = await clientPromise
     const db = client.db(getMongoDbName())
-    
     const result = await db.collection<POI>(COLLECTION_NAME).findOneAndUpdate(
       buildIdQuery(poiId) as any,
       {
@@ -91,10 +90,11 @@ export async function updatePOI(
       },
       { returnDocument: 'after' }
     )
-    
-    if (!result) return null
+    const updated = result.value
 
-    return convertPOI(result)
+    if (!updated) return null
+
+    return convertPOI(updated)
   } catch (error) {
     console.error('Error updating POI:', error)
     return null
