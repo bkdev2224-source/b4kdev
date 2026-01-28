@@ -8,7 +8,7 @@ import { SearchProvider } from '@/components/providers/SearchContext'
 import { CartProvider } from '@/components/providers/CartContext'
 import { AnalyticsTracker } from '@/lib/hooks'
 import { ThemeProvider } from '@/components/ThemeContext'
-import { getTmapApiKey } from '@/lib/config/env'
+import { getNaverMapClientId } from '@/lib/config/env'
 
 // Analytics IDs from environment variables
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID
@@ -29,26 +29,32 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // NOTE:
-  // TMAP Vector Map SDK uses `document.write()` internally.
-  // If the script is loaded asynchronously (e.g., injected after hydration),
-  // browsers can throw: "Failed to execute 'write' on 'Document'..."
-  // So we load it as a normal <script> in <head> during initial HTML parse.
-  const tmapAppKey = getTmapApiKey()
-  const tmapVectorSdkSrc = tmapAppKey
-    ? `https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey=${tmapAppKey}`
-    : undefined
+  const naverMapClientId = getNaverMapClientId()
 
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
-        {/* TMAP Vector SDK uses document.write() internally.
-            We must use a raw <script> tag (not Next.js Script component)
-            to ensure it loads synchronously during initial HTML parse. */}
-        {tmapVectorSdkSrc ? (
-          // eslint-disable-next-line @next/next/no-sync-scripts
-          <script src={tmapVectorSdkSrc} />
-        ) : null}
+        {/* Naver Maps API - 공식 문서 예제에 따라 ncpKeyId와 language=en 사용 */}
+        {naverMapClientId && (
+          <>
+            <Script
+              src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverMapClientId}&language=en`}
+              strategy="beforeInteractive"
+            />
+            {/* 인증 실패 시 처리 */}
+            <Script
+              id="naver-map-auth-failure"
+              strategy="beforeInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.navermap_authFailure = function() {
+                    console.error('Naver Maps API 인증 실패: 클라이언트 ID를 확인하세요.');
+                  };
+                `,
+              }}
+            />
+          </>
+        )}
         
         {/* Microsoft Clarity Analytics */}
         {CLARITY_ID && (

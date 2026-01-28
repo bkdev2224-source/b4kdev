@@ -9,10 +9,10 @@ import { useCart } from '@/components/providers/CartContext'
 import { useSidebar } from '@/components/providers/SidebarContext'
 import { useLayout } from '@/lib/hooks/useLayout'
 import { LAYOUT_CONSTANTS } from '@/lib/utils/layout'
-import TMap from './_components/TMap'
 import { useKContentsBySubName } from '@/lib/hooks/useKContents'
 import { usePOIs } from '@/lib/hooks/usePOIs'
 import type { POIJson } from '@/types'
+import NaverMap from './_components/naverMap'
 
 export default function MapsPage() {
   const allRoutes = getAllRoutes()
@@ -236,7 +236,7 @@ export default function MapsPage() {
     <PageLayout showSidePanel={true} sidePanelWidth="routes">
       {/* Map-only exception: map is a fixed background layer; sidebar/sidepanel overlay on top. */}
       <div className="fixed inset-0 z-0 overflow-hidden">
-        <TMap center={mapCenter} zoom={mapZoom} pois={displayPOIs} cartOrderMap={cartOrderMap} hasSearchResult={!!searchResult} showMapRoute={showMapRoute} />
+        <NaverMap center={mapCenter} zoom={mapZoom} pois={displayPOIs} cartOrderMap={cartOrderMap} hasSearchResult={!!searchResult} showMapRoute={showMapRoute} />
 
         {/* Bottom POI List - always show when cart has items (even when search result is shown) */}
         {/* Cart should only appear in map area, centered horizontally, never overlap with side panel */}
