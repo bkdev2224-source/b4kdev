@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAllPackages, getPackageById } from '@/lib/db/packages'
 import type { TravelPackageJson } from '@/types'
 
+export const dynamic = 'force-dynamic'
+
 function toPackageJson(pkg: { _id: string } & Omit<TravelPackageJson, '_id'>): TravelPackageJson {
   return {
     ...pkg,

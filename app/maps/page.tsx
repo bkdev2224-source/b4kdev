@@ -12,6 +12,7 @@ import { LAYOUT_CONSTANTS } from '@/lib/utils/layout'
 import TMap from './_components/TMap'
 import { useKContentsBySubName } from '@/lib/hooks/useKContents'
 import { usePOIs } from '@/lib/hooks/usePOIs'
+import type { POIJson } from '@/types'
 
 export default function MapsPage() {
   const allRoutes = getAllRoutes()
@@ -109,7 +110,7 @@ export default function MapsPage() {
     // No search result: show only cart POIs
     // This ensures cart POIs are always available for polyline drawing
     return cartPois
-  }, [searchResult, cartItems, allPOIs])
+  }, [searchResult, cartItems, allPOIs, poiById])
 
   // Calculate map center: prioritize search result POI, then selected route, then default
   const mapCenter = useMemo(() => {
@@ -134,7 +135,7 @@ export default function MapsPage() {
     }
     // Default to Seoul center
     return [127.0276, 37.4980]
-  }, [searchResult, selectedRoute, allRoutes])
+  }, [searchResult, selectedRoute, allRoutes, poiById])
 
   // Calculate map zoom: use higher zoom for search results
   const mapZoom = useMemo(() => {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAllPOIs, getPOIById } from '@/lib/db/pois'
 import type { POIJson } from '@/types'
 
+export const dynamic = 'force-dynamic'
+
 function toPOIJson(poi: { _id: string } & Omit<POIJson, '_id'>): POIJson {
   return {
     ...poi,

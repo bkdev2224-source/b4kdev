@@ -110,7 +110,7 @@ export default function TopNav({
     })
     
     return results.slice(0, 5) // 최대 5개
-  }, [searchQuery, allKContents])
+  }, [searchQuery, allKContents, allPOIs])
 
   // 추천 검색어 결과 (POI ID 또는 subName 포함)
   const recommendedResults = useMemo(() => {
@@ -131,7 +131,7 @@ export default function TopNav({
     })
     
     return results
-  }, [allKContents])
+  }, [allKContents, allPOIs])
 
   // 모든 검색 결과 (관련 검색어 + 추천 검색어)
   const allSearchResults = useMemo(() => {
@@ -344,15 +344,6 @@ export default function TopNav({
 
         {/* Right: (desktop) favorites + account, (mobile) hamburger */}
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          <Link
-            href="/"
-            className="lg:hidden font-bold text-lg sm:text-xl text-gray-900 dark:text-gray-100 flex-shrink-0 px-1"
-            aria-label="B4K Home"
-            title="B4K"
-          >
-            B4K
-          </Link>
-
           <button
             onClick={() => {
               // TODO: Navigate to favorites page or open modal
@@ -372,9 +363,7 @@ export default function TopNav({
             </svg>
           </button>
 
-          <div className="hidden lg:block">
-            <AuthButton />
-          </div>
+          <AuthButton />
         </div>
       </div>
     </>
