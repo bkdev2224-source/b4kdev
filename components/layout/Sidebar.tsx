@@ -14,21 +14,63 @@ export default function Sidebar() {
   const poiCartCount = cartItems.filter(item => item.type === 'poi').length
   
   const navItems = [
-    { name: 'Home', href: '/', icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-    )},
-    { name: 'Map', href: '/maps', icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-      </svg>
-    ), badgeCount: poiCartCount },
-    { name: 'Contents', href: '/contents', icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6h8M12 12h8M12 18h8M4 6h4v4H4V6zm0 6h4v4H4v-4zm0 6h4v4H4v-4z" />
-      </svg>
-    )},
+    {
+      name: 'Home',
+      href: '/',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+          />
+        </svg>
+      ),
+    },
+    {
+      name: 'Map',
+      href: '/maps',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+          />
+        </svg>
+      ),
+      badgeCount: poiCartCount,
+    },
+     {
+      name: 'Contents',
+      href: '/contents',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 6h8M12 12h8M12 18h8M4 6h4v4H4V6zm0 6h4v4H4v-4zm0 6h4v4H4v-4z"
+          />
+        </svg>
+      ),
+    },
+    {
+      name: 'Info',
+      href: '/info',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 16h-1v-4h-1m1-4h.01M12 4a8 8 0 100 16 8 8 0 000-16z"
+          />
+        </svg>
+      ),
+    },
   ]
 
   return (
@@ -118,19 +160,6 @@ export default function Sidebar() {
             )
           })}
         </nav>
-
-        {/* Info section */}
-        {sidebarOpen && (
-          <div className="px-4 pb-2 pt-2 border-t border-gray-200 dark:border-gray-800">
-            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-              Info
-            </div>
-            <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
-              <p>Mobile map-style UI · B4K</p>
-              <p>Tip: Use search to find POIs & contents.</p>
-            </div>
-          </div>
-        )}
 
         {/* Bottom button - always visible */}
         <div className="flex-shrink-0 px-4 pb-4 pt-2 relative">
