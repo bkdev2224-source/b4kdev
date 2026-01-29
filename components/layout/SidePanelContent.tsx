@@ -304,7 +304,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
   // Render home sections
   if (type === 'home') {
     return (
-      <div className="p-6 h-full flex flex-col">
+      <div className="px-6 pb-6 pt-4 h-full flex flex-col">
         <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">
           Sections
         </h3>
@@ -331,7 +331,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
   // Render contents categories
   if (type === 'contents') {
     return (
-      <div className="p-6 h-full flex flex-col">
+      <div className="px-6 pb-6 pt-4 h-full flex flex-col">
         <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">
           Categories
         </h3>
