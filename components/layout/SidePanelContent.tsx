@@ -286,7 +286,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Waypoints</h3>
                   <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                     {route.waypoints.map((waypoint, idx) => (
-                      <li key={idx}>{idx + 1}. {waypoint.name}</li>
+                      <li key={`${waypoint.name}-${idx}`}>{idx + 1}. {waypoint.name}</li>
                     ))}
                   </ul>
                 </div>
@@ -295,7 +295,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Categories</h3>
                 <div className="flex flex-wrap gap-2">
                   {route.category.map((cat, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs">
+                    <span key={`${cat}-${idx}`} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs">
                       {cat}
                     </span>
                   ))}
@@ -480,7 +480,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{poi.address}</p>
                   <div className="flex flex-wrap gap-2 mb-3">
                     {poi.categoryTags.map((tag, idx) => (
-                      <span key={idx} className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-xs">
+                      <span key={`${tag}-${idx}`} className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-xs">
                         {tag}
                       </span>
                     ))}

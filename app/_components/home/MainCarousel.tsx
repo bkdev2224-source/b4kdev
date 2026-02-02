@@ -138,9 +138,9 @@ export default function MainCarousel() {
 
       {/* Indicators */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-        {images.map((_, index) => (
+        {images.map((image, index) => (
           <button
-            key={index}
+            key={image.id}
             onClick={() => goToSlide(index)}
             className={`focus-ring h-2 rounded-full transition-all ${
               index === currentIndex

@@ -164,7 +164,7 @@ export default function PackageDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {pkg.highlights.map((highlight, index) => (
               <div
-                key={index}
+                key={`${highlight}-${index}`}
                 className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-lg flex items-center gap-3"
               >
                 <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
@@ -194,7 +194,7 @@ export default function PackageDetailPage() {
           <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {pkg.includedServices.map((service, index) => (
-                <div key={index} className="flex items-center gap-3">
+                <div key={`${service}-${index}`} className="flex items-center gap-3">
                   <svg className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
@@ -223,7 +223,7 @@ export default function PackageDetailPage() {
           <div className="space-y-6">
             {pkg.itinerary.map((day, index) => (
               <div
-                key={index}
+                key={`${day.day}-${day.city}-${index}`}
                 className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-200 shadow-sm"
               >
                 <div className="flex items-start gap-4">
@@ -242,7 +242,7 @@ export default function PackageDetailPage() {
                     <div className="flex flex-wrap gap-2">
                       {day.activities.map((activity, actIdx) => (
                         <span
-                          key={actIdx}
+                          key={`${activity}-${actIdx}`}
                           className="px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-700 dark:text-gray-300 text-sm"
                         >
                           {activity}

@@ -120,7 +120,7 @@ export default function POIDetailPage() {
                   <div className="mb-4 flex flex-wrap items-center gap-3 text-white/90 text-sm md:text-base">
                     <div className="flex gap-2 flex-wrap">
                       {poi.categoryTags.map((tag, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white">
+                        <span key={`${tag}-${idx}`} className="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white">
                           {tag}
                         </span>
                       ))}

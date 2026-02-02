@@ -131,7 +131,7 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
                     <div className="flex flex-wrap gap-2 mb-4">
                       {pkg.highlights.slice(0, 4).map((highlight, idx) => (
                         <span
-                          key={idx}
+                          key={`${highlight}-${idx}`}
                           className="px-2 py-1 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-gray-600 dark:text-gray-300 text-xs"
                         >
                           {highlight}

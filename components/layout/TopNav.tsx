@@ -286,7 +286,7 @@ export default function TopNav({
                         const isSelected = selectedIndex === globalIndex
                         return (
                           <button
-                            key={index}
+                            key={`${result.type}-${result.poiId ?? result.subName ?? result.name}`}
                             onClick={() => handleSearchClick(result)}
                             className={`focus-ring w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                               isSelected 
@@ -318,7 +318,7 @@ export default function TopNav({
                       const isSelected = selectedIndex === globalIndex
                       return (
                         <button
-                          key={index}
+                          key={`${result.type}-${result.poiId ?? result.subName ?? result.name}`}
                           onClick={() => handleSearchClick(result)}
                           className={`focus-ring w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                             isSelected 
