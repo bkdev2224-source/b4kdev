@@ -48,10 +48,9 @@ export function useLayout(options: UseLayoutOptions = {}) {
       return 'routes'
     }
     
-    // For routes pages with 'routes' width
+    // For maps/routes pages with 'routes' width
     if (isRoutesPage && sidePanelWidth === 'routes') {
-      // Maps page exception: show route panel as an overlay (do NOT shrink map/main)
-      return 'none'
+      return 'routes'
     }
     
     // For fixed panels (default), always show on non-maps pages (regardless of sidebar state)
@@ -65,15 +64,22 @@ export function useLayout(options: UseLayoutOptions = {}) {
   }, [showSidePanel, sidePanelWidth, isRoutesPage, pathname, searchResult])
 
   // Determine side panel type
-  const sidePanelType = useMemo((): 'home' | 'contents' | 'info' | 'nav' | 'route' | 'search' | null => {
-    // For search results on Maps page
+  const sidePanelType = useMemo((): 'home' | 'contents' | 'info' | 'nav' | 'maps' | 'route' | 'search' | null => {
+    // Search results:
+    // - On /maps we keep the panel as "maps" so we can show list <-> detail in one UI.
+    // - On /maps/route/* we use "search" bottom-sheet behavior.
     if (isRoutesPage && searchResult) {
-      return 'search'
+      return pathname === '/maps' ? 'maps' : 'search'
     }
     
     // For routes pages
     if (isRoutesPage && sidePanelWidth === 'routes' && hasRoute) {
       return 'route'
+    }
+
+    // Maps default panel (recommended list)
+    if (pathname === '/maps' && sidePanelWidth === 'routes') {
+      return 'maps'
     }
     
     // For fixed panels (always show regardless of sidebar state)

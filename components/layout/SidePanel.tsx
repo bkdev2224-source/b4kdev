@@ -9,7 +9,7 @@ import { useSearchResult } from '@/components/providers/SearchContext'
 import { getSidePanelLeft, getSidePanelWidthClass } from '@/lib/utils/layout'
 
 interface SidePanelProps {
-  type: 'home' | 'contents' | 'info' | 'nav' | 'route' | 'search' | null
+  type: 'home' | 'contents' | 'info' | 'nav' | 'maps' | 'route' | 'search' | null
   route?: Route | null
   routeId?: string | null
   visible?: boolean

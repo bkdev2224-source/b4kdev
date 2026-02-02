@@ -175,6 +175,43 @@ body {
   scrollbar-width: none;
 }
 
+/* Themed scrollbars (light/dark) */
+.themed-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(23, 23, 23, 0.35) transparent; /* thumb track */
+}
+
+.themed-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.themed-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.themed-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(23, 23, 23, 0.28);
+  border-radius: 9999px;
+  border: 2px solid transparent; /* creates padding */
+  background-clip: content-box;
+}
+
+.themed-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(23, 23, 23, 0.4);
+}
+
+.dark .themed-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+.dark .themed-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.dark .themed-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.34);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html:focus-within {
     scroll-behavior: auto;

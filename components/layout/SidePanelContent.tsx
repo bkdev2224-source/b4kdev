@@ -1,13 +1,13 @@
 "use client"
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Route } from '@/lib/services/routes'
 import { useSearchResult } from '@/components/providers/SearchContext'
 import { useCart } from '@/components/providers/CartContext'
 import { useKContentsBySubName, useKContentsByPOIId } from '@/lib/hooks/useKContents'
 import { usePOIs } from '@/lib/hooks/usePOIs'
-import { useMemo } from 'react'
+import type { POIJson } from '@/types'
 
 interface SidePanelItem {
   id: string
@@ -17,16 +17,16 @@ interface SidePanelItem {
 }
 
 interface SidePanelContentProps {
-  type: 'home' | 'contents' | 'info' | 'nav' | 'route' | 'search' | null
+  type: 'home' | 'contents' | 'info' | 'nav' | 'maps' | 'route' | 'search' | null
   route?: Route | null
   routeId?: string | null
 }
 
 export function SidePanelContent({ type, route, routeId }: SidePanelContentProps) {
   const [activeTab, setActiveTab] = useState<'home' | 'reviews' | 'photos' | 'info'>('home')
-  const { searchResult, setSearchResult, showMapRoute, setShowMapRoute } = useSearchResult()
+  const { searchResult, setSearchResult } = useSearchResult()
   const { cartItems, addToCart, removeFromCart, isInCart } = useCart()
-  const { pois } = usePOIs()
+  const { pois, loading: poisLoading, error: poisError } = usePOIs({ enabled: type === 'maps' || type === 'search' })
   const poiById = useMemo(() => new Map(pois.map((p) => [p._id.$oid, p])), [pois])
 
   // Hooks must be called unconditionally (rules-of-hooks)
@@ -70,6 +70,40 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
     { id: 'info', name: 'Info', href: '/info' },
     { id: 'mypage', name: 'MyPage', href: '/mypage' },
   ]
+
+  const formatEntryFee = (fee: string) => {
+    const trimmed = (fee || '').trim()
+    if (!trimmed) return '—'
+    return trimmed
+  }
+
+  const isInPoiCart = (poiId: string) => isInCart(`poi-${poiId}`)
+
+  const togglePoiCart = (poi: POIJson) => {
+    const cartItemId = `poi-${poi._id.$oid}`
+    if (isInCart(cartItemId)) {
+      removeFromCart(cartItemId)
+    } else {
+      addToCart({
+        id: cartItemId,
+        name: poi.name,
+        type: 'poi',
+        poiId: poi._id.$oid,
+      })
+    }
+  }
+
+  const recommendedPois = useMemo(() => {
+    if (type !== 'maps') return [] as POIJson[]
+    // Deterministic "shuffle": sort by a stable hash of the id so we get variety
+    // but don't flicker on every render.
+    const hash = (s: string) => {
+      let h = 0
+      for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
+      return h >>> 0
+    }
+    return [...pois].sort((a, b) => hash(a._id.$oid) - hash(b._id.$oid)).slice(0, 20)
+  }, [type, pois])
 
   // Render route details
   if (type === 'route' && route) {
@@ -186,7 +220,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
         </div>
 
         {/* Tab Content */}
-        <div className="px-4 py-6 flex-1 overflow-y-auto">
+        <div className="themed-scrollbar px-4 py-6 flex-1 overflow-y-auto">
           {activeTab === 'home' && (
             <div className="space-y-4">
               {/* Address */}
@@ -347,7 +381,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
         <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-gray-100">
           Sections
         </h3>
-        <nav className="mt-4 flex-1 overflow-y-auto space-y-1">
+        <nav className="themed-scrollbar mt-4 flex-1 overflow-y-auto space-y-1">
           {homeSections.map((item) => (
             <Link
               key={item.id}
@@ -374,7 +408,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
         <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-gray-100">
           Categories
         </h3>
-        <nav className="mt-4 flex-1 overflow-y-auto space-y-1">
+        <nav className="themed-scrollbar mt-4 flex-1 overflow-y-auto space-y-1">
           {contentCategories.map((item) => (
             <Link
               key={item.id}
@@ -401,7 +435,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
         <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-gray-100">
           Info
         </h3>
-        <nav className="mt-4 flex-1 overflow-y-auto space-y-1">
+        <nav className="themed-scrollbar mt-4 flex-1 overflow-y-auto space-y-1">
           {infoSections.map((item) => (
             <Link
               key={item.id}
@@ -433,7 +467,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
         <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-gray-100">
           Navigation
         </h3>
-        <nav className="mt-4 flex-1 overflow-y-auto space-y-1">
+        <nav className="themed-scrollbar mt-4 flex-1 overflow-y-auto space-y-1">
           {navLinks.map((item) => (
             <Link
               key={item.id}
@@ -454,7 +488,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
   }
 
   // Render search result
-  if (type === 'search' && searchResult) {
+  if ((type === 'search' || type === 'maps') && searchResult) {
     const poi =
       searchResult.type === 'poi' && searchResult.poiId
         ? poiById.get(searchResult.poiId) ?? null
@@ -480,9 +514,9 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
               setSearchResult(null)
             }}
             className="focus-ring p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-            aria-label={hasCartItems ? "Go Back" : "Close"}
+            aria-label={type === 'maps' ? "Back to list" : hasCartItems ? "Go Back" : "Close"}
           >
-            {hasCartItems ? (
+            {type === 'maps' || hasCartItems ? (
               <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
@@ -496,7 +530,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-4 py-6">
+        <div className="themed-scrollbar flex-1 overflow-y-auto px-4 py-6">
           {poi && (() => {
             const cartItemId = `poi-${poi._id.$oid}`
             const inCart = isInCart(cartItemId)
@@ -639,6 +673,145 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
               </Link>
             </div>
           )}
+        </div>
+      </div>
+    )
+  }
+
+  // Render maps panel (Naver-style: recommended list)
+  if (type === 'maps') {
+    const total = Math.min(pois.length, 20)
+
+    return (
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 pt-4 pb-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold tracking-wide text-gray-500 dark:text-gray-400">
+                Smart Around
+              </p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
+                Recommended nearby
+              </h2>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="text-xs text-gray-500 dark:text-gray-400">Recommended</span>
+              <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* List */}
+        <div className="themed-scrollbar flex-1 overflow-y-auto">
+          {poisError && (
+            <div className="px-4 py-4 text-sm text-red-600 dark:text-red-400">
+              Failed to load places: {poisError}
+            </div>
+          )}
+
+          {poisLoading && recommendedPois.length === 0 && (
+            <div className="px-4 py-4 text-sm text-gray-600 dark:text-gray-400">
+              Loading recommendations…
+            </div>
+          )}
+
+          {!poisLoading && !poisError && recommendedPois.length === 0 && (
+            <div className="px-4 py-4 text-sm text-gray-600 dark:text-gray-400">
+              No places to show yet.
+            </div>
+          )}
+
+          <div className="divide-y divide-gray-100 dark:divide-gray-800">
+            {recommendedPois.map((poi, idx) => {
+              const inCart = isInPoiCart(poi._id.$oid)
+              return (
+                <button
+                  key={poi._id.$oid}
+                  type="button"
+                  onClick={() => {
+                    setSearchResult({ name: poi.name, type: 'poi', poiId: poi._id.$oid })
+                  }}
+                  className="w-full text-left px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <div className="flex gap-3">
+                    <div className="relative w-28 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-800">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`https://picsum.photos/seed/${poi._id.$oid}/280/200`}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/60 text-white text-[10px] font-semibold">
+                        {idx + 1}/{total}
+                      </div>
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="flex items-baseline gap-2">
+                            <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+                              {poi.name}
+                            </p>
+                            {poi.categoryTags?.[0] && (
+                              <span className="text-[11px] text-gray-500 dark:text-gray-400 flex-shrink-0">
+                                {poi.categoryTags[0]}
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-1 text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+                            {poi.address}
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-gray-500 dark:text-gray-400">
+                            <span>Fee: {formatEntryFee(poi.entryFee)}</span>
+                            {poi.openingHours && <span>· {poi.openingHours}</span>}
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            togglePoiCart(poi)
+                          }}
+                          className={`focus-ring p-2 rounded-full transition-colors ${
+                            inCart
+                              ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          }`}
+                          aria-label={inCart ? 'Remove from cart' : 'Add to cart'}
+                          title={inCart ? 'Remove from cart' : 'Add to cart'}
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill={inCart ? 'currentColor' : 'none'}
+                            stroke={inCart ? 'none' : 'currentColor'}
+                            viewBox="0 0 24 24"
+                          >
+                            {inCart ? (
+                              <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.15.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                            ) : (
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                              />
+                            )}
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
     )

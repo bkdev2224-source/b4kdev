@@ -54,9 +54,8 @@ export default function MapsPage() {
       ? LAYOUT_CONSTANTS.SIDEBAR_OPEN_WIDTH 
       : LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH
     
-    // Check if side panel is actually visible using layout.showSidePanel
-    // This is the most accurate way to determine if side panel is shown
-    const hasSidePanel = layout.showSidePanel && (layout.sidePanelType === 'search' || layout.sidePanelType === 'route')
+    // Side panel is always reserved on desktop maps when layout.showSidePanel is true.
+    const hasSidePanel = layout.showSidePanel
     const sidePanelWidth = hasSidePanel ? LAYOUT_CONSTANTS.SIDE_PANEL_ROUTES_WIDTH : '0px'
     
     // Calculate left position: start after sidebar + side panel, then add 10% padding
@@ -77,6 +76,22 @@ export default function MapsPage() {
     
     return { left, right, maxWidth }
   }, [isDesktop, sidebarOpen, layout.showSidePanel, layout.sidePanelType])
+
+  // Map viewport should not sit under sidebar/panel on desktop.
+  const mapViewportPosition = useMemo(() => {
+    if (!isDesktop) return { left: '0px' }
+
+    const sidebarWidth = sidebarOpen
+      ? LAYOUT_CONSTANTS.SIDEBAR_OPEN_WIDTH
+      : LAYOUT_CONSTANTS.SIDEBAR_CLOSED_WIDTH
+
+    const sidePanelWidth = layout.showSidePanel ? LAYOUT_CONSTANTS.SIDE_PANEL_ROUTES_WIDTH : '0px'
+    const left = layout.showSidePanel
+      ? `calc(${sidebarWidth} + ${sidePanelWidth})`
+      : `${sidebarWidth}`
+
+    return { left }
+  }, [isDesktop, sidebarOpen, layout.showSidePanel])
 
   // Get POIs to display based on search result or cart
   // ALWAYS include cart POIs for map route drawing - this is critical for polyline
@@ -234,8 +249,8 @@ export default function MapsPage() {
 
   return (
     <PageLayout showSidePanel={true} sidePanelWidth="routes">
-      {/* Map-only exception: map is a fixed background layer; sidebar/sidepanel overlay on top. */}
-      <div className="fixed inset-0 z-0 overflow-hidden">
+      {/* Desktop: reserve sidebar + side panel space for map viewport. */}
+      <div className="fixed inset-0 z-0 overflow-hidden" style={{ left: mapViewportPosition.left }}>
         <NaverMap center={mapCenter} zoom={mapZoom} pois={displayPOIs} cartOrderMap={cartOrderMap} hasSearchResult={!!searchResult} showMapRoute={showMapRoute} />
 
         {/* Bottom POI List - always show when cart has items (even when search result is shown) */}
