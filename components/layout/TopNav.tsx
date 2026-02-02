@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
+import { useDeferredValue, useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
@@ -56,6 +56,7 @@ export default function TopNav({
   const inputRef = useRef<HTMLInputElement>(null)
   const listboxId = 'topnav-search-results'
   const optionId = (idx: number) => `topnav-search-option-${idx}`
+  const deferredSearchQuery = useDeferredValue(searchQuery)
   
   // Maps 페이지인지 확인
   const isMapsPage = pathname === '/maps' || pathname?.startsWith('/maps/route')
@@ -81,13 +82,16 @@ export default function TopNav({
   const navClasses = topNavClasses || defaultClasses
 
   // 관련 검색어 계산 (POI 이름, 주소, 태그, subName 포함)
-  const { contents: allKContents } = useKContents()
-  const { pois: allPOIs } = usePOIs()
+  // Avoid eager fetching on every page load; only load data when search is used.
+  const shouldLoadSearchData = isFocused || Boolean(searchQuery.trim())
+  const { contents: allKContents, loading: kContentsLoading } = useKContents({ enabled: shouldLoadSearchData })
+  const { pois: allPOIs, loading: poisLoading } = usePOIs({ enabled: shouldLoadSearchData })
+  const isSearchDataLoading = shouldLoadSearchData && (kContentsLoading || poisLoading)
   
   const relatedSearches = useMemo(() => {
-    if (!searchQuery.trim()) return []
+    if (!deferredSearchQuery.trim()) return []
     
-    const query = searchQuery.toLowerCase()
+    const query = deferredSearchQuery.toLowerCase()
     const results: SearchResult[] = []
     const addedNames = new Set<string>()
     
@@ -112,7 +116,7 @@ export default function TopNav({
     })
     
     return results.slice(0, 5) // 최대 5개
-  }, [searchQuery, allKContents, allPOIs])
+  }, [deferredSearchQuery, allKContents, allPOIs])
 
   // 추천 검색어 결과 (POI ID 또는 subName 포함)
   const recommendedResults = useMemo(() => {
@@ -335,6 +339,11 @@ export default function TopNav({
                     Recommended Searches
                   </div>
                   <div className="space-y-1">
+                    {isSearchDataLoading && recommendedResults.length === 0 && (
+                      <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                        Loading suggestions…
+                      </div>
+                    )}
                     {recommendedResults.map((result, index) => {
                       const globalIndex = relatedSearches.length + index
                       const isSelected = selectedIndex === globalIndex

@@ -12,12 +12,17 @@ async function fetchJson<T>(url: string): Promise<T> {
   return (await res.json()) as T
 }
 
-export function usePOIs() {
+export function usePOIs(options?: { enabled?: boolean }) {
+  const enabled = options?.enabled ?? true
   const [pois, setPois] = useState<POIJson[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(enabled)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!enabled) {
+      setLoading(false)
+      return
+    }
     let cancelled = false
     setLoading(true)
     setError(null)
@@ -38,17 +43,23 @@ export function usePOIs() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [enabled])
 
   return { pois, loading, error }
 }
 
-export function usePOIById(poiId: string) {
+export function usePOIById(poiId: string, options?: { enabled?: boolean }) {
+  const enabled = options?.enabled ?? true
   const [poi, setPoi] = useState<POIJson | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(enabled)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!enabled) {
+      setLoading(false)
+      return
+    }
+
     if (!poiId) {
       setPoi(null)
       setLoading(false)
@@ -76,7 +87,7 @@ export function usePOIById(poiId: string) {
     return () => {
       cancelled = true
     }
-  }, [poiId])
+  }, [poiId, enabled])
 
   return { poi, loading, error }
 }

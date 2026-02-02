@@ -22,12 +22,17 @@ async function fetchKContents(url: string): Promise<KContentJson[]> {
 /**
  * 클라이언트 컴포넌트에서 KContents를 가져오는 훅
  */
-export function useKContents() {
+export function useKContents(options?: { enabled?: boolean }) {
+  const enabled = options?.enabled ?? true
   const [contents, setContents] = useState<KContentJson[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(enabled)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!enabled) {
+      setLoading(false)
+      return
+    }
     let cancelled = false
     setLoading(true)
     setError(null)
@@ -48,7 +53,7 @@ export function useKContents() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [enabled])
 
   return { contents, loading, error }
 }
