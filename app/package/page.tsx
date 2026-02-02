@@ -18,7 +18,7 @@ export default async function PackagePage() {
     const packages = pkgs.map((p) => toPackageJson(p as any))
 
     return (
-      <PageLayout showSidePanel={false} className="pb-8">
+      <PageLayout className="pb-8">
         <div className="w-full">
           <PackageCarousel packages={packages} />
         </div>
@@ -27,7 +27,7 @@ export default async function PackagePage() {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to load packages'
     return (
-      <PageLayout showSidePanel={false} className="pb-8">
+      <PageLayout className="pb-8">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center max-w-md px-6">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Failed to load</h1>

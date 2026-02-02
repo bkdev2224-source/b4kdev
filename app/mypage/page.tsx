@@ -73,7 +73,7 @@ export default function MyPage() {
 
   if (status === "loading") {
     return (
-      <PageLayout showSidePanel={false} className="pb-8 px-6">
+      <PageLayout className="pb-8 px-6">
         <div className="container mx-auto">
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
@@ -83,7 +83,7 @@ export default function MyPage() {
 
   if (!session) {
     return (
-      <PageLayout showSidePanel={false} className="pb-8 px-6">
+      <PageLayout className="pb-8 px-6">
         <div className="container mx-auto">
           <p className="text-gray-600 dark:text-gray-400">Redirecting to sign in…</p>
         </div>
@@ -92,7 +92,7 @@ export default function MyPage() {
   }
 
   return (
-    <PageLayout showSidePanel={false} className="pb-8 px-6">
+    <PageLayout className="pb-8 px-6">
         <div className="container mx-auto max-w-4xl">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">MyPage</h1>
           

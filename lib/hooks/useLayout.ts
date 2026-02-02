@@ -54,24 +54,18 @@ export function useLayout(options: UseLayoutOptions = {}) {
       return 'none'
     }
     
-    // For fixed panels (default), always show on pages that actually have a panel (regardless of sidebar state)
+    // For fixed panels (default), always show on non-maps pages (regardless of sidebar state)
     if (sidePanelWidth === 'default') {
-      const supportsDefaultPanel =
-        pathname === '/' ||
-        pathname === '/contents' ||
-        pathname?.startsWith('/contents') ||
-        pathname === '/info' ||
-        pathname?.startsWith('/info') ||
-        pathname === '/privacy' ||
-        pathname === '/terms'
-      return supportsDefaultPanel ? 'default' : 'none'
+      // Keep Maps full-width unless it's showing search results (handled above).
+      if (isRoutesPage) return 'none'
+      return 'default'
     }
     
     return sidePanelWidth
   }, [showSidePanel, sidePanelWidth, isRoutesPage, pathname, searchResult])
 
   // Determine side panel type
-  const sidePanelType = useMemo((): 'home' | 'contents' | 'info' | 'route' | 'search' | null => {
+  const sidePanelType = useMemo((): 'home' | 'contents' | 'info' | 'nav' | 'route' | 'search' | null => {
     // For search results on Maps page
     if (isRoutesPage && searchResult) {
       return 'search'
@@ -84,10 +78,14 @@ export function useLayout(options: UseLayoutOptions = {}) {
     
     // For fixed panels (always show regardless of sidebar state)
     if (sidePanelWidth === 'default') {
+      // Keep Maps free unless it's route/search (handled above).
+      if (isRoutesPage) return null
       if (pathname === '/') return 'home'
       if (pathname === '/contents' || pathname?.startsWith('/contents')) return 'contents'
       if (pathname === '/info' || pathname?.startsWith('/info')) return 'info'
       if (pathname === '/privacy' || pathname === '/terms') return 'info'
+      // Default fallback: show a simple navigation panel on all other pages.
+      return 'nav'
     }
     
     return null

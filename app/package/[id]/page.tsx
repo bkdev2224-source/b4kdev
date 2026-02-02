@@ -26,7 +26,7 @@ export default async function PackageDetailPage({
 
     if (!pkg) {
       return (
-        <PageLayout showSidePanel={false}>
+        <PageLayout>
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Package Not Found</h1>
@@ -43,7 +43,7 @@ export default async function PackageDetailPage({
     }
 
     return (
-      <PageLayout showSidePanel={false}>
+      <PageLayout>
         {/* Banner image */}
         <div className="relative h-96">
           <Image
@@ -200,7 +200,7 @@ export default async function PackageDetailPage({
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to load'
     return (
-      <PageLayout showSidePanel={false}>
+      <PageLayout>
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center max-w-md px-6">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Failed to load</h1>

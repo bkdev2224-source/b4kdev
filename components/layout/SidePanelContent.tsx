@@ -17,7 +17,7 @@ interface SidePanelItem {
 }
 
 interface SidePanelContentProps {
-  type: 'home' | 'contents' | 'info' | 'route' | 'search' | null
+  type: 'home' | 'contents' | 'info' | 'nav' | 'route' | 'search' | null
   route?: Route | null
   routeId?: string | null
 }
@@ -59,6 +59,16 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
     { id: 'about', name: 'About Us', href: '/info' },
     { id: 'privacy', name: 'Privacy Policy', href: '/privacy' },
     { id: 'terms', name: 'Terms & Conditions', href: '/terms' },
+  ]
+
+  // Generic navigation (used as a fallback on pages like POI/Package/MyPage)
+  const navLinks: SidePanelItem[] = [
+    { id: 'home', name: 'Home', href: '/' },
+    { id: 'packages', name: 'Packages', href: '/package' },
+    { id: 'maps', name: 'Map', href: '/maps' },
+    { id: 'contents', name: 'Contents', href: '/contents' },
+    { id: 'info', name: 'Info', href: '/info' },
+    { id: 'mypage', name: 'MyPage', href: '/mypage' },
   ]
 
   // Render route details
@@ -406,6 +416,33 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                     strokeWidth={2}
                     d="M9 5l7 7-7 7"
                   />
+                </svg>
+              </span>
+              <span className="text-sm font-medium flex-1">{item.name}</span>
+            </Link>
+          ))}
+        </nav>
+      </div>
+    )
+  }
+
+  // Render generic navigation fallback
+  if (type === 'nav') {
+    return (
+      <div className="px-6 pb-6 pt-4 h-full flex flex-col">
+        <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-gray-100">
+          Navigation
+        </h3>
+        <nav className="mt-4 flex-1 overflow-y-auto space-y-1">
+          {navLinks.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="focus-ring flex items-start gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+            >
+              <span className="mt-0.5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
               <span className="text-sm font-medium flex-1">{item.name}</span>
