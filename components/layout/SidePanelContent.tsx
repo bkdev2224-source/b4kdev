@@ -56,9 +56,9 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
 
   // Info page sections
   const infoSections: SidePanelItem[] = [
-    { id: 'about', name: 'About Us', href: '/info?section=about' },
-    { id: 'privacy', name: 'Privacy Policy', href: '/info?section=privacy' },
-    { id: 'terms', name: 'Terms & Conditions', href: '/info?section=terms' },
+    { id: 'about', name: 'About Us', href: '/info' },
+    { id: 'privacy', name: 'Privacy Policy', href: '/privacy' },
+    { id: 'terms', name: 'Terms & Conditions', href: '/terms' },
   ]
 
   // Render route details

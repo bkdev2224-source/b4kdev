@@ -61,7 +61,9 @@ export function useLayout(options: UseLayoutOptions = {}) {
         pathname === '/contents' ||
         pathname?.startsWith('/contents') ||
         pathname === '/info' ||
-        pathname?.startsWith('/info')
+        pathname?.startsWith('/info') ||
+        pathname === '/privacy' ||
+        pathname === '/terms'
       return supportsDefaultPanel ? 'default' : 'none'
     }
     
@@ -85,6 +87,7 @@ export function useLayout(options: UseLayoutOptions = {}) {
       if (pathname === '/') return 'home'
       if (pathname === '/contents' || pathname?.startsWith('/contents')) return 'contents'
       if (pathname === '/info' || pathname?.startsWith('/info')) return 'info'
+      if (pathname === '/privacy' || pathname === '/terms') return 'info'
     }
     
     return null
