@@ -215,20 +215,11 @@ export default function MapsPage() {
       scrollElement.addEventListener('scroll', checkScrollButtons)
       window.addEventListener('resize', checkScrollButtons)
       
-      // Center scroll position when items change (add/remove)
-      // Only center if content is smaller than container
-      const centerScroll = () => {
-        if (scrollElement.scrollWidth <= scrollElement.clientWidth) {
-          scrollElement.scrollLeft = 0
-        } else {
-          // If content is larger, try to center the scroll
-          const maxScroll = scrollElement.scrollWidth - scrollElement.clientWidth
-          scrollElement.scrollLeft = maxScroll / 2
-        }
+      // If content fits, keep it aligned to the start.
+      // (Avoid forced centering, which causes "cut off" cards at both ends.)
+      if (scrollElement.scrollWidth <= scrollElement.clientWidth) {
+        scrollElement.scrollLeft = 0
       }
-      
-      // Small delay to ensure DOM is updated
-      setTimeout(centerScroll, 0)
       
       return () => {
         scrollElement.removeEventListener('scroll', checkScrollButtons)
@@ -265,12 +256,15 @@ export default function MapsPage() {
               margin: '0 auto'
             }}
           >
-            <div className="pointer-events-auto relative w-full flex justify-center" style={{ paddingLeft: canScrollLeft ? '3rem' : '1rem', paddingRight: canScrollRight ? '3rem' : '1rem' }}>
+            <div className="pointer-events-auto relative w-full">
+              {/* Clean rail (simple + consistent, like major map UIs) */}
+              <div className="relative w-full rounded-2xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-md border border-gray-200/60 dark:border-gray-700/60 shadow-lg overflow-hidden">
+
               {/* Left scroll button */}
               {canScrollLeft && (
                 <button
                   onClick={() => scrollCart('left')}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg border border-gray-200 transition-all"
+                  className="focus-ring absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 rounded-full p-2 shadow-md border border-gray-200/70 dark:border-gray-700/70 transition-colors"
                   aria-label="Scroll left"
                 >
                   <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,7 +277,7 @@ export default function MapsPage() {
               {canScrollRight && (
                 <button
                   onClick={() => scrollCart('right')}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg border border-gray-200 transition-all"
+                  className="focus-ring absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 rounded-full p-2 shadow-md border border-gray-200/70 dark:border-gray-700/70 transition-colors"
                   aria-label="Scroll right"
                 >
                   <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -294,56 +288,60 @@ export default function MapsPage() {
 
               <div 
                 ref={cartScrollRef}
-                className="flex items-center gap-3 overflow-x-auto scrollbar-hide w-full"
+                className="flex items-stretch gap-2 overflow-x-auto scrollbar-hide w-full snap-x snap-proximity scroll-px-3 pl-3 pr-3 py-2"
                 style={{ 
                   scrollbarWidth: 'none', 
                   msOverflowStyle: 'none',
-                  justifyContent: 'center',
-                  paddingLeft: '1rem',
-                  paddingRight: '1rem'
+                  justifyContent: 'flex-start',
                 }}
                 onScroll={checkScrollButtons}
               >
-                <style jsx>{`
-                  .scrollbar-hide::-webkit-scrollbar {
-                    display: none;
-                  }
-                `}</style>
                 {orderedCartPOIs.map(({ poi, order, cartItemId }, index) => (
-                  <div key={poi._id.$oid} className="flex items-center gap-3 flex-shrink-0">
-                    {/* Floating Box for each POI */}
-                    <div className="relative bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200/50 p-3 min-w-[200px] max-w-[200px] transition-all hover:shadow-xl hover:scale-105">
-                      {/* Delete button - top right */}
-                      <button
-                        onClick={() => removeFromCart(cartItemId)}
-                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg transition-all z-10"
-                        aria-label="Remove from cart"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                      
-                      {/* Order badge */}
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs">
+                  <div key={poi._id.$oid} className="flex items-stretch gap-3 flex-shrink-0 snap-start">
+                    {/* Simple card (fixed height to prevent "crooked" rows) */}
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200/80 dark:border-gray-700/70 px-3 py-3 w-[280px] h-[84px] shadow-sm">
+                      <div className="flex items-start gap-3 h-full">
+                        {/* Order badge */}
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 flex items-center justify-center font-bold text-xs">
                           {order}
                         </div>
-                        <h3 className="font-semibold text-gray-900 text-sm truncate flex-1">{poi.name}</h3>
+
+                        <div className="min-w-0 flex-1 flex flex-col justify-between h-full">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-snug truncate">
+                              {poi.name}
+                            </h3>
+                            <button
+                              type="button"
+                              onClick={() => removeFromCart(cartItemId)}
+                              className="focus-ring -mt-1 -mr-1 p-1.5 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                              aria-label="Remove from cart"
+                              title="Remove"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+
+                          <p className="text-gray-600 dark:text-gray-400 text-xs leading-snug line-clamp-2">
+                            {poi.address}
+                          </p>
+                        </div>
                       </div>
-                      <p className="text-gray-600 text-xs line-clamp-2 ml-9">{poi.address}</p>
                     </div>
                     
                     {/* Arrow connector - show between items, not after last item */}
                     {index < orderedCartPOIs.length - 1 && (
-                      <div className="flex-shrink-0 flex items-center">
-                        <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="flex-shrink-0 flex items-center self-center">
+                        <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
                     )}
                   </div>
                 ))}
+              </div>
               </div>
             </div>
           </div>
