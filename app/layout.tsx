@@ -98,6 +98,12 @@ export default function RootLayout({
         )}
       </head>
       <body className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50 transition-colors">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-gray-900 focus:shadow-lg dark:focus:bg-gray-900 dark:focus:text-gray-100 focus-ring"
+        >
+          Skip to content
+        </a>
         <ThemeProvider>
           <SessionProvider>
             <SidebarProvider>

@@ -70,7 +70,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
           {routeId ? (
             <Link
               href="/maps"
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+              className="focus-ring p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
               aria-label="Go back"
             >
               <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,7 +86,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
           {routeId ? (
             <Link
               href="/maps"
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+              className="focus-ring p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
               aria-label="Close"
             >
               <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,30 +124,30 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
 
         {/* Action Buttons */}
         <div className="px-4 pb-4 flex gap-3 flex-shrink-0">
-          <button className="flex-1 py-3 px-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+          <button className="focus-ring flex-1 py-3 px-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
             Depart
           </button>
-          <button className="flex-1 py-3 px-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
+          <button className="focus-ring flex-1 py-3 px-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
             Arrive
           </button>
         </div>
 
         {/* Functional Icons */}
         <div className="px-4 pb-4 flex gap-6 flex-shrink-0">
-          <button className="flex flex-col items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+          <button className="focus-ring flex flex-col items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors rounded-lg px-2 py-1">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
             </svg>
             <span className="text-xs">Save</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+          <button className="focus-ring flex flex-col items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors rounded-lg px-2 py-1">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             <span className="text-xs">Street View</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+          <button className="focus-ring flex flex-col items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors rounded-lg px-2 py-1">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
             </svg>
@@ -162,7 +162,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                className={`focus-ring py-3 px-1 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab
                     ? 'border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100'
                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
@@ -186,7 +186,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                 </svg>
                 <div className="flex-1">
                   <p className="text-gray-900 dark:text-gray-100 text-sm">{route.startLocation.address}</p>
-                  <button className="text-gray-500 dark:text-gray-400 text-xs mt-1 flex items-center gap-1">
+                  <button className="focus-ring text-gray-600 dark:text-gray-300 text-xs mt-1 flex items-center gap-1 rounded">
                     <span>More</span>
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -204,10 +204,10 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                   <p className="text-gray-900 dark:text-gray-100 text-sm">
                     From {route.startLocation.name}, take {route.transportation.join(', ')}
                   </p>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                  <p className="text-gray-600 dark:text-gray-300 text-xs mt-1">
                     Distance: {route.distance} • Duration: {route.duration}
                   </p>
-                  <button className="text-gray-500 dark:text-gray-400 text-xs mt-1 flex items-center gap-1">
+                  <button className="focus-ring text-gray-600 dark:text-gray-300 text-xs mt-1 flex items-center gap-1 rounded">
                     <span>More</span>
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -224,7 +224,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                   </svg>
                   <div className="flex-1">
                     <p className="text-gray-900 dark:text-gray-100 text-sm">{route.operatingHours}</p>
-                    <button className="text-gray-500 dark:text-gray-400 text-xs mt-1 flex items-center gap-1">
+                    <button className="focus-ring text-gray-600 dark:text-gray-300 text-xs mt-1 flex items-center gap-1 rounded">
                       <span>More</span>
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -243,14 +243,14 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <p className="text-gray-900 dark:text-gray-100 text-sm">{route.phoneNumber}</p>
-                      <button className="text-gray-600 dark:text-gray-400 text-xs font-medium">Copy</button>
+                      <button className="focus-ring text-gray-700 dark:text-gray-300 text-xs font-medium rounded px-1">Copy</button>
                     </div>
                   </div>
                 </div>
               )}
 
               {/* More Information Button */}
-              <button className="w-full py-3 px-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mt-4">
+              <button className="focus-ring w-full py-3 px-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mt-4">
                 More Information &gt;
               </button>
             </div>
@@ -320,7 +320,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
             <Link
               key={item.id}
               href={item.href}
-              className="flex items-start gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+              className="focus-ring flex items-start gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
             >
               <span className="mt-0.5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,7 +347,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
             <Link
               key={item.id}
               href={item.href}
-              className="flex items-start gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+              className="focus-ring flex items-start gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
             >
               <span className="mt-0.5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -374,7 +374,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
             <Link
               key={item.id}
               href={item.href}
-              className="flex items-start gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+              className="focus-ring flex items-start gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
             >
               <span className="mt-0.5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -419,7 +419,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
             onClick={() => {
               setSearchResult(null)
             }}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+            className="focus-ring p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
             aria-label={hasCartItems ? "Go Back" : "Close"}
           >
             {hasCartItems ? (
@@ -460,7 +460,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                           })
                         }
                       }}
-                      className={`p-2 rounded-full transition-all ${
+                      className={`focus-ring p-2 rounded-full transition-all ${
                         inCart 
                           ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200' 
                           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -517,7 +517,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
 
                 <Link
                   href={`/poi/${poi._id.$oid}`}
-                  className="block w-full py-3 px-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors text-center"
+                  className="focus-ring block w-full py-3 px-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors text-center"
                 >
                   View Full Details &gt;
                 </Link>
@@ -548,7 +548,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                           })
                         }
                       }}
-                      className="w-full text-left p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className="focus-ring w-full text-left p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                       <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm mb-1">{content.spotName}</h4>
                       <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 mb-2">{content.description}</p>
@@ -571,7 +571,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
 
               <Link
                 href={`/contents/${searchResult.subName || ''}`}
-                className="block w-full py-3 px-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors text-center"
+                className="focus-ring block w-full py-3 px-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors text-center"
               >
                 View All Spots &gt;
               </Link>

@@ -118,11 +118,11 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`group relative flex items-center gap-3 px-5 py-1.5 rounded-full transition-colors ${
+                className={`focus-ring group relative flex items-center gap-3 px-5 py-1.5 rounded-full transition-colors ${
                   isActive
                     ? 'text-gray-900 dark:text-gray-100'
                     : 'text-gray-700 dark:text-gray-300'
-                } ${sidebarOpen && !isActive ? 'hover:bg-gray-50 dark:hover:bg-gray-800' : ''}`}
+                } ${!isActive ? 'hover:bg-gray-50 dark:hover:bg-gray-800' : ''}`}
                 title={!sidebarOpen ? item.name : undefined}
               >
                 {/* Active highlight: circle (collapsed) -> pill (expanded) */}
@@ -165,7 +165,7 @@ export default function Sidebar() {
         <div className="flex-shrink-0 px-4 pb-4 pt-2 relative">
           <button
             onClick={toggleSidebar}
-            className="w-full py-3 rounded-lg flex items-center justify-center transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 relative"
+            className="focus-ring w-full py-3 rounded-lg flex items-center justify-center transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 relative"
             aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
             {/* Expand icon - always centered */}

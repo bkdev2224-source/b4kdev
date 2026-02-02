@@ -230,7 +230,7 @@ export default function TopNav({
           <button
             type="button"
             onClick={toggleSidebar}
-            className="lg:hidden p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="focus-ring lg:hidden p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label={sidebarOpen ? "Close menu" : "Open menu"}
           >
             <svg className="w-6 h-6 text-gray-800 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,10 +255,10 @@ export default function TopNav({
                 // 검색어를 지워도 SearchContext는 유지 (사이드 패널 유지)
               }}
               onFocus={handleFocus}
-              className="w-full px-4 sm:px-6 py-2 pl-10 sm:pl-12 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600 transition-all bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 placeholder-white/70 dark:placeholder-gray-500 border border-gray-700/60 dark:border-gray-300/60"
+              className="focus-ring w-full px-4 sm:px-6 py-2 pl-10 sm:pl-12 rounded-full text-sm transition-colors bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 border border-gray-300/80 dark:border-gray-700/70"
             />
             <svg
-              className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white dark:text-gray-900"
+              className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -277,7 +277,7 @@ export default function TopNav({
                 {/* 관련 검색어 */}
                 {searchQuery.trim() && relatedSearches.length > 0 && (
                   <div className="p-4 border-b border-gray-100 dark:border-gray-800">
-                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">
+                    <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 uppercase tracking-wide">
                       Related Searches
                     </div>
                     <div className="space-y-1">
@@ -288,7 +288,7 @@ export default function TopNav({
                           <button
                             key={index}
                             onClick={() => handleSearchClick(result)}
-                            className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
+                            className={`focus-ring w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                               isSelected 
                                 ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100' 
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -309,7 +309,7 @@ export default function TopNav({
                 
                 {/* 추천 검색어 */}
                 <div className="p-4">
-                  <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">
+                  <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2 uppercase tracking-wide">
                     Recommended Searches
                   </div>
                   <div className="space-y-1">
@@ -320,7 +320,7 @@ export default function TopNav({
                         <button
                           key={index}
                           onClick={() => handleSearchClick(result)}
-                          className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
+                          className={`focus-ring w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                             isSelected 
                               ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100' 
                               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -349,7 +349,7 @@ export default function TopNav({
               // TODO: Navigate to favorites page or open modal
               console.log('Favorites clicked')
             }}
-            className="hidden lg:inline-flex p-2 rounded-full bg-gray-100 dark:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="focus-ring hidden lg:inline-flex p-2 rounded-full bg-gray-100 dark:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
             aria-label="Favorites"
             title="Favorites"
           >
