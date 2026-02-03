@@ -52,7 +52,7 @@ export default function PageLayout({
 
       <main
         id="main-content"
-        className={`pt-16 pb-16 lg:pb-0 transition-all duration-300 overflow-x-hidden ${layout.mainClasses} ${className}`}
+        className={`pt-16 pb-16 lg:pb-0 transition-[margin,padding] duration-300 overflow-x-hidden ${layout.mainClasses} ${className}`}
       >
         {children}
       </main>

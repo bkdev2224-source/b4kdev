@@ -555,7 +555,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                           })
                         }
                       }}
-                      className={`focus-ring p-2 rounded-full transition-all ${
+                      className={`focus-ring p-2 rounded-full transition-colors ${
                         inCart 
                           ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200' 
                           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -728,13 +728,20 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
             {recommendedPois.map((poi, idx) => {
               const inCart = isInPoiCart(poi._id.$oid)
               return (
-                <button
+                <div
                   key={poi._id.$oid}
-                  type="button"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => {
                     setSearchResult({ name: poi.name, type: 'poi', poiId: poi._id.$oid })
                   }}
-                  className="w-full text-left px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setSearchResult({ name: poi.name, type: 'poi', poiId: poi._id.$oid })
+                    }
+                  }}
+                  className="focus-ring w-full text-left px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 >
                   <div className="flex gap-3">
                     <div className="relative w-28 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-800">
@@ -808,7 +815,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                       </div>
                     </div>
                   </div>
-                </button>
+                </div>
               )
             })}
           </div>

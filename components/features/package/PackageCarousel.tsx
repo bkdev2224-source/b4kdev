@@ -102,7 +102,7 @@ export default function PackageCarousel({ packages }: PackageCarouselProps) {
               role="listitem"
               className="focus-ring flex-shrink-0 w-[360px] group cursor-pointer no-underline rounded-xl"
             >
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg transition-all duration-200 h-full">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg transition-[border-color,box-shadow] duration-200 h-full">
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden">
                   <Image

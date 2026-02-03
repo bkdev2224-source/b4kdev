@@ -137,7 +137,7 @@ export default async function POIDetailPage({
                 {kContents.map((content, index) => (
                   <div
                     key={`${content.poiId?.$oid ?? poi._id.$oid}-${content.spotName}-${index}`}
-                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-lg"
+                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-[border-color,box-shadow] duration-200 shadow-sm hover:shadow-lg"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">

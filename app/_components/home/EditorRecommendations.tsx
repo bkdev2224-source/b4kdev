@@ -85,7 +85,7 @@ export default function EditorRecommendations() {
               key={item.id}
               className="group"
             >
-              <div className="relative overflow-hidden rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-all duration-300">
+              <div className="relative overflow-hidden rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-[border-color,box-shadow] duration-300">
                 <div className="relative h-64 overflow-hidden">
                   <Image
                     src={item.imageUrl}

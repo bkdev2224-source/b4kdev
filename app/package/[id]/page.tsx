@@ -104,7 +104,7 @@ export default async function PackageDetailPage({
               {pkg.highlights.map((highlight, index) => (
                 <div
                   key={`${highlight}-${index}`}
-                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-lg flex items-center gap-3"
+                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 hover:border-gray-400 dark:hover:border-gray-600 transition-[border-color,box-shadow] duration-200 shadow-sm hover:shadow-lg flex items-center gap-3"
                 >
                   <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-gray-700 dark:text-gray-300 font-bold">{index + 1}</span>
@@ -163,7 +163,7 @@ export default async function PackageDetailPage({
             {pkg.itinerary.map((day, index) => (
               <div
                 key={`${day.day}-${day.city}-${index}`}
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-200 shadow-sm"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-[border-color,box-shadow] duration-200 shadow-sm"
               >
                 <div className="flex items-start gap-4">
                   <div className="w-16 h-16 bg-gray-900 dark:bg-gray-100 rounded-xl flex flex-col items-center justify-center flex-shrink-0 text-white dark:text-gray-900">

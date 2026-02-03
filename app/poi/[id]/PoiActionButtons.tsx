@@ -36,7 +36,7 @@ export default function PoiActionButtons({
             })
           }
         }}
-        className={`p-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+        className={`p-4 rounded-full shadow-lg hover:shadow-xl transition-[transform,box-shadow] hover:scale-105 ${
           inCart
             ? 'bg-gray-900 dark:bg-gray-100 hover:bg-gray-800 dark:hover:bg-gray-200'
             : 'bg-black/40 backdrop-blur-sm border border-white/20 hover:bg-black/50'
@@ -74,7 +74,7 @@ export default function PoiActionButtons({
           })
           router.push('/maps')
         }}
-        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-full shadow-lg hover:shadow-xl transition-[transform,box-shadow] hover:scale-105"
         aria-label="View on Map"
         title="View on Map"
       >

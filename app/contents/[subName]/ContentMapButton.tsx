@@ -18,7 +18,7 @@ export default function ContentMapButton({ subName }: { subName: string }) {
         })
         router.push('/maps')
       }}
-      className="focus-ring flex-shrink-0 p-3 bg-black/40 backdrop-blur-sm border border-white/20 rounded-full hover:bg-black/50 transition-all"
+      className="focus-ring flex-shrink-0 p-3 bg-black/40 backdrop-blur-sm border border-white/20 rounded-full hover:bg-black/50 transition-colors"
       aria-label="View on Map"
       title="View on Map"
     >

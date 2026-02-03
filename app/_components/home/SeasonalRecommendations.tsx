@@ -102,7 +102,7 @@ export default function SeasonalRecommendations() {
               href={item.href || '#'}
               className="focus-ring group no-underline rounded-xl"
             >
-              <div className="relative overflow-hidden rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg hover:scale-105">
+              <div className="relative overflow-hidden rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600 transition-[border-color,box-shadow,transform] duration-300 hover:shadow-lg hover:scale-105">
                 <div className="relative h-64 overflow-hidden">
                   <Image
                     src={item.imageUrl}

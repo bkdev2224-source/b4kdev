@@ -53,7 +53,7 @@ function LogoContentCard({
           <ArtistLogo
             subName={content.subName}
             size="md"
-            className="transition-all group-hover:shadow-md group-hover:border-gray-400 dark:group-hover:border-gray-600"
+            className="transition-[border-color,box-shadow] group-hover:shadow-md group-hover:border-gray-400 dark:group-hover:border-gray-600"
           />
 
           <div className="mt-4">
