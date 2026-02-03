@@ -61,7 +61,7 @@ export function useLayout(options: UseLayoutOptions = {}) {
     }
     
     return sidePanelWidth
-  }, [showSidePanel, sidePanelWidth, isRoutesPage, pathname, searchResult])
+  }, [showSidePanel, sidePanelWidth, isRoutesPage, searchResult])
 
   // Determine side panel type
   const sidePanelType = useMemo((): 'home' | 'contents' | 'info' | 'nav' | 'maps' | 'route' | 'search' | null => {
