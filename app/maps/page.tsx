@@ -1,5 +1,6 @@
 "use client"
 
+import dynamic from 'next/dynamic'
 import { useMemo, useState, useRef, useEffect } from 'react'
 import PageLayout from '@/components/layout/PageLayout'
 import { getAllRoutes } from '@/lib/services/routes'
@@ -12,7 +13,18 @@ import { LAYOUT_CONSTANTS } from '@/lib/utils/layout'
 import { useKContentsBySubName } from '@/lib/hooks/useKContents'
 import { usePOIs } from '@/lib/hooks/usePOIs'
 import type { POIJson } from '@/types'
-import NaverMap from './_components/naverMap'
+
+const NaverMap = dynamic(() => import('./_components/naverMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4" />
+        <p className="text-gray-600">Loading map...</p>
+      </div>
+    </div>
+  ),
+})
 
 export default function MapsPage() {
   const allRoutes = getAllRoutes()
