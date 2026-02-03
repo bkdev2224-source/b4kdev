@@ -14,11 +14,11 @@ export default function MapsLayout({
         <>
           <Script
             src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverMapClientId}&language=en&submodules=geocoder`}
-            strategy="beforeInteractive"
+            strategy="afterInteractive"
           />
           <Script
             id="naver-map-auth-failure"
-            strategy="beforeInteractive"
+            strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `
                 window.navermap_authFailure = function() {
