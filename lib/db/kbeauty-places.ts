@@ -10,6 +10,7 @@ const COLLECTION_NAME = 'kbeauty_places'
 export type KBeautyPlace = {
   name: string
   logoUrl?: string
+  backgroundUrl?: string
   instagram?: string
   youtube?: string
   twitter?: string
@@ -30,6 +31,7 @@ export async function getKBeautyPlaceByName(name: string): Promise<KBeautyPlace 
   return {
     name: (doc as any).name,
     logoUrl: (doc as any).logoUrl,
+    backgroundUrl: (doc as any).backgroundUrl,
     instagram: (doc as any).instagram,
     youtube: (doc as any).youtube,
     twitter: (doc as any).twitter,
@@ -47,6 +49,7 @@ export async function getAllKBeautyPlaces(): Promise<KBeautyPlace[]> {
   return docs.map((doc) => ({
     name: (doc as any).name,
     logoUrl: (doc as any).logoUrl,
+    backgroundUrl: (doc as any).backgroundUrl,
     instagram: (doc as any).instagram,
     youtube: (doc as any).youtube,
     twitter: (doc as any).twitter,

@@ -10,6 +10,7 @@ const COLLECTION_NAME = 'kfestival_places'
 export type KFestivalPlace = {
   name: string
   logoUrl?: string
+  backgroundUrl?: string
 }
 
 /**
@@ -26,6 +27,7 @@ export async function getKFestivalPlaceByName(name: string): Promise<KFestivalPl
   return {
     name: (doc as any).name,
     logoUrl: (doc as any).logoUrl,
+    backgroundUrl: (doc as any).backgroundUrl,
   }
 }
 
@@ -39,6 +41,7 @@ export async function getAllKFestivalPlaces(): Promise<KFestivalPlace[]> {
   return docs.map((doc) => ({
     name: (doc as any).name,
     logoUrl: (doc as any).logoUrl,
+    backgroundUrl: (doc as any).backgroundUrl,
   }))
 }
 

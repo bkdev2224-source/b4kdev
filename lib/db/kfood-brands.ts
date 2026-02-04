@@ -10,6 +10,7 @@ const COLLECTION_NAME = 'kfood_brands'
 export type KFoodBrand = {
   name: string
   logoUrl?: string
+  backgroundUrl?: string
 }
 
 /**
@@ -26,6 +27,7 @@ export async function getKFoodBrandByName(name: string): Promise<KFoodBrand | nu
   return {
     name: (doc as any).name,
     logoUrl: (doc as any).logoUrl,
+    backgroundUrl: (doc as any).backgroundUrl,
   }
 }
 
@@ -39,6 +41,7 @@ export async function getAllKFoodBrands(): Promise<KFoodBrand[]> {
   return docs.map((doc) => ({
     name: (doc as any).name,
     logoUrl: (doc as any).logoUrl,
+    backgroundUrl: (doc as any).backgroundUrl,
   }))
 }
 

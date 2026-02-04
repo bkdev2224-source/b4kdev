@@ -121,11 +121,13 @@ export default async function ContentDetailPage({
     let displayName = subName
     let socialLinks: { instagram?: string; youtube?: string; twitter?: string; wikipedia?: string } | null = null
     let agency: string | undefined = undefined
+    let backgroundUrl: string | null = null
     
     if (category === 'kpop') {
       const artist = await getKpopArtistByName(subName)
       if (artist) {
         logoUrl = artist.logoUrl ?? null
+        backgroundUrl = artist.backgroundUrl && artist.backgroundUrl !== '' ? artist.backgroundUrl : null
         displayName = artist.name ?? subName
         agency = artist.agency
         socialLinks = {
@@ -139,6 +141,7 @@ export default async function ContentDetailPage({
       const place = await getKBeautyPlaceByName(subName)
       if (place) {
         logoUrl = place.logoUrl ?? null
+        backgroundUrl = place.backgroundUrl && place.backgroundUrl !== '' ? place.backgroundUrl : null
         displayName = place.name ?? subName
         socialLinks = {
           instagram: place.instagram,
@@ -151,12 +154,14 @@ export default async function ContentDetailPage({
       const brand = await getKFoodBrandByName(subName)
       if (brand) {
         logoUrl = brand.logoUrl ?? null
+        backgroundUrl = brand.backgroundUrl && brand.backgroundUrl !== '' ? brand.backgroundUrl : null
         displayName = brand.name ?? subName
       }
     } else if (category === 'kfestival') {
       const place = await getKFestivalPlaceByName(subName)
       if (place) {
         logoUrl = place.logoUrl ?? null
+        backgroundUrl = place.backgroundUrl && place.backgroundUrl !== '' ? place.backgroundUrl : null
         displayName = place.name ?? subName
       }
     }
@@ -195,7 +200,7 @@ export default async function ContentDetailPage({
       {/* Banner image */}
       <div className="relative h-96">
         <Image
-          src={`https://picsum.photos/seed/${subName}/1920/600`}
+          src={backgroundUrl || `https://picsum.photos/seed/${subName}/1920/600`}
           alt={subName}
           fill
           sizes="100vw"

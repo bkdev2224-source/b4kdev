@@ -119,30 +119,35 @@ export default async function ContentsPage() {
           }, new Map<string, KContent>()).values()
         )
         
-        // logoUrl이 있는 항목만 필터링
+        // logoUrl 또는 backgroundUrl이 있는 항목만 필터링
         const itemsWithLogo = await Promise.all(
           uniqueBySubName.map(async (content) => {
             let logoUrl: string | null = null
+            let backgroundUrl: string | null = null
             if (section.id === 'kbeauty') {
               const place = await getKBeautyPlaceByName(content.subName)
               logoUrl = place?.logoUrl ?? null
+              backgroundUrl = place?.backgroundUrl && place.backgroundUrl !== '' ? place.backgroundUrl : null
             } else if (section.id === 'kpop') {
               const artist = await getKpopArtistByName(content.subName)
               logoUrl = artist?.logoUrl ?? null
+              backgroundUrl = artist?.backgroundUrl && artist.backgroundUrl !== '' ? artist.backgroundUrl : null
             } else if (section.id === 'kfood') {
               const brand = await getKFoodBrandByName(content.subName)
               logoUrl = brand?.logoUrl ?? null
+              backgroundUrl = brand?.backgroundUrl && brand.backgroundUrl !== '' ? brand.backgroundUrl : null
             } else if (section.id === 'kfestival') {
               const place = await getKFestivalPlaceByName(content.subName)
               logoUrl = place?.logoUrl ?? null
+              backgroundUrl = place?.backgroundUrl && place.backgroundUrl !== '' ? place.backgroundUrl : null
             }
-            return { content, logoUrl }
+            return { content, logoUrl, backgroundUrl }
           })
         )
         
-        // logoUrl이 있는 항목만 선택
+        // logoUrl 또는 backgroundUrl이 있는 항목만 선택
         const filteredItems = itemsWithLogo
-          .filter(({ logoUrl }) => logoUrl !== null)
+          .filter(({ logoUrl, backgroundUrl }) => logoUrl !== null || backgroundUrl !== null)
           .map(({ content }) => content)
         
         const previewItems = filteredItems.slice(0, 12)
