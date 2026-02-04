@@ -13,6 +13,8 @@ import { getKBeautyPlaceByName } from '@/lib/db/kbeauty-places'
 import { getKFoodBrandByName } from '@/lib/db/kfood-brands'
 import { getKFestivalPlaceByName } from '@/lib/db/kfestival-places'
 import { getSiteUrl } from '@/lib/config/env'
+import { getKFestivalPlaceName, getKFoodBrandName, getPOIName, getKContentSubName } from '@/lib/utils/locale'
+import { cookies } from 'next/headers'
 
 export const revalidate = 60
 
@@ -67,6 +69,10 @@ export default async function ContentDetailPage({
 }) {
   const rawSubName = params?.subName || ''
   const subName = decodeURIComponent(rawSubName)
+
+  // 서버에서 언어 가져오기 (쿠키에서)
+  const cookieStore = await cookies()
+  const language = (cookieStore.get('language')?.value || 'en') as 'ko' | 'en'
 
   try {
     const dbContents = await getKContentsBySubName(subName)
@@ -155,14 +161,16 @@ export default async function ContentDetailPage({
       if (brand) {
         logoUrl = brand.logoUrl ?? null
         backgroundUrl = brand.backgroundUrl && brand.backgroundUrl !== '' ? brand.backgroundUrl : null
-        displayName = brand.name ?? subName
+        // 언어에 따라 적절한 이름 선택
+        displayName = getKFoodBrandName(brand, language) || subName
       }
     } else if (category === 'kfestival') {
       const place = await getKFestivalPlaceByName(subName)
       if (place) {
         logoUrl = place.logoUrl ?? null
         backgroundUrl = place.backgroundUrl && place.backgroundUrl !== '' ? place.backgroundUrl : null
-        displayName = place.name ?? subName
+        // 언어에 따라 적절한 이름 선택
+        displayName = getKFestivalPlaceName(place, language) || subName
       }
     }
 
@@ -298,7 +306,7 @@ export default async function ContentDetailPage({
                           href={`/poi/${poi._id.$oid}`}
                           className="hover:text-white underline transition-colors"
                         >
-                          {poi.name}
+                          {getPOIName(poi, language)}
                         </Link>
                       </>
                     )}
@@ -345,7 +353,7 @@ export default async function ContentDetailPage({
                             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">{content.spotName}</h3>
                             {content.subName && (
                               <span className="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-700 dark:text-gray-300 text-sm font-medium mb-3">
-                                #{content.subName}
+                                #{getKContentSubName(content, language)}
                               </span>
                             )}
                           </div>
@@ -364,7 +372,7 @@ export default async function ContentDetailPage({
                         </p>
                         {contentPoi && (
                           <p className="text-gray-500 dark:text-gray-400 text-xs mb-2">
-                            📍 {contentPoi.name}
+                            📍 {getPOIName(contentPoi, language)}
                           </p>
                         )}
                         {content.tags && content.tags.length > 0 && (

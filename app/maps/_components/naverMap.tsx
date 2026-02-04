@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { POIJson as POI } from '@/types'
 import { useSearchResult } from '@/components/providers/SearchContext'
+import { useLanguage } from '@/components/providers/LanguageContext'
+import { getPOIName, getPOIAddress } from '@/lib/utils/locale'
 
 interface NaverMapProps {
   center: number[] // [longitude, latitude]
@@ -66,6 +68,7 @@ export default function NaverMap({ center, zoom = 16, pois = [], cartOrderMap = 
   const markersRef = useRef<any[]>([])
   const polylineRef = useRef<any>(null)
   const { setSearchResult } = useSearchResult()
+  const { language } = useLanguage()
   const [isReady, setIsReady] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -345,8 +348,8 @@ export default function NaverMap({ center, zoom = 16, pois = [], cartOrderMap = 
           const order = cartOrderMap.get(poi._id.$oid)
           if (order === undefined) return null
 
-          // address_ko로 Geocoding 수행 (없으면 address 사용)
-          const addressForGeocoding = poi.address_ko || poi.address
+          // address.address_ko로 Geocoding 수행 (없으면 address.address_en 사용)
+          const addressForGeocoding = poi.address.address_ko || poi.address.address_en
           if (!addressForGeocoding) return null
 
           const geocoded = await geocodeAddress(addressForGeocoding, poi._id.$oid, poi)
@@ -439,14 +442,14 @@ export default function NaverMap({ center, zoom = 16, pois = [], cartOrderMap = 
     if (!window.naver.maps.Marker) return null
 
     const poiData = {
-      name: poi.name,
+      name: getPOIName(poi, language),
       poiId: poi._id.$oid
     }
 
     const markerOptions: any = {
       position: new window.naver.maps.LatLng(lat, lng),
       map: mapInstanceRef.current,
-      title: poi.name
+      title: getPOIName(poi, language)
     }
 
     // If POI is in cart and no search result, use numbered marker
@@ -503,21 +506,21 @@ export default function NaverMap({ center, zoom = 16, pois = [], cartOrderMap = 
           let lat: number | null = null
           let lng: number | null = null
 
-          // 무조건 address_ko로 Geocoding 수행 (없으면 address 사용)
-          const addressForGeocoding = poi.address_ko || poi.address
-          log(`[Geocoding] POI: ${poi.name}, Address: ${addressForGeocoding}`)
+          // 무조건 address.address_ko로 Geocoding 수행 (없으면 address.address_en 사용)
+          const addressForGeocoding = poi.address.address_ko || poi.address.address_en
+          log(`[Geocoding] POI: ${getPOIName(poi, language)}, Address: ${addressForGeocoding}`)
           
           if (addressForGeocoding) {
             const geocoded = await geocodeAddress(addressForGeocoding, poi._id.$oid, poi)
             if (geocoded) {
               lat = geocoded.lat
               lng = geocoded.lng
-              log(`[Geocoding Success] POI: ${poi.name}, lat: ${lat}, lng: ${lng}`)
+              log(`[Geocoding Success] POI: ${getPOIName(poi, language)}, lat: ${lat}, lng: ${lng}`)
             } else {
-              console.warn(`[Geocoding Failed] POI: ${poi.name}, Address: ${addressForGeocoding}`)
+              console.warn(`[Geocoding Failed] POI: ${getPOIName(poi, language)}, Address: ${addressForGeocoding}`)
             }
           } else {
-            console.warn(`[No Address] POI: ${poi.name} has no address_ko or address`)
+            console.warn(`[No Address] POI: ${getPOIName(poi, language)} has no address.address_ko or address.address_en`)
           }
 
           // Geocoding으로 좌표를 얻었으면 마커 생성

@@ -5,6 +5,8 @@ import { useMemo, useState } from 'react'
 import { Route } from '@/lib/services/routes'
 import { useSearchResult } from '@/components/providers/SearchContext'
 import { useCart } from '@/components/providers/CartContext'
+import { useLanguage } from '@/components/providers/LanguageContext'
+import { getPOIName, getPOIAddress } from '@/lib/utils/locale'
 import { useKContentsBySubName, useKContentsByPOIId } from '@/lib/hooks/useKContents'
 import { usePOIs } from '@/lib/hooks/usePOIs'
 import type { POIJson } from '@/types'
@@ -26,6 +28,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
   const [activeTab, setActiveTab] = useState<'home' | 'reviews' | 'photos' | 'info'>('home')
   const { searchResult, setSearchResult } = useSearchResult()
   const { cartItems, addToCart, removeFromCart, isInCart } = useCart()
+  const { language } = useLanguage()
   const { pois, loading: poisLoading, error: poisError } = usePOIs({ enabled: type === 'maps' || type === 'search' })
   const poiById = useMemo(() => new Map(pois.map((p) => [p._id.$oid, p])), [pois])
 
@@ -86,7 +89,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
     } else {
       addToCart({
         id: cartItemId,
-        name: poi.name,
+        name: getPOIName(poi, language),
         type: 'poi',
         poiId: poi._id.$oid,
       })
@@ -539,7 +542,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
               <div className="space-y-4">
                 <div>
                   <div className="flex items-start justify-between mb-2">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex-1">{poi.name}</h2>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex-1">{getPOIName(poi, language)}</h2>
                     {/* 장바구니 버튼 */}
                     <button
                       type="button"
@@ -549,7 +552,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                         } else {
                           addToCart({
                             id: cartItemId,
-                            name: poi.name,
+                            name: getPOIName(poi, language),
                             type: 'poi',
                             poiId: poi._id.$oid
                           })
@@ -572,7 +575,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                       </svg>
                     </button>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{poi.address}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{getPOIAddress(poi, language)}</p>
                   <div className="flex flex-wrap gap-2 mb-3">
                     {poi.categoryTags.map((tag, idx) => (
                       <span key={`${tag}-${idx}`} className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-xs">
@@ -733,12 +736,12 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                   role="button"
                   tabIndex={0}
                   onClick={() => {
-                    setSearchResult({ name: poi.name, type: 'poi', poiId: poi._id.$oid })
+                    setSearchResult({ name: getPOIName(poi, language), type: 'poi', poiId: poi._id.$oid })
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault()
-                      setSearchResult({ name: poi.name, type: 'poi', poiId: poi._id.$oid })
+                      setSearchResult({ name: getPOIName(poi, language), type: 'poi', poiId: poi._id.$oid })
                     }
                   }}
                   className="focus-ring w-full text-left px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
@@ -763,7 +766,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                         <div className="min-w-0">
                           <div className="flex items-baseline gap-2">
                             <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">
-                              {poi.name}
+                              {getPOIName(poi, language)}
                             </p>
                             {poi.categoryTags?.[0] && (
                               <span className="text-[11px] text-gray-500 dark:text-gray-400 flex-shrink-0">
@@ -772,7 +775,7 @@ export function SidePanelContent({ type, route, routeId }: SidePanelContentProps
                             )}
                           </div>
                           <p className="mt-1 text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                            {poi.address}
+                            {getPOIAddress(poi, language)}
                           </p>
                           <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-gray-500 dark:text-gray-400">
                             <span>Fee: {formatEntryFee(poi.entryFee)}</span>

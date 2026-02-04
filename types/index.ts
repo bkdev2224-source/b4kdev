@@ -42,9 +42,14 @@ export interface GeoLocation {
  */
 export interface POIJson {
   _id: OidWrapper
-  name: string
-  address: string // English address for UI display
-  address_ko?: string // Korean address for Geocoding
+  name: {
+    name_en: string
+    name_ko: string
+  }
+  address: {
+    address_en: string
+    address_ko: string
+  }
   location: GeoLocation
   categoryTags: string[]
   openingHours: string
@@ -57,9 +62,14 @@ export interface POIJson {
  */
 export interface POI {
   _id: ObjectId | string
-  name: string
-  address: string // English address for UI display
-  address_ko?: string // Korean address for Geocoding
+  name: {
+    name_en: string
+    name_ko: string
+  }
+  address: {
+    address_en: string
+    address_ko: string
+  }
   location: GeoLocation
   categoryTags: string[]
   openingHours: string
@@ -77,7 +87,10 @@ export interface POI {
  * KContent - JSON format (from mockupdata)
  */
 export interface KContentJson {
-  subName: string
+  subName: {
+    subName_en: string
+    subName_ko: string
+  }
   poiId: OidWrapper
   spotName: string
   description: string
@@ -91,7 +104,10 @@ export interface KContentJson {
  */
 export interface KContent {
   _id: ObjectId | string
-  subName: string
+  subName: {
+    subName_en: string
+    subName_ko: string
+  }
   poiId: ObjectId | string
   spotName: string
   description: string
