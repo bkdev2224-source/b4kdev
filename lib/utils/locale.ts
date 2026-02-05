@@ -47,6 +47,16 @@ export function getKFoodBrandName(
 }
 
 /**
+ * KpopArtist의 이름 가져오기
+ */
+export function getKpopArtistName(
+  artist: { name: { name_en: string; name_ko: string } }, 
+  language: Language
+): string {
+  return language === 'ko' ? artist.name.name_ko : artist.name.name_en
+}
+
+/**
  * POI의 이름 가져오기
  */
 export function getPOIName(

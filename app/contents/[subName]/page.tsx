@@ -13,7 +13,7 @@ import { getKBeautyPlaceByName } from '@/lib/db/kbeauty-places'
 import { getKFoodBrandByName } from '@/lib/db/kfood-brands'
 import { getKFestivalPlaceByName } from '@/lib/db/kfestival-places'
 import { getSiteUrl } from '@/lib/config/env'
-import { getKFestivalPlaceName, getKFoodBrandName, getPOIName, getKContentSubName, getKContentSpotName, getKContentDescription } from '@/lib/utils/locale'
+import { getKFestivalPlaceName, getKFoodBrandName, getPOIName, getKContentSubName, getKContentSpotName, getKContentDescription, getKpopArtistName } from '@/lib/utils/locale'
 import { cookies } from 'next/headers'
 
 export const revalidate = 60
@@ -42,7 +42,8 @@ export async function generateMetadata({
     const first = contents[0]
     const category = first.category as string | undefined
     const label = category && categoryLabels[category] ? categoryLabels[category] : subName
-    const title = category === 'kpop' ? (await getKpopArtistByName(subName))?.name ?? subName : subName
+    const artist = category === 'kpop' ? await getKpopArtistByName(subName) : null
+    const title = artist ? (typeof artist.name === 'string' ? artist.name : artist.name.name_en) : subName
     const spotName = typeof first.spotName === 'string' ? first.spotName : first.spotName.spotName_en
     const description = `${label} — ${spotName} and related spots in Korea. Explore on B4K.`
     const imageUrl = `https://picsum.photos/seed/${encodeURIComponent(subName)}/1200/630`
@@ -135,7 +136,7 @@ export default async function ContentDetailPage({
       if (artist) {
         logoUrl = artist.logoUrl ?? null
         backgroundUrl = artist.backgroundUrl && artist.backgroundUrl !== '' ? artist.backgroundUrl : null
-        displayName = artist.name ?? subName
+        displayName = getKpopArtistName(artist, language) ?? subName
         agency = artist.agency
         socialLinks = {
           instagram: artist.instagram,
