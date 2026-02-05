@@ -73,7 +73,7 @@ export default function SeasonalRecommendations() {
   }
 
   return (
-    <section id="seasonal-recommendations" className="w-full py-16 bg-white dark:bg-gray-950">
+    <section id="seasonal-recommendations" className="w-full py-16 bg-white dark:bg-gray-900">
       <div className="px-6">
         {/* Title section */}
         <div className="text-center mb-12">

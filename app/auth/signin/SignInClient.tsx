@@ -34,7 +34,7 @@ export default function SignInClient() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-12 lg:p-24 bg-gray-50 dark:bg-gray-950">
+    <div className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-12 lg:p-24 bg-gray-50 dark:bg-gray-900">
       <div className="z-10 max-w-md w-full items-center justify-center">
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-gray-100">
           Sign In
@@ -51,6 +51,9 @@ export default function SignInClient() {
             variant="testing"
             title="Sign In Temporarily Unavailable"
             message="Google sign-in is temporarily disabled for testing purposes. Please check back later."
+            showBackButton={true}
+            backHref="/"
+            backLabel="Go to Home"
           />
         ) : (
           <button

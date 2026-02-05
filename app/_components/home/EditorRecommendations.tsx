@@ -57,7 +57,7 @@ const editorRecommendations: RecommendationItem[] = [
 
 export default function EditorRecommendations() {
   return (
-    <section id="editor-recommendations" className="w-full py-16 bg-white dark:bg-gray-950">
+    <section id="editor-recommendations" className="w-full py-16 bg-white dark:bg-gray-900">
       <div className="px-6">
         {/* Title section - centered with border lines */}
         <div className="text-center mb-12">
